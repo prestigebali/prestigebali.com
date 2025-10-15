@@ -5,7 +5,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
-import { RecommendationEngine } from '@/components/recommendation-engine';
 import { Separator } from '@/components/ui/separator';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
@@ -74,7 +73,6 @@ export default function Home() {
         <HeroSection />
         <DestinationsSection />
         <ToursSection />
-        <RecommendationSection />
         <ReviewsSection />
       </main>
       <Footer />
@@ -104,7 +102,7 @@ function HeroSection() {
         </p>
         <div className="animate-fade-in-up animation-delay-600">
           <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-            <a href="#recommendations">Find a Tour</a>
+            <a href="#tours">Find a Tour</a>
           </Button>
         </div>
       </div>
@@ -160,16 +158,6 @@ function ToursSection() {
             />
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-function RecommendationSection() {
-  return (
-    <section id="recommendations" className="py-16 md:py-24 bg-card">
-      <div className="container mx-auto px-4">
-        <RecommendationEngine />
       </div>
     </section>
   );
