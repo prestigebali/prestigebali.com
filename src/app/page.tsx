@@ -115,7 +115,7 @@ export default function Home() {
 
 function HeroSection() {
   return (
-    <section className="relative h-[70dvh] md:h-[80dvh] w-full flex items-center justify-center text-center text-white">
+    <section className="relative h-screen w-full flex items-center justify-center text-center text-white">
       {heroImage && (
         <Image
           src={heroImage.imageUrl}
