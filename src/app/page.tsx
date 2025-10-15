@@ -7,10 +7,11 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
-import { Heart, Users, Mountain, Waves, Compass, Ship, Sun, Building } from 'lucide-react';
+import { Heart, Users, Mountain, Waves, Building } from 'lucide-react';
 import { Footer } from '@/components/footer';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination').slice(0, 4);
@@ -319,18 +320,32 @@ function ReviewsSection() {
               Treasured Memories, Trusted Service
             </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviewData.map((review) => (
-            <ReviewCard
-              key={review.id}
-              avatar={review.avatar}
-              name={review.name}
-              handle={review.handle}
-              review={review.review}
-              rating={review.rating}
-            />
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-4xl mx-auto"
+        >
+          <CarouselContent>
+            {reviewData.map((review) => (
+              <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                <div className="p-1">
+                  <ReviewCard
+                    avatar={review.avatar}
+                    name={review.name}
+                    handle={review.handle}
+                    review={review.review}
+                    rating={review.rating}
+                    className="h-full"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </section>
   );

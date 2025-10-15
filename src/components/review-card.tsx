@@ -30,7 +30,7 @@ const renderStars = (rating: number) => {
 
 export function ReviewCard({ avatar, name, handle, review, rating, className }: ReviewCardProps) {
   return (
-    <Card className={cn('flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-2', className)}>
+    <Card className={cn('flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1', className)}>
       <CardHeader className="flex flex-row items-center gap-4 pb-4">
         <Avatar className="w-12 h-12">
           <AvatarImage src={avatar.imageUrl} alt={name} data-ai-hint={avatar.imageHint} />
