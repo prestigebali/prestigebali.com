@@ -112,31 +112,31 @@ const reviewData = [
 
 const experienceTypes = [
     {
-        icon: <Heart className="w-10 h-10 text-primary" />,
+        icon: <Heart className="w-10 h-10 text-white" />,
         title: "Romantic Honeymoons",
         description: "Create timeless memories with our exclusive romantic escapes in breathtaking settings.",
         image: experienceImages.find(i => i.id === 'exp-1')!
     },
     {
-        icon: <Users className="w-10 h-10 text-primary" />,
+        icon: <Users className="w-10 h-10 text-white" />,
         title: "Family Vacations",
         description: "Engaging, safe, and memorable adventures for the whole family to enjoy together.",
         image: experienceImages.find(i => i.id === 'exp-2')!
     },
     {
-        icon: <Mountain className="w-10 h-10 text-primary" />,
+        icon: <Mountain className="w-10 h-10 text-white" />,
         title: "Cultural Adventures",
         description: "Immerse yourself in the rich traditions, arts, and heritage of the Indonesian islands.",
         image: experienceImages.find(i => i.id === 'exp-3')!
     },
     {
-        icon: <Waves className="w-10 h-10 text-primary" />,
+        icon: <Waves className="w-10 h-10 text-white" />,
         title: "Wellness Retreats",
         description: "Restore your mind, body, and soul in serene, luxurious settings with expert guidance.",
         image: experienceImages.find(i => i.id === 'exp-4')!
     },
     {
-        icon: <Building className="w-10 h-10 text-primary" />,
+        icon: <Building className="w-10 h-10 text-white" />,
         title: "Company Outings",
         description: "Inspiring team-building and corporate retreats that foster collaboration and creativity.",
         image: experienceImages.find(i => i.id === 'exp-5')!
@@ -283,17 +283,27 @@ function ExperiencesSection() {
               From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
             </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
           {experienceTypes.map((exp) => (
-             <Card key={exp.title} className="group flex flex-col items-center text-center p-6 bg-card border-2 border-transparent hover:border-primary hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                <div className="mb-4 p-4 bg-primary/10 rounded-full">
+            <div key={exp.title} className="relative group aspect-[4/5] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+               <Image
+                src={exp.image.imageUrl}
+                alt={exp.title}
+                data-ai-hint={exp.image.imageHint}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110 brightness-75"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 text-white">
+                <div className="mb-4">
                   {exp.icon}
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">{exp.title}</h3>
-                <p className="text-sm text-muted-foreground flex-grow">
+                <h3 className="text-xl font-bold text-shadow-md shadow-black/50 mb-2">{exp.title}</h3>
+                <p className="text-sm text-primary-foreground/90 max-w-xs mx-auto text-shadow-sm shadow-black/50">
                   {exp.description}
                 </p>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>
