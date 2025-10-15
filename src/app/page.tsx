@@ -2,10 +2,11 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/header';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Heart, Users, Mountain, Waves } from 'lucide-react';
+import { Footer } from '@/components/footer';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination').slice(0, 4);
@@ -107,6 +108,7 @@ export default function Home() {
         <ExperiencesSection />
         <ReviewsSection />
       </main>
+      <Footer />
     </div>
   );
 }
