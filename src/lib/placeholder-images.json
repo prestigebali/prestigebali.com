@@ -4,61 +4,67 @@
       "id": "hero",
       "description": "hero image",
       "imageUrl": "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740",
-      "imageHint": "desert landscape"
+      "imageHint": "Lombok beach landscape"
     },
     {
       "id": "dest-1",
       "description": "destination",
-      "imageUrl": "https://picsum.photos/seed/dest1/800/1000",
-      "imageHint": "serene beach"
+      "imageUrl": "https://picsum.photos/seed/bali/800/1000",
+      "imageHint": "Bali temple"
     },
     {
       "id": "dest-2",
       "description": "destination",
-      "imageUrl": "https://picsum.photos/seed/dest2/800/1000",
-      "imageHint": "ancient ruins"
+      "imageUrl": "https://picsum.photos/seed/lombok/800/1000",
+      "imageHint": "Lombok beach"
     },
     {
       "id": "dest-3",
       "description": "destination",
-      "imageUrl": "https://picsum.photos/seed/dest3/800/1000",
-      "imageHint": "bustling city"
+      "imageUrl": "https://picsum.photos/seed/labuanbajo/800/1000",
+      "imageHint": "Labuan Bajo island"
+    },
+    {
+      "id": "dest-4",
+      "description": "destination",
+      "imageUrl": "https://picsum.photos/seed/sumbawa/800/1000",
+      "imageHint": "Sumbawa coast"
     },
     {
       "id": "tour-1",
       "description": "tour",
       "imageUrl": "https://picsum.photos/seed/tour1/600/400",
-      "imageHint": "bali temple"
+      "imageHint": "bali rice fields"
     },
     {
       "id": "tour-2",
       "description": "tour",
       "imageUrl": "https://picsum.photos/seed/tour2/600/400",
-      "imageHint": "tokyo street"
+      "imageHint": "rinjani mountain"
     },
     {
       "id": "tour-3",
       "description": "tour",
       "imageUrl": "https://picsum.photos/seed/tour3/600/400",
-      "imageHint": "rome colosseum"
+      "imageHint": "komodo dragon"
     },
     {
       "id": "avatar-1",
       "description": "avatar",
       "imageUrl": "https://picsum.photos/seed/avatar1/100/100",
-      "imageHint": "man portrait"
+      "imageHint": "woman portrait"
     },
     {
       "id": "avatar-2",
       "description": "avatar",
       "imageUrl": "https://picsum.photos/seed/avatar2/100/100",
-      "imageHint": "woman portrait"
+      "imageHint": "man portrait"
     },
     {
       "id": "avatar-3",
       "description": "avatar",
       "imageUrl": "https://picsum.photos/seed/avatar3/100/100",
-      "imageHint": "person portrait"
+      "imageHint": "person smiling"
     }
   ]
 }

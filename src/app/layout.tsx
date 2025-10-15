@@ -3,8 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Voyage Zen',
-  description: 'Modern & Minimalist Tour & Travel',
+  title: 'Prestige Bali – Premium Leisures and Tours',
+  description: 'Crafting premium leisure and tour experiences across Bali, Lombok, Labuan Bajo & Sumbawa.',
 };
 
 export default function RootLayout({

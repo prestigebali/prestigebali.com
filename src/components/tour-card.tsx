@@ -42,13 +42,13 @@ export function TourCard({ image, title, description, price, rating, className }
           />
         </div>
       </CardHeader>
-      <CardContent className="p-6 flex-1">
+      <CardContent className="p-6 flex-1 flex flex-col">
         <CardTitle className="text-xl mb-2">{title}</CardTitle>
         <div className="flex items-center gap-2 mb-4">
           {renderStars(rating)}
           <span className="text-sm text-muted-foreground">{rating.toFixed(1)}</span>
         </div>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className="flex-grow">{description}</CardDescription>
       </CardContent>
       <CardFooter className="p-6 pt-0 flex justify-between items-center bg-secondary/20">
         <div className="text-2xl font-bold text-primary">

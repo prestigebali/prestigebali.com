@@ -21,6 +21,7 @@ export function Header() {
   const navLinks = [
     { name: 'Destinations', href: '#destinations' },
     { name: 'Tours', href: '#tours' },
+    { name: 'Experiences', href: '#experiences' },
     { name: 'Reviews', href: '#reviews' },
   ];
 
@@ -35,7 +36,7 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
           <Mountain className={cn('h-6 w-6', scrolled ? 'text-primary' : 'text-white')} />
           <span className={cn(scrolled ? 'text-foreground' : 'text-white shadow-black/50 text-shadow')}>
-            Voyage Zen
+            Prestige Bali
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-6">
@@ -54,7 +55,7 @@ export function Header() {
         </nav>
         <div className="hidden md:block">
           <Button asChild size="sm">
-            <Link href="#tours">Book a Trip</Link>
+            <Link href="#tours">Book Now</Link>
           </Button>
         </div>
         <div className="md:hidden">
@@ -69,7 +70,7 @@ export function Header() {
               <div className="flex flex-col gap-6 p-6">
                 <Link href="/" className="flex items-center gap-2 font-bold text-lg">
                   <Mountain className="h-6 w-6 text-primary" />
-                  <span>Voyage Zen</span>
+                  <span>Prestige Bali</span>
                 </Link>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (
@@ -83,7 +84,7 @@ export function Header() {
                   ))}
                 </nav>
                 <Button asChild className="mt-4">
-                  <Link href="#tours">Book a Trip</Link>
+                  <Link href="#tours">Book Now</Link>
                 </Button>
               </div>
             </SheetContent>
