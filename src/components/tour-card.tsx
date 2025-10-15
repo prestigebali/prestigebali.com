@@ -50,12 +50,12 @@ export function TourCard({ image, title, description, price, rating, className }
         </div>
         <CardDescription>{description}</CardDescription>
       </CardContent>
-      <CardFooter className="p-6 pt-0 flex justify-between items-center">
+      <CardFooter className="p-6 pt-0 flex justify-between items-center bg-secondary/20">
         <div className="text-2xl font-bold text-primary">
           ${price}
           <span className="text-sm font-normal text-muted-foreground">/person</span>
         </div>
-        <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">Book Now</Button>
+        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Book Now</Button>
       </CardFooter>
     </Card>
   );

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Separator } from '@/components/ui/separator';
+import { Header } from '@/components/header';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination');
@@ -69,6 +70,7 @@ const reviewData = [
 export default function Home() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
+      <Header />
       <main className="flex-1">
         <HeroSection />
         <DestinationsSection />
@@ -102,7 +104,7 @@ function HeroSection() {
           Discover curated journeys to the world's most breathtaking destinations. Your dream trip awaits.
         </p>
         <div className="animate-fade-in-up animation-delay-600">
-          <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <a href="#tours">Find a Tour</a>
           </Button>
         </div>
@@ -113,24 +115,24 @@ function HeroSection() {
 
 function DestinationsSection() {
   return (
-    <section id="destinations" className="py-16 md:py-24 bg-card">
+    <section id="destinations" className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12">
           Popular Destinations
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {destinationImages.map((dest, index) => (
-            <div key={index} className="relative group overflow-hidden rounded-lg shadow-lg aspect-w-4 aspect-h-5">
+            <div key={index} className="relative group overflow-hidden rounded-lg shadow-lg aspect-w-4 aspect-h-5 transition-transform duration-300 hover:scale-105">
               <Image
                 src={dest.imageUrl}
                 alt={dest.imageHint}
                 data-ai-hint={dest.imageHint}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-300 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-0 left-0 p-6">
-                <h3 className="text-2xl font-bold text-white">{dest.imageHint.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</h3>
+                <h3 className="text-2xl font-bold text-white shadow-black/50 text-shadow-sm">{dest.imageHint.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</h3>
               </div>
             </div>
           ))}
@@ -166,7 +168,7 @@ function ToursSection() {
 
 function ReviewsSection() {
   return (
-    <section id="reviews" className="py-16 md:py-24">
+    <section id="reviews" className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12">
           What Our Travelers Say
