@@ -112,31 +112,31 @@ const reviewData = [
 
 const experienceTypes = [
     {
-        icon: <Heart className="w-12 h-12 text-white" />,
+        icon: <Heart className="w-10 h-10 text-primary" />,
         title: "Romantic Honeymoons",
         description: "Create timeless memories with our exclusive romantic escapes in breathtaking settings.",
         image: experienceImages.find(i => i.id === 'exp-1')!
     },
     {
-        icon: <Users className="w-12 h-12 text-white" />,
+        icon: <Users className="w-10 h-10 text-primary" />,
         title: "Family Vacations",
         description: "Engaging, safe, and memorable adventures for the whole family to enjoy together.",
         image: experienceImages.find(i => i.id === 'exp-2')!
     },
     {
-        icon: <Mountain className="w-12 h-12 text-white" />,
+        icon: <Mountain className="w-10 h-10 text-primary" />,
         title: "Cultural Adventures",
         description: "Immerse yourself in the rich traditions, arts, and heritage of the Indonesian islands.",
         image: experienceImages.find(i => i.id === 'exp-3')!
     },
     {
-        icon: <Waves className="w-12 h-12 text-white" />,
+        icon: <Waves className="w-10 h-10 text-primary" />,
         title: "Wellness Retreats",
         description: "Restore your mind, body, and soul in serene, luxurious settings with expert guidance.",
         image: experienceImages.find(i => i.id === 'exp-4')!
     },
     {
-        icon: <Building className="w-12 h-12 text-white" />,
+        icon: <Building className="w-10 h-10 text-primary" />,
         title: "Company Outings",
         description: "Inspiring team-building and corporate retreats that foster collaboration and creativity.",
         image: experienceImages.find(i => i.id === 'exp-5')!
@@ -172,7 +172,7 @@ function HeroSection() {
           priority
         />
       )}
-       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
+       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
@@ -181,7 +181,7 @@ function HeroSection() {
          Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits.
         </p>
         <div className="animate-fade-in-up animation-delay-600">
-          <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
             <a href="#tours">Explore Packages</a>
           </Button>
         </div>
@@ -202,7 +202,7 @@ function DestinationsSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {destinations.map((dest) => (
-            <div key={dest.name} className="relative group aspect-[4/5] overflow-hidden rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl">
+            <div key={dest.name} className="relative group aspect-[4/5] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
               <Image
                 src={dest.image.imageUrl}
                 alt={dest.name}
@@ -283,26 +283,17 @@ function ExperiencesSection() {
               From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
             </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
           {experienceTypes.map((exp) => (
-            <div key={exp.title} className="relative group aspect-[4/5] overflow-hidden rounded-lg shadow-lg">
-                <Image
-                    src={exp.image.imageUrl}
-                    alt={exp.title}
-                    data-ai-hint={exp.image.imageHint}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110 brightness-50 group-hover:brightness-[.6]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-8 flex flex-col justify-end text-white">
-                    <div className="mb-4 transition-transform duration-300 group-hover:-translate-y-2">
-                      {exp.icon}
-                    </div>
-                    <h3 className="text-2xl font-bold text-shadow-md shadow-black/50 mb-2 transition-transform duration-300 group-hover:-translate-y-2">{exp.title}</h3>
-                    <p className="text-primary-foreground/80 opacity-0 max-h-0 transition-all duration-500 group-hover:opacity-100 group-hover:max-h-40 group-hover:mt-2">
-                      {exp.description}
-                    </p>
+             <Card key={exp.title} className="group flex flex-col items-center text-center p-6 bg-card border-2 border-transparent hover:border-primary hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                <div className="mb-4 p-4 bg-primary/10 rounded-full">
+                  {exp.icon}
                 </div>
-            </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">{exp.title}</h3>
+                <p className="text-sm text-muted-foreground flex-grow">
+                  {exp.description}
+                </p>
+            </Card>
           ))}
         </div>
       </div>
@@ -314,7 +305,7 @@ function ReviewsSection() {
   return (
     <section id="reviews" className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 relative">
            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
               Treasured Memories, Trusted Service
@@ -325,12 +316,12 @@ function ReviewsSection() {
             align: "start",
             loop: true,
           }}
-          className="w-full max-w-4xl mx-auto"
+          className="w-full max-w-6xl mx-auto"
         >
-          <CarouselContent>
+          <CarouselContent className="-ml-4">
             {reviewData.map((review) => (
-              <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-1">
+              <CarouselItem key={review.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="p-1 h-full">
                   <ReviewCard
                     avatar={review.avatar}
                     name={review.name}
@@ -343,8 +334,10 @@ function ReviewsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4">
+            <CarouselPrevious className="static translate-y-0" />
+            <CarouselNext className="static translate-y-0" />
+          </div>
         </Carousel>
       </div>
     </section>
