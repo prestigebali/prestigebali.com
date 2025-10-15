@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero",
+      "description": "hero image",
+      "imageUrl": "https://picsum.photos/seed/hero42/1920/1080",
+      "imageHint": "mountain landscape"
+    },
+    {
+      "id": "dest-1",
+      "description": "destination",
+      "imageUrl": "https://picsum.photos/seed/dest1/800/1000",
+      "imageHint": "serene beach"
+    },
+    {
+      "id": "dest-2",
+      "description": "destination",
+      "imageUrl": "https://picsum.photos/seed/dest2/800/1000",
+      "imageHint": "ancient ruins"
+    },
+    {
+      "id": "dest-3",
+      "description": "destination",
+      "imageUrl": "https://picsum.photos/seed/dest3/800/1000",
+      "imageHint": "bustling city"
+    },
+    {
+      "id": "tour-1",
+      "description": "tour",
+      "imageUrl": "https://picsum.photos/seed/tour1/600/400",
+      "imageHint": "bali temple"
+    },
+    {
+      "id": "tour-2",
+      "description": "tour",
+      "imageUrl": "https://picsum.photos/seed/tour2/600/400",
+      "imageHint": "tokyo street"
+    },
+    {
+      "id": "tour-3",
+      "description": "tour",
+      "imageUrl": "https://picsum.photos/seed/tour3/600/400",
+      "imageHint": "rome colosseum"
+    },
+    {
+      "id": "avatar-1",
+      "description": "avatar",
+      "imageUrl": "https://picsum.photos/seed/avatar1/100/100",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "avatar-2",
+      "description": "avatar",
+      "imageUrl": "https://picsum.photos/seed/avatar2/100/100",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "avatar-3",
+      "description": "avatar",
+      "imageUrl": "https://picsum.photos/seed/avatar3/100/100",
+      "imageHint": "person portrait"
+    }
+  ]
 }
