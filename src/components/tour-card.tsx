@@ -30,15 +30,15 @@ const renderStars = (rating: number) => {
 
 export function TourCard({ image, title, description, price, rating, className }: TourCardProps) {
   return (
-    <Card className={cn('flex flex-col overflow-hidden transition-all hover:shadow-xl', className)}>
+    <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2', className)}>
       <CardHeader className="p-0">
-        <div className="relative aspect-video">
+        <div className="relative aspect-video overflow-hidden">
           <Image
             src={image.imageUrl}
             alt={title}
             data-ai-hint={image.imageHint}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
       </CardHeader>

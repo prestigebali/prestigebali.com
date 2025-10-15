@@ -153,7 +153,7 @@ function DestinationsSection() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {destinations.map((dest) => (
-            <div key={dest.name} className="relative group overflow-hidden rounded-lg shadow-lg aspect-w-4 aspect-h-5 transition-transform duration-300 hover:scale-105">
+            <div key={dest.name} className="relative group overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <Image
                 src={dest.image.imageUrl}
                 alt={dest.name}
@@ -209,7 +209,7 @@ function ExperiencesSection() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {experienceTypes.map((exp) => (
-            <Card key={exp.title} className="text-center bg-card hover:shadow-lg transition-shadow">
+            <Card key={exp.title} className="text-center bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
                 <CardHeader className="items-center">
                     <div className="p-4 bg-primary/10 rounded-full mb-2">
                         {exp.icon}
