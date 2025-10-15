@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -71,7 +70,6 @@ const reviewData = [
 export default function Home() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <Header />
       <main className="flex-1">
         <HeroSection />
         <DestinationsSection />
