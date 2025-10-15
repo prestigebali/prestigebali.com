@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Separator } from '@/components/ui/separator';
-import { Header } from '@/components/header';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination');
@@ -70,7 +69,6 @@ const reviewData = [
 export default function Home() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <Header />
       <main className="flex-1">
         <HeroSection />
         <DestinationsSection />
