@@ -172,7 +172,7 @@ function HeroSection() {
           priority
         />
       )}
-       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
@@ -303,7 +303,7 @@ function ExperiencesSection() {
 
 function ReviewsSection() {
   return (
-    <section id="reviews" className="py-16 md:py-24 bg-secondary/50">
+    <section id="reviews" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 relative">
            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
@@ -334,9 +334,9 @@ function ReviewsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4">
-            <CarouselPrevious className="static translate-y-0" />
-            <CarouselNext className="static translate-y-0" />
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
+            <CarouselPrevious className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
+            <CarouselNext className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
           </div>
         </Carousel>
       </div>
