@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/header';
@@ -5,13 +7,16 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
-import { Heart, Users, Mountain, Waves } from 'lucide-react';
+import { Heart, Users, Mountain, Waves, Compass, Ship, Sun, Building } from 'lucide-react';
 import { Footer } from '@/components/footer';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination').slice(0, 4);
 const curatedTours = PlaceHolderImages.filter(p => p.description === 'tour');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
+const experienceImages = PlaceHolderImages.filter(p => p.description === 'experience');
 
 const destinations = [
   { name: "Bali", image: destinationImages[0] },
@@ -27,7 +32,8 @@ const tourData = [
     description: "Immerse yourself in the spiritual and cultural heart of Bali.",
     price: 1350,
     rating: 4.9,
-    image: curatedTours[0]
+    image: curatedTours[0],
+    category: "Cultural Adventures"
   },
   {
     id: "tour-2",
@@ -35,7 +41,8 @@ const tourData = [
     description: "Explore pristine beaches and the majestic Mount Rinjani.",
     price: 1550,
     rating: 4.8,
-    image: curatedTours[1]
+    image: curatedTours[1],
+    category: "Wellness Retreats"
   },
   {
     id: "tour-3",
@@ -43,7 +50,35 @@ const tourData = [
     description: "Sail through turquoise waters and meet the legendary Komodo dragons.",
     price: 2200,
     rating: 4.9,
-    image: curatedTours[2]
+    image: curatedTours[2],
+    category: "Cultural Adventures"
+  },
+  {
+    id: "tour-4",
+    title: "Bali Honeymoon Dream",
+    description: "Private villas, romantic dinners, and breathtaking sunsets.",
+    price: 1800,
+    rating: 5.0,
+    image: experienceImages.find(i => i.id === 'exp-1')!,
+    category: "Romantic Honeymoons"
+  },
+  {
+    id: "tour-5",
+    title: "Lombok Family Fun",
+    description: "Safe & engaging activities for all ages on a beautiful island.",
+    price: 1650,
+    rating: 4.8,
+    image: experienceImages.find(i => i.id === 'exp-2')!,
+    category: "Family Vacations"
+  },
+    {
+    id: "tour-6",
+    title: "Sumbawa Corporate Retreat",
+    description: "Team building and strategy sessions in an inspiring, remote location.",
+    price: 2500,
+    rating: 4.9,
+    image: experienceImages.find(i => i.id === 'exp-4')!,
+    category: "Company Outings"
   }
 ];
 
@@ -76,24 +111,34 @@ const reviewData = [
 
 const experienceTypes = [
     {
-        icon: <Heart className="w-8 h-8 text-primary" />,
+        icon: <Heart className="w-12 h-12 text-white" />,
         title: "Romantic Honeymoons",
-        description: "Create timeless memories with our exclusive romantic escapes."
+        description: "Create timeless memories with our exclusive romantic escapes in breathtaking settings.",
+        image: experienceImages.find(i => i.id === 'exp-1')!
     },
     {
-        icon: <Users className="w-8 h-8 text-primary" />,
+        icon: <Users className="w-12 h-12 text-white" />,
         title: "Family Vacations",
-        description: "Engaging and memorable adventures for the whole family."
+        description: "Engaging, safe, and memorable adventures for the whole family to enjoy together.",
+        image: experienceImages.find(i => i.id === 'exp-2')!
     },
     {
-        icon: <Mountain className="w-8 h-8 text-primary" />,
+        icon: <Mountain className="w-12 h-12 text-white" />,
         title: "Cultural Adventures",
-        description: "Immerse yourself in the rich traditions and heritage of the islands."
+        description: "Immerse yourself in the rich traditions, arts, and heritage of the Indonesian islands.",
+        image: experienceImages.find(i => i.id === 'exp-3')!
     },
     {
-        icon: <Waves className="w-8 h-8 text-primary" />,
+        icon: <Waves className="w-12 h-12 text-white" />,
         title: "Wellness Retreats",
-        description: "Restore your mind, body, and soul in serene, luxurious settings."
+        description: "Restore your mind, body, and soul in serene, luxurious settings with expert guidance.",
+        image: experienceImages.find(i => i.id === 'exp-4')!
+    },
+    {
+        icon: <Building className="w-12 h-12 text-white" />,
+        title: "Company Outings",
+        description: "Inspiring team-building and corporate retreats that foster collaboration and creativity.",
+        image: experienceImages.find(i => i.id === 'exp-5')!
     }
 ]
 
@@ -126,12 +171,12 @@ function HeroSection() {
           priority
         />
       )}
-       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up shadow-black/50 text-shadow">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
         </h1>
-        <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 shadow-black/50 text-shadow-sm">
+        <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-md shadow-black/50">
          Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits.
         </p>
         <div className="animate-fade-in-up animation-delay-600">
@@ -146,24 +191,27 @@ function HeroSection() {
 
 function DestinationsSection() {
   return (
-    <section id="destinations" className="py-16 md:py-24 bg-secondary/50">
+    <section id="destinations" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12">
-          Explore Our Destinations
-        </h2>
+        <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Our Destinations</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+              Explore Captivating Islands
+            </h2>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {destinations.map((dest) => (
-            <div key={dest.name} className="relative group overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+            <div key={dest.name} className="relative group aspect-[4/5] overflow-hidden rounded-lg shadow-lg transition-all duration-500 hover:shadow-2xl">
               <Image
                 src={dest.image.imageUrl}
                 alt={dest.name}
                 data-ai-hint={dest.image.imageHint}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
               <div className="absolute bottom-0 left-0 p-6">
-                <h3 className="text-2xl font-bold text-white shadow-black/50 text-shadow-sm">{dest.name}</h3>
+                <h3 className="text-2xl font-bold text-white text-shadow-md shadow-black/50">{dest.name}</h3>
               </div>
             </div>
           ))}
@@ -174,14 +222,38 @@ function DestinationsSection() {
 }
 
 function ToursSection() {
+  const tourCategories = ["All", ...new Set(tourData.map(tour => tour.category))];
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  const filteredTours = activeFilter === "All" 
+    ? tourData 
+    : tourData.filter(tour => tour.category === activeFilter);
+
   return (
-    <section id="tours" className="py-16 md:py-24">
+    <section id="tours" className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12">
-          Exclusive Tour Packages
-        </h2>
+        <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Exclusive Packages</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+              Find Your Perfect Journey
+            </h2>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
+          {tourCategories.map(category => (
+            <Button
+              key={category}
+              variant={activeFilter === category ? "default" : "outline"}
+              onClick={() => setActiveFilter(category)}
+              className="rounded-full transition-all duration-300"
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {tourData.map((tour) => (
+          {filteredTours.map((tour) => (
             <TourCard
               key={tour.id}
               image={tour.image}
@@ -199,27 +271,37 @@ function ToursSection() {
 
 function ExperiencesSection() {
   return (
-    <section id="experiences" className="py-16 md:py-24 bg-secondary/50">
+    <section id="experiences" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-4">
-          Tailor-Made Experiences
-        </h2>
-        <p className="text-lg text-muted-foreground text-center max-w-3xl mx-auto mb-12">
-          From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Tailor-Made</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+              Experiences for Every Traveler
+            </h2>
+             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mt-4">
+              From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
+            </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {experienceTypes.map((exp) => (
-            <Card key={exp.title} className="text-center bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
-                <CardHeader className="items-center">
-                    <div className="p-4 bg-primary/10 rounded-full mb-2">
-                        {exp.icon}
+            <div key={exp.title} className="relative group aspect-[4/5] overflow-hidden rounded-lg shadow-lg">
+                <Image
+                    src={exp.image.imageUrl}
+                    alt={exp.title}
+                    data-ai-hint={exp.image.imageHint}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 brightness-50 group-hover:brightness-[.6]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-8 flex flex-col justify-end text-white">
+                    <div className="mb-4 transition-transform duration-300 group-hover:-translate-y-2">
+                      {exp.icon}
                     </div>
-                    <CardTitle className="text-xl">{exp.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">{exp.description}</p>
-                </CardContent>
-            </Card>
+                    <h3 className="text-2xl font-bold text-shadow-md shadow-black/50 mb-2 transition-transform duration-300 group-hover:-translate-y-2">{exp.title}</h3>
+                    <p className="text-primary-foreground/80 opacity-0 max-h-0 transition-all duration-500 group-hover:opacity-100 group-hover:max-h-40 group-hover:mt-2">
+                      {exp.description}
+                    </p>
+                </div>
+            </div>
           ))}
         </div>
       </div>
@@ -229,11 +311,14 @@ function ExperiencesSection() {
 
 function ReviewsSection() {
   return (
-    <section id="reviews" className="py-16 md:py-24">
+    <section id="reviews" className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12">
-          Stories From Our Guests
-        </h2>
+        <div className="text-center mb-12">
+           <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+              Treasured Memories, Trusted Service
+            </h2>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {reviewData.map((review) => (
             <ReviewCard
@@ -251,6 +336,7 @@ function ReviewsSection() {
   );
 }
 
+
 // Add animation styles to globals.css if they don't exist
 // This is a placeholder for custom animation utility classes.
 // You can define them in globals.css or tailwind.config.js
@@ -266,7 +352,6 @@ const animationStyles = `
     opacity: 0;
   }
 `;
-
 // To use these styles, you'd typically add a style tag or put them in your CSS file.
 // For this case, we'll just acknowledge their conceptual presence.
 // In a real app, these would be in globals.css or configured in Tailwind.

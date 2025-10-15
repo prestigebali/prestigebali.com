@@ -49,6 +49,36 @@
       "imageHint": "komodo dragon"
     },
     {
+      "id": "exp-1",
+      "description": "experience",
+      "imageUrl": "https://picsum.photos/seed/romance/800/1000",
+      "imageHint": "couple beach sunset"
+    },
+    {
+      "id": "exp-2",
+      "description": "experience",
+      "imageUrl": "https://picsum.photos/seed/family/800/1000",
+      "imageHint": "family holiday"
+    },
+    {
+      "id": "exp-3",
+      "description": "experience",
+      "imageUrl": "https://picsum.photos/seed/culture/800/1000",
+      "imageHint": "traditional dance"
+    },
+    {
+      "id": "exp-4",
+      "description": "experience",
+      "imageUrl": "https://picsum.photos/seed/wellness/800/1000",
+      "imageHint": "yoga retreat"
+    },
+    {
+      "id": "exp-5",
+      "description": "experience",
+      "imageUrl": "https://picsum.photos/seed/company/800/1000",
+      "imageHint": "corporate meeting"
+    },
+    {
       "id": "avatar-1",
       "description": "avatar",
       "imageUrl": "https://picsum.photos/seed/avatar1/100/100",

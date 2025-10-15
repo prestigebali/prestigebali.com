@@ -22,7 +22,7 @@ const renderStars = (rating: number) => {
     <div className="flex items-center gap-1">
       {Array(fullStars).fill(0).map((_, i) => <Star key={`full-${i}`} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
       {halfStar && <StarHalf key="half" className="w-4 h-4 text-amber-400 fill-amber-400" />}
-      {Array(emptyStars).fill(0).map((_, i) => <Star key={`empty-${i}`} className="w-4 h-4 text-muted-foreground/50 fill-muted-foreground/20" />)}
+      {Array(emptyStars).fill(0).map((_, i) => <Star key={`empty-${i}`} className="w-4 h-4 text-muted-foreground/30 fill-muted-foreground/20" />)}
     </div>
   );
 };
@@ -32,19 +32,21 @@ export function ReviewCard({ avatar, name, handle, review, rating, className }: 
   return (
     <Card className={cn('flex flex-col bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-2', className)}>
       <CardHeader className="flex flex-row items-center gap-4 pb-4">
-        <Avatar>
+        <Avatar className="w-12 h-12">
           <AvatarImage src={avatar.imageUrl} alt={name} data-ai-hint={avatar.imageHint} />
           <AvatarFallback>{name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <p className="font-semibold">{name}</p>
+          <p className="font-semibold text-foreground">{name}</p>
           <p className="text-sm text-muted-foreground">{handle}</p>
         </div>
-        {renderStars(rating)}
       </CardHeader>
-      <CardContent>
-        <p className="text-muted-foreground">{review}</p>
+      <CardContent className="flex-1">
+        <p className="text-muted-foreground leading-relaxed italic">"{review}"</p>
       </CardContent>
+       <CardContent className="pt-4">
+        {renderStars(rating)}
+       </CardContent>
     </Card>
   );
 }
