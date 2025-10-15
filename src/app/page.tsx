@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -108,7 +107,6 @@ export default function Home() {
         <ExperiencesSection />
         <ReviewsSection />
       </main>
-      <Footer />
     </div>
   );
 }
