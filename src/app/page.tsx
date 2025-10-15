@@ -168,11 +168,11 @@ function HeroSection() {
           alt={heroImage.imageHint}
           data-ai-hint={heroImage.imageHint}
           fill
-          className="object-cover brightness-[.6]"
+          className="object-cover brightness-75"
           priority
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
@@ -373,3 +373,5 @@ const animationStyles = `
 // To use these styles, you'd typically add a style tag or put them in your CSS file.
 // For this case, we'll just acknowledge their conceptual presence.
 // In a real app, these would be in globals.css or configured in Tailwind.
+
+    
