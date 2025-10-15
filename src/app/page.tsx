@@ -82,23 +82,24 @@ export default function Home() {
 
 function HeroSection() {
   return (
-    <section className="relative h-[60dvh] md:h-[70dvh] w-full flex items-center justify-center text-center text-white">
+    <section className="relative h-[70dvh] md:h-[80dvh] w-full flex items-center justify-center text-center text-white">
       {heroImage && (
         <Image
           src={heroImage.imageUrl}
           alt={heroImage.imageHint}
           data-ai-hint={heroImage.imageHint}
           fill
-          className="object-cover brightness-50"
+          className="object-cover brightness-[.6]"
           priority
         />
       )}
+       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 animate-fade-in-up">
-          Craft Your Next Adventure
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up shadow-black/50 text-shadow">
+          Your Journey Begins Here
         </h1>
-        <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto mb-8 animate-fade-in-up animation-delay-300">
-          Discover curated journeys and get personalized recommendations from our AI travel expert. Your dream trip awaits.
+        <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto mb-8 animate-fade-in-up animation-delay-300 shadow-black/50 text-shadow-sm">
+          Discover curated journeys to the world's most breathtaking destinations. Your dream trip awaits.
         </p>
         <div className="animate-fade-in-up animation-delay-600">
           <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
