@@ -194,34 +194,25 @@ function ExperiencesSection() {
             From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {packageExperienceTypes.slice(0, 5).map((exp) => (
-            <Link 
-              href={`/packages?category=${encodeURIComponent(exp.title)}`} 
-              key={exp.title} 
-              className="block group"
-            >
-              <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={exp.image.imageUrl}
-                    alt={exp.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    data-ai-hint={exp.image.imageHint}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-4">
-                     <exp.icon className="w-8 h-8 text-white mb-2" />
-                    <CardTitle className="text-white text-2xl !font-bold text-shadow-md shadow-black/50">{exp.title}</CardTitle>
+        <div className="max-w-5xl mx-auto">
+          <Card className="p-8 md:p-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+              {packageExperienceTypes.slice(0, 5).map((exp) => (
+                <Link 
+                  href={`/packages?category=${encodeURIComponent(exp.title)}`} 
+                  key={exp.title} 
+                  className="block group text-center"
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                      <exp.icon className="w-10 h-10 text-primary" />
+                    </div>
+                    <h3 className="text-base font-semibold text-foreground">{exp.title}</h3>
                   </div>
-                </div>
-                <CardContent className="p-6 flex-grow">
-                  <p className="text-muted-foreground">{exp.description}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                </Link>
+              ))}
+            </div>
+          </Card>
         </div>
       </div>
     </section>
