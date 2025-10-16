@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { allPackages, destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
 import Link from 'next/link';
+import { Card } from '@/components/ui/card';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
@@ -160,6 +161,7 @@ function ToursSection() {
           {filteredTours.map((tour) => (
             <TourCard
               key={tour.id}
+              id={tour.id}
               image={tour.image}
               title={tour.title}
               description={tour.description}
@@ -193,7 +195,7 @@ function ExperiencesSection() {
               From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
             </p>
         </div>
-        <div className="max-w-4xl mx-auto">
+        <Card className="p-8 md:p-12">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 text-center">
             {packageExperienceTypes.map((exp) => (
               <Link 
@@ -208,7 +210,7 @@ function ExperiencesSection() {
               </Link>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </section>
   );

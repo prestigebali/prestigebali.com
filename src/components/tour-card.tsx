@@ -8,6 +8,7 @@ import { Badge } from './ui/badge';
 import Link from 'next/link';
 
 interface TourCardProps {
+  id?: string;
   image: ImagePlaceholder;
   title: string;
   description: string;
@@ -31,44 +32,43 @@ const renderStars = (rating: number) => {
   );
 };
 
-export function TourCard({ image, title, description, price, rating, destination, category, className }: TourCardProps) {
+export function TourCard({ id, image, title, description, price, rating, destination, category, className }: TourCardProps) {
   return (
-    <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 bg-card', className)}>
-      <CardHeader className="p-0">
-        <div className="relative aspect-[4/3] overflow-hidden">
-          <Image
-            src={image.imageUrl}
-            alt={title}
-            data-ai-hint={image.imageHint}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-           <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="p-6 flex-1 flex flex-col">
-        <div className='flex items-center gap-1 text-sm text-muted-foreground mb-2'>
-            <Pin className='w-3.5 h-3.5'/>
-            <span>{destination}</span>
-        </div>
-        <CardTitle className="text-2xl mb-2 leading-tight">{title}</CardTitle>
-        <div className="flex items-center gap-2 mb-4">
-          {renderStars(rating)}
-          <span className="text-sm text-muted-foreground font-medium">{rating.toFixed(1)}</span>
-        </div>
-        <CardDescription className="flex-grow text-muted-foreground">{description}</CardDescription>
-      </CardContent>
-      <CardFooter className="p-6 pt-0 flex justify-between items-center bg-transparent">
-        <div>
-            <p className="text-sm font-normal text-muted-foreground">Starting from</p>
-            <div className="text-2xl font-bold text-primary">
-            ${price}
+    <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <Image
+          src={image.imageUrl}
+          alt={title}
+          data-ai-hint={image.imageHint}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
+      </div>
+      <div className="flex flex-col flex-grow">
+        <CardHeader className="p-6">
+          <CardTitle className="text-xl mb-2 leading-tight font-bold">{title}</CardTitle>
+          <CardDescription className="text-muted-foreground line-clamp-2">{description}</CardDescription>
+        </CardHeader>
+        <CardFooter className="p-6 pt-0 mt-auto flex justify-between items-end">
+          <div>
+            <div className='flex items-center gap-1 text-sm text-muted-foreground mb-1'>
+                <Pin className='w-3.5 h-3.5'/>
+                <span>{destination}</span>
             </div>
-        </div>
-        <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-          <Link href={`/packages?title=${encodeURIComponent(title)}`}>Book Now</Link>
-        </Button>
-      </CardFooter>
+            <div className="flex items-center gap-2 mb-2">
+              {renderStars(rating)}
+              <span className="text-xs text-muted-foreground font-medium">{rating.toFixed(1)}</span>
+            </div>
+            <div className="text-2xl font-bold text-primary">
+              ${price}
+            </div>
+          </div>
+          <Button asChild variant="link" className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full px-0 text-primary">
+            <Link href={`/packages?title=${encodeURIComponent(title)}`}>Book Now &rarr;</Link>
+          </Button>
+        </CardFooter>
+      </div>
     </Card>
   );
 }
