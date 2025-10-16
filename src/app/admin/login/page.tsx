@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,7 +19,6 @@ import { useAuth, useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect } from 'react';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -42,6 +41,8 @@ export default function LoginPage() {
   });
   
   useEffect(() => {
+    // If the user check is complete and the user IS logged in, redirect them away
+    // from the login page to the dashboard.
     if (!isUserLoading && user) {
       router.push('/admin/dashboard');
     }
@@ -64,7 +65,7 @@ export default function LoginPage() {
         title: 'Login Successful',
         description: 'Redirecting to dashboard...',
       });
-      router.push('/admin/dashboard');
+      // No need to manually push, the useEffect will catch the user change and redirect.
     } catch (error: any) {
       console.error('Login failed:', error);
       toast({
@@ -77,18 +78,18 @@ export default function LoginPage() {
     }
   };
 
+  // While the initial user check is running, show a loading state.
   if (isUserLoading) {
     return <div className="flex h-screen items-center justify-center"><p>Loading...</p></div>;
   }
   
-  // If the user is already logged in, the useEffect will handle the redirection.
-  // We can show a minimal loading state or nothing while that happens.
-  // A logged-in user should not see the login form.
+  // If the user is already logged in, the useEffect will handle redirection.
+  // Show a message indicating this.
   if (user) {
-     return <div className="flex h-screen items-center justify-center"><p>Redirecting...</p></div>;
+     return <div className="flex h-screen items-center justify-center"><p>Already logged in. Redirecting...</p></div>;
   }
 
-  // Only show the login form if not loading and no user is present.
+  // If not loading and no user is found, render the login form.
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
