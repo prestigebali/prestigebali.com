@@ -104,7 +104,7 @@ export const allPackages = [
     description: "Team building and strategy sessions in an inspiring, remote location.",
     price: 2500,
     rating: 4.9,
-    image: experienceImages.find(i => i.id === 'exp-4')!,
+    image: experienceImages.find(i => i.id === 'exp-5')!,
     category: "Company Outings",
     destination: "Sumbawa"
   },

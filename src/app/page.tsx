@@ -6,13 +6,12 @@ import { Header } from '@/components/header';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
-import { Heart, Users, Mountain, Waves, Building } from 'lucide-react';
 import { Footer } from '@/components/footer';
 import { useState } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { allPackages, destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
@@ -106,7 +105,7 @@ function DestinationsSection() {
             <Link 
               key={dest.name} 
               href={`/packages?destination=${encodeURIComponent(dest.name)}`} 
-              className="relative group aspect-video overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
+              className="relative group aspect-[1.7] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
             >
               <Image
                 src={dest.image.imageUrl}
@@ -187,30 +186,43 @@ function ExperiencesSection() {
     <section id="experiences" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Tailor-Made</p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
-              Experiences for Every Traveler
-            </h2>
-             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mt-4">
-              From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
-            </p>
+          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Tailor-Made</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
+            Experiences for Every Traveler
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mt-4">
+            From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
+          </p>
         </div>
-        <Card className="p-8 md:p-12">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 text-center">
-            {packageExperienceTypes.map((exp) => (
-              <Link 
-                href={`/packages?category=${encodeURIComponent(exp.title)}`} 
-                key={exp.title} 
-                className="flex flex-col items-center group"
-              >
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 transition-all duration-300 group-hover:bg-primary">
-                  <exp.icon className="w-8 h-8 text-primary transition-all duration-300 group-hover:text-primary-foreground" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {packageExperienceTypes.slice(0, 5).map((exp) => (
+            <Link 
+              href={`/packages?category=${encodeURIComponent(exp.title)}`} 
+              key={exp.title} 
+              className="block group"
+            >
+              <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <Image
+                    src={exp.image.imageUrl}
+                    alt={exp.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    data-ai-hint={exp.image.imageHint}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-4">
+                     <exp.icon className="w-8 h-8 text-white mb-2" />
+                    <CardTitle className="text-white text-2xl !font-bold text-shadow-md shadow-black/50">{exp.title}</CardTitle>
+                  </div>
                 </div>
-                <h3 className="text-base font-semibold text-foreground group-hover:text-primary">{exp.title}</h3>
-              </Link>
-            ))}
-          </div>
-        </Card>
+                <CardContent className="p-6 flex-grow">
+                  <p className="text-muted-foreground">{exp.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
