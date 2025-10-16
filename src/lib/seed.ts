@@ -1,4 +1,4 @@
-import { collection, writeBatch, Firestore } from 'firebase/firestore';
+import { collection, writeBatch, Firestore, doc } from 'firebase/firestore';
 import { allPackages as staticPackages } from './packages';
 
 export async function seedPackages(db: Firestore) {
@@ -8,7 +8,7 @@ export async function seedPackages(db: Firestore) {
   staticPackages.forEach((pkg) => {
     // In a real app, you'd want to use the package's own ID if it's meaningful,
     // or let Firestore auto-generate one. Here we use the static ID.
-    const docRef = collection(db, 'tour_packages', pkg.id);
+    const docRef = doc(db, 'tour_packages', pkg.id);
     batch.set(docRef, pkg);
   });
 
