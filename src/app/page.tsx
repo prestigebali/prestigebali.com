@@ -194,25 +194,29 @@ function ExperiencesSection() {
             From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
           </p>
         </div>
-        <div className="max-w-5xl mx-auto">
-          <Card className="p-8 md:p-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-              {packageExperienceTypes.slice(0, 5).map((exp) => (
-                <Link 
-                  href={`/packages?category=${encodeURIComponent(exp.title)}`} 
-                  key={exp.title} 
-                  className="block group text-center"
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
-                      <exp.icon className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="text-base font-semibold text-foreground">{exp.title}</h3>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {packageExperienceTypes.map((exp) => (
+            <Link
+              href={`/packages?category=${encodeURIComponent(exp.title)}`}
+              key={exp.title}
+              className="group"
+            >
+              <Card className="relative overflow-hidden h-full rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <Image
+                  src={exp.image.imageUrl}
+                  alt={exp.title}
+                  data-ai-hint={exp.image.imageHint}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <CardContent className="relative flex flex-col justify-end h-full p-6">
+                  <CardTitle className="text-white text-2xl !font-bold text-shadow-md shadow-black/50">{exp.title}</CardTitle>
+                  <CardDescription className="text-primary-foreground/80 mt-2 line-clamp-2">{exp.description}</CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
