@@ -44,9 +44,9 @@ const packageSchema = z.object({
   category: z.string().min(1, 'Please select a category.'),
   rating: z.coerce.number().min(1).max(5).default(4.5),
   image: z.object({
-    imageUrl: z.string().url('Please upload an image or provide a valid URL.'),
+    imageUrl: z.string().url('Please upload an image or provide a valid URL.').or(z.literal('')),
     imageHint: z.string().optional().default(''),
-  }),
+  }).optional(),
 });
 
 type PackageFormValues = z.infer<typeof packageSchema>;
@@ -69,7 +69,10 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   const form = useForm<PackageFormValues>({
     resolver: zodResolver(packageSchema),
-    defaultValues: isEditMode && initialData ? initialData : {
+    defaultValues: isEditMode && initialData ? {
+        ...initialData,
+        image: initialData.image || { imageUrl: '', imageHint: '' }
+    } : {
       title: '',
       description: '',
       price: 0,
@@ -87,7 +90,10 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
+      form.reset({
+        ...initialData,
+        image: initialData.image || { imageUrl: '', imageHint: '' }
+      });
     }
   }, [initialData, form]);
 
@@ -102,56 +108,59 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   const onSubmit = async (data: PackageFormValues) => {
     setIsSubmitting(true);
-    
     try {
-      if (!firestore) {
-        throw new Error('Firestore service is not available.');
-      }
+        let finalImageUrl = data.image?.imageUrl || '';
+        const finalData = { ...data };
 
-      let finalImageUrl = data.image.imageUrl;
-
-      if (imageFile) {
-        if (!storage) {
-          throw new Error('Storage service is not available.');
+        // Step 1: Handle file upload if a new file is selected
+        if (imageFile) {
+            if (!storage) {
+                throw new Error('Storage service is not available.');
+            }
+            toast({ title: 'Uploading Image...', description: 'Please wait.' });
+            
+            const filePath = `tour_packages/${uuidv4()}-${imageFile.name}`;
+            finalImageUrl = await uploadImage(storage, imageFile, (progress) => {
+                setUploadProgress(progress);
+            });
+            
+            toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
+            
+            if (finalData.image) {
+                finalData.image.imageUrl = finalImageUrl;
+            } else {
+                 finalData.image = { imageUrl: finalImageUrl, imageHint: '' };
+            }
         }
-        toast({ title: 'Uploading Image...', description: 'Please wait.' });
-        setUploadProgress(0);
-        const filePath = `tour_packages/${uuidv4()}-${imageFile.name}`;
-        // Await the upload process as we need the URL before saving to Firestore
-        finalImageUrl = await uploadImage(storage, imageFile, filePath, setUploadProgress);
-        toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
-      }
+        
+        // Step 2: Save data to Firestore using the non-blocking pattern
+        if (isEditMode && initialData?.id) {
+            const docRef = doc(firestore, 'tour_packages', initialData.id);
+            updateDocumentNonBlocking(docRef, finalData);
+        } else {
+            const newId = uuidv4();
+            const docRef = doc(firestore, 'tour_packages', newId);
+            setDocumentNonBlocking(docRef, { ...finalData, id: newId });
+        }
 
-      const finalData = { ...data, image: { ...data.image, imageUrl: finalImageUrl } };
-      
-      if (isEditMode && initialData?.id) {
-        const docRef = doc(firestore, 'tour_packages', initialData.id);
-        updateDocumentNonBlocking(docRef, finalData);
-      } else {
-        const newId = uuidv4();
-        const docRef = doc(firestore, 'tour_packages', newId);
-        setDocumentNonBlocking(docRef, { ...finalData, id: newId });
-      }
+        toast({
+            title: isEditMode ? 'Package Updated!' : 'Package Created!',
+            description: `The tour package "${data.title}" has been saved.`,
+        });
 
-      toast({
-        title: isEditMode ? 'Package Updated!' : 'Package Created!',
-        description: `The tour package "${data.title}" has been saved.`,
-      });
-
-      // Optimistic UI update: navigate away immediately.
-      router.push('/admin/packages');
-      router.refresh();
+        router.push('/admin/packages');
+        router.refresh();
 
     } catch (error: any) {
-      console.error("Operation failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Operation Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
-      });
+        console.error("Operation failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Operation Failed",
+            description: error.message || "An unexpected error occurred. Please try again.",
+        });
     } finally {
-      // This is crucial: ensure isSubmitting is always reset.
-      setIsSubmitting(false);
+        setIsSubmitting(false);
+        setUploadProgress(0);
     }
   };
   
@@ -280,7 +289,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                             <Progress value={uploadProgress} className="w-48" />
                                             <p className="text-sm font-semibold">{Math.round(uploadProgress)}%</p>
                                         </div>
-                                    ) : imagePreview && imagePreview.startsWith('http') ? (
+                                    ) : imagePreview && (imagePreview.startsWith('http') || imagePreview.startsWith('blob')) ? (
                                         <>
                                             <Image src={imagePreview} alt="Package preview" layout="fill" className="object-contain rounded-md p-2" />
                                             <Button
@@ -310,9 +319,9 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                 </div>
                                 <Input 
                                     className="mt-4" 
-                                    placeholder="Or paste an image URL here" 
+                                    placeholder="Or paste an image URL here"
                                     {...field}
-                                    value={imagePreview && !imageFile ? imagePreview : ''}
+                                    value={imagePreview && !(imagePreview.startsWith('blob:')) ? imagePreview : ''}
                                     onChange={(e) => {
                                       field.onChange(e);
                                       setImageFile(null);
