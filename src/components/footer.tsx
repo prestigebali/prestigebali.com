@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Mountain, Facebook, Twitter, Instagram } from 'lucide-react';
+import Image from 'next/image';
+import { Facebook, Twitter, Instagram } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -8,8 +9,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 font-bold text-2xl mb-4 text-foreground">
-              <Mountain className="h-7 w-7 text-primary" />
-              <span>Prestige Bali</span>
+              <Image 
+                src="https://res.cloudinary.com/dfinkfssq/image/upload/v1760581094/logo_th6oyh.png" 
+                alt="Prestige Bali Logo"
+                width={140}
+                height={35}
+                className="w-auto h-8"
+              />
             </Link>
             <p className="text-sm text-muted-foreground">
               Crafting premium leisure and tour experiences across Indonesia’s most captivating islands.
