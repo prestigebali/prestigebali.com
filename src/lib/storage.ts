@@ -11,14 +11,14 @@ import { FirebaseStorage, getDownloadURL, ref, uploadBytesResumable, UploadTaskS
  * @param onProgress - A callback function that receives the upload progress percentage.
  * @returns A promise that resolves with the public download URL of the uploaded file.
  */
-export async function uploadImage(
+export function uploadImage(
   storage: FirebaseStorage,
   file: File,
   path: string,
   onProgress: (progress: number) => void
 ): Promise<string> {
   if (!storage) {
-    throw new Error("Firebase Storage is not initialized.");
+    return Promise.reject(new Error("Firebase Storage is not initialized."));
   }
   
   const storageRef = ref(storage, path);
@@ -62,7 +62,3 @@ export async function uploadImage(
     );
   });
 }
-
-// Keep generateId in case it's used elsewhere, though not in the form now.
-import { v4 as uuidv4 } from 'uuid';
-export const generateId = () => uuidv4();

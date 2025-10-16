@@ -56,8 +56,8 @@ interface PackageFormProps {
 
 export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   
   const router = useRouter();
   const { toast } = useToast();
@@ -92,84 +92,76 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!storage) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Storage service is not available.' });
-        return;
-    }
-
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    try {
-        const fileId = uuidv4();
-        const filePath = `tour_packages/${fileId}-${file.name}`;
-        
-        const downloadURL = await uploadImage(storage, file, filePath, (progress) => {
-            setUploadProgress(progress);
-        });
-
-        form.setValue('image.imageUrl', downloadURL, { shouldValidate: true });
-        toast({ title: 'Upload Successful', description: 'Image has been uploaded and URL is set.' });
-
-    } catch (error) {
-        console.error("Upload failed:", error);
-        toast({
-            variant: "destructive",
-            title: "Upload Failed",
-            description: error instanceof Error ? error.message : "Could not upload image. Please try again.",
-        });
-    } finally {
-        setIsUploading(false);
+    if (file) {
+      setImageFile(file);
+      // Create a temporary URL for immediate preview
+      const tempUrl = URL.createObjectURL(file);
+      form.setValue('image.imageUrl', tempUrl, { shouldValidate: true });
     }
   };
 
-
-  const onSubmit = (data: PackageFormValues) => {
-    if (!firestore) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Firestore is not available.' });
+  const onSubmit = async (data: PackageFormValues) => {
+    if (!firestore || !storage) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Firebase services are not available.' });
         return;
     }
     setIsSubmitting(true);
+    setUploadProgress(0);
 
-    if (isEditMode && initialData?.id) {
-        const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
-        updateDoc(packageDocRef, data).catch((error) => {
-            console.error('Failed to update package:', error);
-            toast({
-                variant: 'destructive',
-                title: 'Operation Failed',
-                description: 'Could not update the package. Please try again.',
-            });
-            setIsSubmitting(false);
+    let finalImageUrl = data.image.imageUrl;
+
+    try {
+      // 1. Handle Image Upload if a new file is selected
+      if (imageFile) {
+        toast({ title: 'Uploading Image...', description: 'Please wait while the image is being uploaded.' });
+        const fileId = uuidv4();
+        const filePath = `tour_packages/${fileId}-${imageFile.name}`;
+        
+        finalImageUrl = await uploadImage(storage, imageFile, filePath, (progress) => {
+            setUploadProgress(progress);
         });
-    } else {
+
+        toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
+      }
+
+      // 2. Prepare data for Firestore
+      const finalData = { ...data, image: { ...data.image, imageUrl: finalImageUrl } };
+
+      // 3. Save data to Firestore
+      toast({ title: 'Saving Package...', description: 'Please wait while the package details are being saved.' });
+      
+      if (isEditMode && initialData?.id) {
+        const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
+        await updateDoc(packageDocRef, finalData);
+      } else {
         const newId = uuidv4();
         const packageDocRef = doc(firestore, 'tour_packages', newId);
-        const newData = { ...data, id: newId };
-        setDoc(packageDocRef, newData).catch((error) => {
-            console.error('Failed to create package:', error);
-            toast({
-                variant: 'destructive',
-                title: 'Operation Failed',
-                description: 'Could not create the package. Please try again.',
-            });
-            setIsSubmitting(false);
-        });
-    }
+        await setDoc(packageDocRef, { ...finalData, id: newId });
+      }
 
-    // Optimistic UI update
-    toast({
-        title: isEditMode ? 'Package Updated' : 'Package Created',
-        description: `The tour package has been ${isEditMode ? 'updated' : 'added'} successfully.`,
-    });
-    router.push('/admin/packages');
-    router.refresh(); // Tell Next.js to refetch server components
-    // No need to set isSubmitting to false here, as we are navigating away.
+      toast({
+          title: isEditMode ? 'Package Updated!' : 'Package Created!',
+          description: `The tour package "${data.title}" has been saved successfully.`,
+      });
+
+      router.push('/admin/packages');
+      router.refresh();
+
+    } catch (error: any) {
+        console.error("Operation failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Operation Failed",
+            description: error.message || "An unexpected error occurred. Please try again.",
+        });
+    } finally {
+        setIsSubmitting(false);
+        setUploadProgress(0);
+        setImageFile(null);
+    }
   };
 
-  const isFormBusy = isSubmitting || isUploading;
+  const isUploading = isSubmitting && uploadProgress > 0 && uploadProgress < 100;
 
   return (
     <Form {...form}>
@@ -186,7 +178,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                 <FormItem>
                   <FormLabel>Package Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Enchanting Bali Discovery" {...field} disabled={isFormBusy} />
+                    <Input placeholder="e.g., Enchanting Bali Discovery" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +194,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     <Textarea
                       placeholder="Describe the tour package in detail..."
                       {...field}
-                      disabled={isFormBusy}
+                      disabled={isSubmitting}
                     />
                   </FormControl>
                   <FormMessage />
@@ -217,7 +209,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                         <FormItem>
                         <FormLabel>Price ($)</FormLabel>
                         <FormControl>
-                            <Input type="number" placeholder="1500" {...field} disabled={isFormBusy} />
+                            <Input type="number" placeholder="1500" {...field} disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -229,7 +221,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Destination</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={isFormBusy}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a destination" />
@@ -251,7 +243,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={isFormBusy}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
@@ -282,11 +274,11 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     id="file-upload"
                                     onChange={handleFileChange} 
                                     accept="image/png, image/jpeg, image/gif"
-                                    disabled={isFormBusy}
+                                    disabled={isSubmitting}
                                 />
                                 <div 
                                     className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors border-input"
-                                    onClick={() => !isFormBusy && document.getElementById('file-upload')?.click()}
+                                    onClick={() => !isSubmitting && document.getElementById('file-upload')?.click()}
                                 >
                                     {isUploading ? (
                                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -305,8 +297,12 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     form.setValue('image.imageUrl', '', { shouldValidate: true });
+                                                    setImageFile(null);
+                                                    // Also reset the file input
+                                                    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                                                    if(fileInput) fileInput.value = '';
                                                 }}
-                                                disabled={isFormBusy}
+                                                disabled={isSubmitting}
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
@@ -323,7 +319,12 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     className="mt-4" 
                                     placeholder="Or paste an image URL here" 
                                     {...field}
-                                    disabled={isFormBusy}
+                                    value={imagePreview && !imageFile ? imagePreview : field.value}
+                                    onChange={(e) => {
+                                      field.onChange(e);
+                                      setImageFile(null);
+                                    }}
+                                    disabled={isSubmitting}
                                 />
                             </div>
                         </FormControl>
@@ -334,16 +335,14 @@ export function PackageForm({ initialData }: PackageFormProps) {
           </CardContent>
         </Card>
         <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isFormBusy}>
+            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
                 Cancel
             </Button>
-            <Button type="submit" disabled={isFormBusy}>
-                {isFormBusy ? (isUploading ? 'Uploading...' : 'Saving...') : (isEditMode ? 'Save Changes' : 'Create Package')}
+            <Button type="submit" disabled={isSubmitting}>
+                {isUploading ? 'Uploading...' : isSubmitting ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Package')}
             </Button>
         </div>
       </form>
     </Form>
   );
 }
-
-    
