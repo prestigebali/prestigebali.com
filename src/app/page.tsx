@@ -231,7 +231,7 @@ function ToursSection() {
     : tourData.filter(tour => tour.category === activeFilter);
 
   return (
-    <section id="tours" className="py-16 md:py-24 bg-secondary/50">
+    <section id="tours" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <p className="text-sm font-semibold text-primary uppercase tracking-wider">Exclusive Packages</p>
@@ -313,7 +313,7 @@ function ExperiencesSection() {
 
 function ReviewsSection() {
   return (
-    <section id="reviews" className="py-16 md:py-24 bg-secondary/50">
+    <section id="reviews" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 relative">
            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
