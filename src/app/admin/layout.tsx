@@ -18,10 +18,11 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { LayoutDashboard, Package, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export default function AdminLayout({
   children,
@@ -52,7 +53,7 @@ export default function AdminLayout({
 
   if (isUserLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
         <p>Loading...</p>
       </div>
     );
@@ -64,7 +65,7 @@ export default function AdminLayout({
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
         <p>Redirecting to login...</p>
       </div>
     );
@@ -74,9 +75,17 @@ export default function AdminLayout({
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <SidebarGroup>
-            <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
-          </SidebarGroup>
+          <div className="p-4 flex items-center gap-3">
+             <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+              <Image 
+                src="https://res.cloudinary.com/dfinkfssq/image/upload/v1760581094/logo_th6oyh.png" 
+                alt="Prestige Bali Logo"
+                width={120}
+                height={30}
+                className={'w-auto h-7'}
+              />
+            </Link>
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -112,10 +121,12 @@ export default function AdminLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
+          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 sticky top-0 bg-background z-30">
               <SidebarTrigger className="md:hidden"/>
               <div className="flex-1">
-                  {/* Header content can go here */}
+                 <h1 className="font-semibold text-lg">
+                    Prestige Bali - Admin Panel
+                 </h1>
               </div>
           </header>
         {children}
