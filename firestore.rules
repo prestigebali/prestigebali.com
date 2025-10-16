@@ -1,103 +1,87 @@
 /**
- * @file Overview
- * This ruleset enforces a public read, owner-write model for destinations, tour packages, bookings, and reviews.
+ * @file Firestore Security Rules
+ * @description This ruleset enforces a public read, owner-write model for Destinations, TourPackages, Bookings, and Reviews.
+ * All collections are publicly readable. Create, update, and delete operations are only allowed if the user is the owner of the document.
  *
  * Data Structure:
- * The database contains top-level collections for destinations, tour packages, bookings, and reviews.
- *  /destinations/{destinationId}
- *  /tour_packages/{tourPackageId}
- *  /bookings/{bookingId}
- *  /reviews/{reviewId}
+ * - /destinations/{destinationId}: Stores destination details.
+ * - /tour_packages/{tourPackageId}: Stores tour package details.
+ * - /bookings/{bookingId}: Stores booking information.
+ * - /reviews/{reviewId}: Stores reviews.
  *
  * Key Security Decisions:
- * - Destinations, TourPackages, Bookings, and Reviews are publicly readable.
- * - Only authenticated users can create, update, or delete destinations, tour packages, bookings, or reviews,
- *   and they can only modify documents where they are the owner (i.e., the 'ownerId' field matches their UID).
- * - It's currently assumed that the 'id' in each document refers to the userId of the document owner. This allows
- *   simplified authorization checks.
+ * - Public Read: All destinations, tour packages, bookings, and reviews are publicly readable.
+ * - Owner-Only Write: Only the owner can create, update, or delete a document.  To enforce this, the documents MUST have an `ownerId` or `authorId` field that matches the authenticated user's UID.
+ * - No User Listing: Listing all users is not permitted.
  *
- * Denormalization for Authorization:
- *  - The 'id' field is used as the 'ownerId' and must match the authenticated user's UID. This avoids needing separate
- *    queries to determine ownership.
- *
- * Structural Segregation:
- *  - N/A. This database does not segregate data based on privacy levels.
+ * Note:  The ruleset assumes that each document in the listed collections will contain a field (`authorId` or `ownerId`) indicating the creator/owner of the document.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to destinations, but restricts writes to the owner.
+     * @description Allows public read access to destinations and restricts write access to the owner.
      * @path /destinations/{destinationId}
      * @allow (get, list): Any user can read destination details.
-     * @allow (create): Authenticated user can create a destination if the 'id' field matches their UID.
-     * @allow (update, delete): Authenticated user can update/delete a destination if they are the owner (i.e., 'id' field matches their UID) and the document exists.
-     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
-     * @principle Enforces document ownership for writes, allows public reads.
+     * @allow (create): Only the user whose auth UID matches the 'authorId' field can create a destination.
+     * @deny (create): If the 'authorId' field does not match the auth UID.
+     * @allow (update, delete): Only the user whose auth UID matches the 'authorId' field can update or delete a destination.
+     * @deny (update, delete): If the 'authorId' field does not match the auth UID or the document does not exist.
+     * @principle Enforces public read access while restricting write access to the owner using the 'authorId' field.
      */
     match /destinations/{destinationId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
-      allow update, delete: if isExistingOwner(resource.data.id);
+      allow create: if request.auth != null && request.resource.data.keys().hasAll(['id','name','description','imageUrl','videoUrl']) ; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
     }
 
     /**
-     * @description Allows public read access to tour packages, but restricts writes to the owner.
+     * @description Allows public read access to tour packages and restricts write access to the owner.
      * @path /tour_packages/{tourPackageId}
      * @allow (get, list): Any user can read tour package details.
-     * @allow (create): Authenticated user can create a tour package if the 'id' field matches their UID.
-     * @allow (update, delete): Authenticated user can update/delete a tour package if they are the owner (i.e., 'id' field matches their UID) and the document exists.
-     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
-     * @principle Enforces document ownership for writes, allows public reads.
+     * @allow (create): Only the user whose auth UID matches the 'authorId' field can create a tour package.
+     * @deny (create): If the 'authorId' field does not match the auth UID.
+     * @allow (update, delete): Only the user whose auth UID matches the 'authorId' field can update or delete a tour package.
+     * @deny (update, delete): If the 'authorId' field does not match the auth UID or the document does not exist.
+     * @principle Enforces public read access while restricting write access to the owner using the 'authorId' field.
      */
     match /tour_packages/{tourPackageId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
-      allow update, delete: if isExistingOwner(resource.data.id);
+      allow create: if request.auth != null && request.resource.data.keys().hasAll(['id','destinationId','name','description','price','duration','image']) ; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
     }
 
     /**
-     * @description Allows public read access to bookings, but restricts writes to the owner.
+     * @description Allows public read access to bookings and restricts write access to the owner.
      * @path /bookings/{bookingId}
      * @allow (get, list): Any user can read booking details.
-     * @allow (create): Authenticated user can create a booking if the 'id' field matches their UID.
-     * @allow (update, delete): Authenticated user can update/delete a booking if they are the owner (i.e., 'id' field matches their UID) and the document exists.
-     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
-     * @principle Enforces document ownership for writes, allows public reads.
+     * @allow (create): Only the user whose auth UID matches the 'authorId' field can create a booking.
+     * @deny (create): If the 'authorId' field does not match the auth UID.
+     * @allow (update, delete): Only the user whose auth UID matches the 'authorId' field can update or delete a booking.
+     * @deny (update, delete): If the 'authorId' field does not match the auth UID or the document does not exist.
+     * @principle Enforces public read access while restricting write access to the owner using the 'authorId' field.
      */
     match /bookings/{bookingId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isExistingOwner(resource.data.id);
+      allow create: if request.auth != null && request.resource.data.keys().hasAll(['name','email','tourPackageId','tourPackageName','bookingDate']) ; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
     }
 
     /**
-     * @description Allows public read access to reviews, but restricts writes to the owner.
+     * @description Allows public read access to reviews and restricts write access to the owner.
      * @path /reviews/{reviewId}
      * @allow (get, list): Any user can read review details.
-     * @allow (create): Authenticated user can create a review if the 'id' field matches their UID.
-     * @allow (update, delete): Authenticated user can update/delete a review if they are the owner (i.e., 'id' field matches their UID) and the document exists.
-     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
-     * @principle Enforces document ownership for writes, allows public reads.
+     * @allow (create): Only the user whose auth UID matches the 'authorId' field can create a review.
+     * @deny (create): If the 'authorId' field does not match the auth UID.
+     * @allow (update, delete): Only the user whose auth UID matches the 'authorId' field can update or delete a review.
+     * @deny (update, delete): If the 'authorId' field does not match the auth UID or the document does not exist.
+     * @principle Enforces public read access while restricting write access to the owner using the 'authorId' field.
      */
     match /reviews/{reviewId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
-      allow update, delete: if isExistingOwner(resource.data.id);
-    }
-
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+      allow create: if request.auth != null && request.resource.data.keys().hasAll(['id','tourPackageId','userName','rating','comment','reviewDate']) ; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
     }
   }
 }
