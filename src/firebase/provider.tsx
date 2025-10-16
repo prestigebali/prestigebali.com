@@ -164,6 +164,9 @@ export const useFirebaseApp = (): FirebaseApp => {
 /** Hook to access Firebase Storage instance. */
 export const useStorage = (): FirebaseStorage => {
     const { storage } = useFirebase();
+    if (!storage) {
+      throw new Error("useStorage must be used within a FirebaseProvider with a valid storage prop.");
+    }
     return storage;
 }
 
