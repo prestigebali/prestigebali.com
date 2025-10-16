@@ -61,23 +61,22 @@ export default function Home() {
 
 function HeroSection() {
   return (
-    <section className="relative h-screen w-full flex items-center justify-center text-center text-white">
+    <section className="relative h-screen w-full flex items-center justify-center text-center text-foreground">
       {heroImage && (
         <Image
           src={heroImage.imageUrl}
           alt={heroImage.imageHint}
           data-ai-hint={heroImage.imageHint}
           fill
-          className="object-cover brightness-75"
+          className="object-cover"
           priority
         />
       )}
-      <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up">
           Crafting Premium Leisures & Tours
         </h1>
-        <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-md shadow-black/50">
+        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300">
          Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits.
         </p>
         <div className="animate-fade-in-up animation-delay-600">
