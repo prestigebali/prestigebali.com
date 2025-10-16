@@ -14,11 +14,16 @@ export default function AdminLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/admin/login');
+    // Wait until the initial loading is finished
+    if (!isUserLoading) {
+      // If there's no user, redirect to login
+      if (!user) {
+        router.push('/admin/login');
+      }
     }
   }, [user, isUserLoading, router]);
 
+  // While loading, or if there's no user (and the redirect is in progress), show a loading screen.
   if (isUserLoading || !user) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -26,7 +31,8 @@ export default function AdminLayout({
       </div>
     );
   }
-
+  
+  // If the user is logged in, render the dashboard layout
   return (
     <SidebarProvider>
       <Sidebar>
