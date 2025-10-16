@@ -4,84 +4,17 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/header';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Card, CardContent } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Heart, Users, Mountain, Waves, Building } from 'lucide-react';
 import { Footer } from '@/components/footer';
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { allPackages, destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
+import Link from 'next/link';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
-const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination').slice(0, 4);
-const curatedTours = PlaceHolderImages.filter(p => p.description === 'tour');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
-const experienceImages = PlaceHolderImages.filter(p => p.description === 'experience');
-
-const destinations = [
-  { name: "Bali", image: destinationImages[0] },
-  { name: "Lombok", image: destinationImages[1] },
-  { name: "Labuan Bajo", image: destinationImages[2] },
-  { name: "Sumbawa", image: destinationImages[3] },
-];
-
-const tourData = [
-  {
-    id: "tour-1",
-    title: "Enchanting Bali Discovery",
-    description: "Immerse yourself in the spiritual and cultural heart of Bali.",
-    price: 1350,
-    rating: 4.9,
-    image: curatedTours[0],
-    category: "Cultural Adventures"
-  },
-  {
-    id: "tour-2",
-    title: "Lombok's Coastal Gems",
-    description: "Explore pristine beaches and the majestic Mount Rinjani.",
-    price: 1550,
-    rating: 4.8,
-    image: curatedTours[1],
-    category: "Wellness Retreats"
-  },
-  {
-    id: "tour-3",
-    title: "Komodo & Labuan Bajo Adventure",
-    description: "Sail through turquoise waters and meet the legendary Komodo dragons.",
-    price: 2200,
-    rating: 4.9,
-    image: curatedTours[2],
-    category: "Cultural Adventures"
-  },
-  {
-    id: "tour-4",
-    title: "Bali Honeymoon Dream",
-    description: "Private villas, romantic dinners, and breathtaking sunsets.",
-    price: 1800,
-    rating: 5.0,
-    image: experienceImages.find(i => i.id === 'exp-1')!,
-    category: "Romantic Honeymoons"
-  },
-  {
-    id: "tour-5",
-    title: "Lombok Family Fun",
-    description: "Safe & engaging activities for all ages on a beautiful island.",
-    price: 1650,
-    rating: 4.8,
-    image: experienceImages.find(i => i.id === 'exp-2')!,
-    category: "Family Vacations"
-  },
-    {
-    id: "tour-6",
-    title: "Sumbawa Corporate Retreat",
-    description: "Team building and strategy sessions in an inspiring, remote location.",
-    price: 2500,
-    rating: 4.9,
-    image: experienceImages.find(i => i.id === 'exp-4')!,
-    category: "Company Outings"
-  }
-];
 
 const reviewData = [
   {
@@ -109,39 +42,6 @@ const reviewData = [
     avatar: reviews[2]
   }
 ];
-
-const experienceTypes = [
-    {
-        icon: <Heart className="w-10 h-10 text-white" />,
-        title: "Romantic Honeymoons",
-        description: "Create timeless memories with our exclusive romantic escapes in breathtaking settings.",
-        image: experienceImages.find(i => i.id === 'exp-1')!
-    },
-    {
-        icon: <Users className="w-10 h-10 text-white" />,
-        title: "Family Vacations",
-        description: "Engaging, safe, and memorable adventures for the whole family to enjoy together.",
-        image: experienceImages.find(i => i.id === 'exp-2')!
-    },
-    {
-        icon: <Mountain className="w-10 h-10 text-white" />,
-        title: "Cultural Adventures",
-        description: "Immerse yourself in the rich traditions, arts, and heritage of the Indonesian islands.",
-        image: experienceImages.find(i => i.id === 'exp-3')!
-    },
-    {
-        icon: <Waves className="w-10 h-10 text-white" />,
-        title: "Wellness Retreats",
-        description: "Restore your mind, body, and soul in serene, luxurious settings with expert guidance.",
-        image: experienceImages.find(i => i.id === 'exp-4')!
-    },
-    {
-        icon: <Building className="w-10 h-10 text-white" />,
-        title: "Company Outings",
-        description: "Inspiring team-building and corporate retreats that foster collaboration and creativity.",
-        image: experienceImages.find(i => i.id === 'exp-5')!
-    }
-]
 
 export default function Home() {
   return (
@@ -182,7 +82,7 @@ function HeroSection() {
         </p>
         <div className="animate-fade-in-up animation-delay-600">
           <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-            <a href="#tours">Explore Packages</a>
+            <Link href="/packages">Explore Packages</Link>
           </Button>
         </div>
       </div>
@@ -201,8 +101,12 @@ function DestinationsSection() {
             </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {destinations.map((dest) => (
-            <div key={dest.name} className="relative group aspect-[4/5] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+          {packageDestinations.map((dest) => (
+            <Link 
+              key={dest.name} 
+              href={`/packages?destination=${encodeURIComponent(dest.name)}`} 
+              className="relative group aspect-[4/5] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
+            >
               <Image
                 src={dest.image.imageUrl}
                 alt={dest.name}
@@ -214,7 +118,7 @@ function DestinationsSection() {
               <div className="absolute bottom-0 left-0 p-6">
                 <h3 className="text-3xl font-bold text-white text-shadow-md shadow-black/50">{dest.name}</h3>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -223,12 +127,11 @@ function DestinationsSection() {
 }
 
 function ToursSection() {
-  const tourCategories = ["All", ...new Set(tourData.map(tour => tour.category))];
   const [activeFilter, setActiveFilter] = useState("All");
 
   const filteredTours = activeFilter === "All" 
-    ? tourData 
-    : tourData.filter(tour => tour.category === activeFilter);
+    ? allPackages.slice(0, 6) 
+    : allPackages.filter(tour => tour.category === activeFilter);
 
   return (
     <section id="tours" className="py-16 md:py-24 bg-background">
@@ -241,7 +144,7 @@ function ToursSection() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
-          {tourCategories.map(category => (
+          {["All", ...tourCategories].map(category => (
             <Button
               key={category}
               variant={activeFilter === category ? "default" : "outline"}
@@ -262,8 +165,15 @@ function ToursSection() {
               description={tour.description}
               price={tour.price}
               rating={tour.rating}
+              destination={tour.destination}
+              category={tour.category}
             />
           ))}
+        </div>
+        <div className="text-center mt-12">
+          <Button asChild size="lg" variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            <Link href="/packages">View All Packages</Link>
+          </Button>
         </div>
       </div>
     </section>
@@ -283,28 +193,21 @@ function ExperiencesSection() {
               From romantic escapes to company outings, we craft journeys that reflect your unique style and expectations.
             </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
-          {experienceTypes.map((exp) => (
-            <div key={exp.title} className="relative group aspect-[4/5] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-               <Image
-                src={exp.image.imageUrl}
-                alt={exp.title}
-                data-ai-hint={exp.image.imageHint}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110 brightness-75"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 text-white">
-                <div className="mb-4">
-                  {exp.icon}
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 text-center">
+            {packageExperienceTypes.map((exp) => (
+              <Link 
+                href={`/packages?category=${encodeURIComponent(exp.title)}`} 
+                key={exp.title} 
+                className="flex flex-col items-center group"
+              >
+                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 transition-all duration-300 group-hover:bg-primary">
+                  <exp.icon className="w-8 h-8 text-primary transition-all duration-300 group-hover:text-primary-foreground" />
                 </div>
-                <h3 className="text-2xl font-bold text-shadow-md shadow-black/50 mb-2">{exp.title}</h3>
-                <p className="text-sm text-primary-foreground/90 max-w-xs mx-auto text-shadow-sm shadow-black/50">
-                  {exp.description}
-                </p>
-              </div>
-            </div>
-          ))}
+                <h3 className="text-base font-semibold text-foreground group-hover:text-primary">{exp.title}</h3>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>

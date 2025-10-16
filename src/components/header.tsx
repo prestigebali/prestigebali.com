@@ -7,9 +7,11 @@ import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,15 +24,16 @@ export function Header() {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
+    { name: 'Packages', href: '/packages' },
     { name: 'Destinations', href: '/#destinations' },
-    { name: 'Tours', href: '/#tours' },
     { name: 'Experiences', href: '/#experiences' },
   ];
 
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gray-900/90 shadow-md backdrop-blur-sm'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        scrolled || pathname !== '/' ? 'bg-gray-900/90 shadow-md backdrop-blur-sm' : 'bg-transparent'
       )}
     >
       <div className="container mx-auto flex h-14 items-center justify-between px-4 md:px-6">
@@ -59,7 +62,7 @@ export function Header() {
         </nav>
         <div className="hidden md:block">
           <Button asChild size="sm" className="rounded-full">
-            <Link href="#tours">Book Now</Link>
+            <Link href="/packages">Book Now</Link>
           </Button>
         </div>
         <div className="md:hidden">
@@ -96,7 +99,7 @@ export function Header() {
                   ))}
                 </nav>
                 <Button asChild className="mt-4">
-                  <Link href="#tours">Book Now</Link>
+                  <Link href="/packages">Book Now</Link>
                 </Button>
               </div>
             </SheetContent>
