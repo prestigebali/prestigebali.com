@@ -1,9 +1,10 @@
 rules_version = '2';
-
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow uploads only for authenticated users
     match /{allPaths=**} {
+      // Izinkan siapa saja untuk membaca file (misalnya, melihat gambar paket).
+      allow read;
+      // Hanya izinkan pengguna terautentikasi untuk menulis (mengunggah, memperbarui, menghapus).
       allow write: if request.auth != null;
     }
   }
