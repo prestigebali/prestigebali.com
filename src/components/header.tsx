@@ -20,17 +20,18 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { name: 'Destinations', href: '#destinations' },
-    { name: 'Tours', href: '#tours' },
-    { name: 'Experiences', href: '#experiences' },
-    { name: 'Reviews', href: '#reviews' },
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '/about' },
+    { name: 'Destinations', href: '/#destinations' },
+    { name: 'Tours', href: '/#tours' },
+    { name: 'Experiences', href: '/#experiences' },
+    { name: 'Reviews', href: '/#reviews' },
   ];
 
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled ? 'bg-gray-900/90 shadow-md backdrop-blur-sm' : 'bg-transparent'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gray-900/90 shadow-md backdrop-blur-sm'
       )}
     >
       <div className="container mx-auto flex h-14 items-center justify-between px-4 md:px-6">
@@ -49,7 +50,7 @@ export function Header() {
               key={link.name}
               href={link.href}
               className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
+                'text-sm font-medium transition-colors',
                 'text-primary-foreground/90 hover:text-white'
               )}
             >
