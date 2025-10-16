@@ -70,8 +70,8 @@ export function TourCard({ id, image, title, description, price, rating, destina
                 ${price}
               </div>
             </div>
-            <Button variant="link" className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full px-0 text-primary" onClick={() => setBookingOpen(true)}>
-              Book Now &rarr;
+            <Button size="sm" className="rounded-full" onClick={() => setBookingOpen(true)}>
+              Book Now
             </Button>
           </CardFooter>
         </div>
