@@ -39,7 +39,7 @@ export function ReviewCard({ avatar, name, handle, review, rating, className }: 
             <AvatarFallback>{name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <p className="font-semibold text-foreground">{name}</p>
+            <p className="font-semibold text-foreground font-headline">{name}</p>
             <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">{handle}</p>
                 {renderStars(rating)}

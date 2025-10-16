@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
-import { Inter, Poppins } from 'next/font/google';
+import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
 
-const inter = Inter({
+const playfairDisplay = Playfair_Display({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-playfair-display',
   display: 'swap',
 });
 
-const poppins = Poppins({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-poppins',
+  variable: '--font-plus-jakarta-sans',
   display: 'swap',
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} !scroll-smooth`}>
+    <html lang="en" className={`${playfairDisplay.variable} ${plusJakartaSans.variable} !scroll-smooth`}>
       <body className="font-body antialiased">
         {children}
         <Toaster />

@@ -168,13 +168,13 @@ function HeroSection() {
           alt={heroImage.imageHint}
           data-ai-hint={heroImage.imageHint}
           fill
-          className="object-cover brightness-75"
+          className="object-cover brightness-50"
           priority
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-black/30" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
         </h1>
         <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-md shadow-black/50">
@@ -196,7 +196,7 @@ function DestinationsSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <p className="text-sm font-semibold text-primary uppercase tracking-wider">Our Destinations</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
               Explore Captivating Islands
             </h2>
         </div>
@@ -212,7 +212,7 @@ function DestinationsSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
               <div className="absolute bottom-0 left-0 p-6">
-                <h3 className="text-2xl font-bold text-white text-shadow-md shadow-black/50">{dest.name}</h3>
+                <h3 className="text-3xl font-bold text-white text-shadow-md shadow-black/50">{dest.name}</h3>
               </div>
             </div>
           ))}
@@ -235,7 +235,7 @@ function ToursSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <p className="text-sm font-semibold text-primary uppercase tracking-wider">Exclusive Packages</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
               Find Your Perfect Journey
             </h2>
         </div>
@@ -276,7 +276,7 @@ function ExperiencesSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <p className="text-sm font-semibold text-primary uppercase tracking-wider">Tailor-Made</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
               Experiences for Every Traveler
             </h2>
              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mt-4">
@@ -298,7 +298,7 @@ function ExperiencesSection() {
                 <div className="mb-4">
                   {exp.icon}
                 </div>
-                <h3 className="text-xl font-bold text-shadow-md shadow-black/50 mb-2">{exp.title}</h3>
+                <h3 className="text-2xl font-bold text-shadow-md shadow-black/50 mb-2">{exp.title}</h3>
                 <p className="text-sm text-primary-foreground/90 max-w-xs mx-auto text-shadow-sm shadow-black/50">
                   {exp.description}
                 </p>
@@ -317,7 +317,7 @@ function ReviewsSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 relative">
            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
               Treasured Memories, Trusted Service
             </h2>
         </div>

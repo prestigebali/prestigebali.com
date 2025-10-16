@@ -43,7 +43,7 @@ export function TourCard({ image, title, description, price, rating, className }
         </div>
       </CardHeader>
       <CardContent className="p-6 flex-1 flex flex-col">
-        <CardTitle className="text-xl mb-2 leading-tight">{title}</CardTitle>
+        <CardTitle className="text-2xl mb-2 leading-tight">{title}</CardTitle>
         <div className="flex items-center gap-2 mb-4">
           {renderStars(rating)}
           <span className="text-sm text-muted-foreground font-medium">{rating.toFixed(1)}</span>
@@ -57,7 +57,7 @@ export function TourCard({ image, title, description, price, rating, className }
             ${price}
             </div>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Book Now</Button>
+        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">Book Now</Button>
       </CardFooter>
     </Card>
   );

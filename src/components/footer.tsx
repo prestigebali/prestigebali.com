@@ -7,7 +7,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4 text-foreground">
+            <Link href="/" className="flex items-center gap-2 font-bold text-2xl mb-4 text-foreground">
               <Mountain className="h-7 w-7 text-primary" />
               <span>Prestige Bali</span>
             </Link>
