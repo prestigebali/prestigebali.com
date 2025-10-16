@@ -67,7 +67,7 @@ export function BookingDialog({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof bookingSchema>) => {
+  const onSubmit = (values: z.infer<typeof bookingSchema>) => {
     setIsSubmitting(true);
     try {
       const bookingData = {
@@ -78,7 +78,7 @@ export function BookingDialog({
       };
       
       const bookingsCol = collection(firestore, 'bookings');
-      await addDocumentNonBlocking(bookingsCol, bookingData);
+      addDocumentNonBlocking(bookingsCol, bookingData);
 
       toast({
         title: 'Booking Submitted!',
