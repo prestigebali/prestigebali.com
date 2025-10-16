@@ -30,7 +30,7 @@ export function Header() {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled ? 'bg-background/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
+        scrolled ? 'bg-gray-900/90 shadow-md backdrop-blur-sm' : 'bg-transparent'
       )}
     >
       <div className="container mx-auto flex h-14 items-center justify-between px-4 md:px-6">
@@ -40,7 +40,7 @@ export function Header() {
             alt="Prestige Bali Logo"
             width={120}
             height={30}
-            className={cn('w-auto h-7 transition-all', scrolled ? '' : 'invert brightness-0')}
+            className={'w-auto h-7'}
           />
         </Link>
         <nav className="hidden md:flex items-center gap-8">
@@ -50,7 +50,7 @@ export function Header() {
               href={link.href}
               className={cn(
                 'text-sm font-medium transition-colors hover:text-primary',
-                scrolled ? 'text-foreground' : 'text-primary-foreground/90 hover:text-white'
+                'text-primary-foreground/90 hover:text-white'
               )}
             >
               {link.name}
@@ -65,7 +65,7 @@ export function Header() {
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn('hover:bg-white/10', scrolled ? 'text-foreground hover:text-foreground' : 'text-white hover:text-white')}>
+              <Button variant="ghost" size="icon" className={cn('hover:bg-white/10 text-white hover:text-white')}>
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open Menu</span>
               </Button>
