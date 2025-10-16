@@ -7,11 +7,12 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Footer } from '@/components/footer';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { allPackages, destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
+import { destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
@@ -129,9 +130,21 @@ function DestinationsSection() {
 function ToursSection() {
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filteredTours = activeFilter === "All" 
-    ? allPackages.slice(0, 6) 
-    : allPackages.filter(tour => tour.category === activeFilter);
+  const firestore = useFirestore();
+  const packagesCollection = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'tour_packages');
+  }, [firestore]);
+
+  const { data: allPackages } = useCollection(packagesCollection);
+
+  const filteredTours = useMemo(() => {
+    if (!allPackages) return [];
+    if (activeFilter === "All") {
+      return allPackages.slice(0, 6);
+    }
+    return allPackages.filter(tour => tour.category === activeFilter);
+  }, [allPackages, activeFilter]);
 
   return (
     <section id="tours" className="py-16 md:py-24 bg-background">

@@ -3,11 +3,11 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { TourCard } from '@/components/tour-card';
-import { allPackages, destinations, experienceTypes } from '@/lib/packages';
+import { destinations, experienceTypes } from '@/lib/packages';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,9 @@ import { Slider } from '@/components/ui/slider';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { useMemo } from 'react';
 
 const PackagesContent = () => {
     const searchParams = useSearchParams();
@@ -27,6 +30,14 @@ const PackagesContent = () => {
         categories: [],
         price: [0, 3000],
     });
+
+    const firestore = useFirestore();
+    const packagesCollection = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return collection(firestore, 'tour_packages');
+    }, [firestore]);
+
+    const { data: allPackages } = useCollection(packagesCollection);
 
     useEffect(() => {
         const destinationParam = searchParams.get('destination');
@@ -74,13 +85,14 @@ const PackagesContent = () => {
     }
 
     const filteredPackages = useMemo(() => {
+        if (!allPackages) return [];
         return allPackages.filter(pkg => {
             const destMatch = filters.destinations.length === 0 || filters.destinations.includes(pkg.destination);
             const catMatch = filters.categories.length === 0 || filters.categories.includes(pkg.category);
             const priceMatch = pkg.price >= filters.price[0] && pkg.price <= filters.price[1];
             return destMatch && catMatch && priceMatch;
         });
-    }, [filters]);
+    }, [allPackages, filters]);
 
     const FilterSidebar = () => (
         <aside className="lg:w-72 lg:flex-shrink-0">
