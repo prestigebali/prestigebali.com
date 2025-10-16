@@ -14,7 +14,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { seedPackages } from '@/lib/seed';
 import { PlusCircle, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -37,12 +36,6 @@ export default function PackagesDashboardPage() {
 
   const { data: packages, isLoading } = useCollection(packagesCollection);
 
-  const handleSeed = () => {
-    if (firestore) {
-      seedPackages(firestore);
-    }
-  };
-
   const handleDelete = async (packageId: string) => {
     if (firestore) {
       if (confirm('Are you sure you want to delete this package?')) {
@@ -59,9 +52,6 @@ export default function PackagesDashboardPage() {
             <p className="text-muted-foreground">Tambah, edit, atau hapus paket wisata.</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleSeed}>
-            Seed Packages
-          </Button>
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" /> Tambah Paket Baru
           </Button>
