@@ -35,6 +35,7 @@ import { generateId, uploadImage } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 import type { TourPackage } from '@/lib/packages';
 import { Progress } from '@/components/ui/progress';
+import { FirebaseStorage } from 'firebase/storage';
 
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -71,7 +72,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   const form = useForm<PackageFormValues>({
     resolver: zodResolver(packageSchema),
-    defaultValues: {
+    defaultValues: initialData || {
         title: '',
         description: '',
         price: 0,
@@ -86,14 +87,14 @@ export function PackageForm({ initialData }: PackageFormProps) {
   });
 
   useEffect(() => {
-    if (isEditMode && initialData) {
+    if (initialData) {
       form.reset(initialData);
     }
-  }, [initialData, isEditMode, form]);
+  }, [initialData, form]);
   
   const imageUrl = form.watch('image.imageUrl');
 
-  const handleFileChange = async (files: FileList | null) => {
+  const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const file = files[0];
     if (!file.type.startsWith('image/')) {
@@ -101,18 +102,25 @@ export function PackageForm({ initialData }: PackageFormProps) {
         return;
     }
     
+    if (!storage) {
+        toast({
+            variant: 'destructive',
+            title: 'Storage Not Ready',
+            description: 'Firebase Storage is not initialized. Please wait and try again.'
+        });
+        return;
+    }
+    
     setIsUploading(true);
     setUploadProgress(0);
     try {
-        if (!storage) {
-            throw new Error("Firebase Storage is not initialized. Please wait and try again.");
-        }
         const imageId = generateId();
         const path = `package-images/${imageId}`;
         const url = await uploadImage(storage, file, path, (progress) => {
           setUploadProgress(progress);
         });
         form.setValue('image.imageUrl', url, { shouldValidate: true });
+        toast({ title: 'Image Uploaded', description: 'Image has been successfully uploaded.'});
     } catch(e: any) {
         console.error("Upload failed", e);
         toast({
@@ -141,7 +149,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileChange(e.dataTransfer.files);
+        handleFileSelect(e.dataTransfer.files);
     }
   };
   
@@ -165,7 +173,8 @@ export function PackageForm({ initialData }: PackageFormProps) {
             });
         } else {
             const packagesCollection = collection(firestore, 'tour_packages');
-            await addDoc(packagesCollection, data);
+            const newDocRef = await addDoc(packagesCollection, data);
+            await updateDoc(newDocRef, { id: newDocRef.id });
             toast({
                 title: 'Package Created',
                 description: 'The new tour package has been added successfully.',
@@ -293,7 +302,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     type="file" 
                                     className="hidden"
                                     ref={fileInputRef}
-                                    onChange={(e) => handleFileChange(e.target.files)}
+                                    onChange={(e) => handleFileSelect(e.target.files)}
                                     accept="image/*"
                                     disabled={isUploading}
                                 />
@@ -306,7 +315,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                             size="icon"
                                             className="absolute top-2 right-2 rounded-full h-8 w-8"
                                             onClick={removeImage}
-                                            disabled={isUploading}
+                                            disabled={isUploading || isSubmitting}
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -351,7 +360,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
           </CardContent>
         </Card>
         <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => router.back()}>
+            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
                 Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting || isUploading}>
@@ -362,5 +371,3 @@ export function PackageForm({ initialData }: PackageFormProps) {
     </Form>
   );
 }
-
-    
