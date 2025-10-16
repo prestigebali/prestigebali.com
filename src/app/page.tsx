@@ -11,7 +11,8 @@ import { useState, useMemo } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
 import Link from 'next/link';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollectionOnce } from '@/firebase/firestore/use-collection-once';
 import { collection } from 'firebase/firestore';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
@@ -136,7 +137,7 @@ function ToursSection() {
     return collection(firestore, 'tour_packages');
   }, [firestore]);
 
-  const { data: allPackages } = useCollection(packagesCollection);
+  const { data: allPackages } = useCollectionOnce(packagesCollection);
 
   const filteredTours = useMemo(() => {
     if (!allPackages) return [];

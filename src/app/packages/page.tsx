@@ -15,7 +15,8 @@ import { Slider } from '@/components/ui/slider';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollectionOnce } from '@/firebase/firestore/use-collection-once';
 import { collection } from 'firebase/firestore';
 import { useMemo } from 'react';
 
@@ -37,7 +38,7 @@ const PackagesContent = () => {
         return collection(firestore, 'tour_packages');
     }, [firestore]);
 
-    const { data: allPackages } = useCollection(packagesCollection);
+    const { data: allPackages } = useCollectionOnce(packagesCollection);
 
     useEffect(() => {
         const destinationParam = searchParams.get('destination');
