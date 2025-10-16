@@ -25,7 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
 import type { TourPackage } from '@/lib/packages';
@@ -43,7 +43,7 @@ const packageSchema = z.object({
   category: z.string().min(1, 'Please select a category.'),
   rating: z.coerce.number().min(1).max(5).default(4.5),
   image: z.object({
-    imageUrl: z.string().url('Please provide a valid image URL. Upload an image or paste a URL.'),
+    imageUrl: z.string().url('Please upload an image or provide a valid URL.'),
     imageHint: z.string().optional().default(''),
   }),
 });
@@ -51,7 +51,7 @@ const packageSchema = z.object({
 type PackageFormValues = z.infer<typeof packageSchema>;
 
 interface PackageFormProps {
-  initialData?: TourPackage & { id: string };
+  initialData?: TourPackage;
 }
 
 export function PackageForm({ initialData }: PackageFormProps) {
@@ -68,7 +68,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   const form = useForm<PackageFormValues>({
     resolver: zodResolver(packageSchema),
-    defaultValues: initialData || {
+    defaultValues: isEditMode && initialData ? initialData : {
       title: '',
       description: '',
       price: 0,
@@ -126,41 +126,47 @@ export function PackageForm({ initialData }: PackageFormProps) {
   };
 
 
-  const onSubmit = async (data: PackageFormValues) => {
+  const onSubmit = (data: PackageFormValues) => {
     if (!firestore) {
         toast({ variant: 'destructive', title: 'Error', description: 'Firestore is not available.' });
         return;
     }
     setIsSubmitting(true);
-    try {
-        if (isEditMode && initialData) {
-            const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
-            await updateDoc(packageDocRef, data);
-             toast({
-                title: 'Package Updated',
-                description: 'The tour package has been updated successfully.',
-            });
-        } else {
-            const newId = uuidv4();
-            const packageDocRef = doc(firestore, 'tour_packages', newId);
-            await updateDoc(packageDocRef, { ...data, id: newId });
+
+    if (isEditMode && initialData?.id) {
+        const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
+        updateDoc(packageDocRef, data).catch((error) => {
+            console.error('Failed to update package:', error);
             toast({
-                title: 'Package Created',
-                description: 'The new tour package has been added successfully.',
+                variant: 'destructive',
+                title: 'Operation Failed',
+                description: 'Could not update the package. Please try again.',
             });
-        }
-      router.push('/admin/packages');
-      router.refresh();
-    } catch (error) {
-      console.error('Failed to save package:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Operation Failed',
-        description: 'Could not save the package. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
+            setIsSubmitting(false);
+        });
+    } else {
+        const newId = uuidv4();
+        const packageDocRef = doc(firestore, 'tour_packages', newId);
+        const newData = { ...data, id: newId };
+        setDoc(packageDocRef, newData).catch((error) => {
+            console.error('Failed to create package:', error);
+            toast({
+                variant: 'destructive',
+                title: 'Operation Failed',
+                description: 'Could not create the package. Please try again.',
+            });
+            setIsSubmitting(false);
+        });
     }
+
+    // Optimistic UI update
+    toast({
+        title: isEditMode ? 'Package Updated' : 'Package Created',
+        description: `The tour package has been ${isEditMode ? 'updated' : 'added'} successfully.`,
+    });
+    router.push('/admin/packages');
+    router.refresh(); // Tell Next.js to refetch server components
+    // No need to set isSubmitting to false here, as we are navigating away.
   };
 
   const isFormBusy = isSubmitting || isUploading;
@@ -332,7 +338,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                 Cancel
             </Button>
             <Button type="submit" disabled={isFormBusy}>
-                {isFormBusy ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Package')}
+                {isFormBusy ? (isUploading ? 'Uploading...' : 'Saving...') : (isEditMode ? 'Save Changes' : 'Create Package')}
             </Button>
         </div>
       </form>
