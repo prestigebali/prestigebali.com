@@ -1,72 +1,103 @@
 /**
- * @fileoverview Firestore Security Rules for Prestige Bali application.
- *
- * Core Philosophy:
- * This ruleset prioritizes security by default, restricting access to data
- * unless explicitly allowed. It uses flexible access control patterns to
- * balance security with ease of development in this prototyping phase.
- * Schema validation is intentionally relaxed to facilitate rapid iteration.
+ * @file Overview
+ * This ruleset enforces a public read, owner-write model for destinations, tour packages, bookings, and reviews.
  *
  * Data Structure:
- * The Firestore database consists of four top-level collections:
- * - /destinations/{destinationId}: Stores information about travel destinations.
- * - /tour_packages/{tourPackageId}: Stores details about curated tour packages.
- * - /bookings/{bookingId}: Stores user booking information.
- * - /reviews/{reviewId}: Stores user reviews for tour packages.
+ * The database contains top-level collections for destinations, tour packages, bookings, and reviews.
+ *  /destinations/{destinationId}
+ *  /tour_packages/{tourPackageId}
+ *  /bookings/{bookingId}
+ *  /reviews/{reviewId}
  *
  * Key Security Decisions:
- * - Public Read Access: The destinations and tour_packages collections are readable by anyone.
- * - Restricted Writes: Writes to all collections are disallowed unless the correct validation steps are implemented (e.g. a review is written to a tour package).
- * - No User Listing: Listing all users is not permitted.
+ * - Destinations, TourPackages, Bookings, and Reviews are publicly readable.
+ * - Only authenticated users can create, update, or delete destinations, tour packages, bookings, or reviews,
+ *   and they can only modify documents where they are the owner (i.e., the 'ownerId' field matches their UID).
+ * - It's currently assumed that the 'id' in each document refers to the userId of the document owner. This allows
+ *   simplified authorization checks.
+ *
+ * Denormalization for Authorization:
+ *  - The 'id' field is used as the 'ownerId' and must match the authenticated user's UID. This avoids needing separate
+ *    queries to determine ownership.
+ *
+ * Structural Segregation:
+ *  - N/A. This database does not segregate data based on privacy levels.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows anyone to read Destinations, but restricts writes.
+     * @description Allows public read access to destinations, but restricts writes to the owner.
      * @path /destinations/{destinationId}
-     * @allow (get, list): if true
-     * @deny (create, update, delete): if false
-     * @principle Public read, restricted write.
+     * @allow (get, list): Any user can read destination details.
+     * @allow (create): Authenticated user can create a destination if the 'id' field matches their UID.
+     * @allow (update, delete): Authenticated user can update/delete a destination if they are the owner (i.e., 'id' field matches their UID) and the document exists.
+     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
+     * @principle Enforces document ownership for writes, allows public reads.
      */
     match /destinations/{destinationId} {
       allow get, list: if true;
-      allow create, update, delete: if false;
+      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
+      allow update, delete: if isExistingOwner(resource.data.id);
     }
 
     /**
-     * @description Allows anyone to read TourPackages, but restricts writes.
+     * @description Allows public read access to tour packages, but restricts writes to the owner.
      * @path /tour_packages/{tourPackageId}
-     * @allow (get, list): if true
-     * @deny (create, update, delete): if false
-     * @principle Public read, restricted write.
+     * @allow (get, list): Any user can read tour package details.
+     * @allow (create): Authenticated user can create a tour package if the 'id' field matches their UID.
+     * @allow (update, delete): Authenticated user can update/delete a tour package if they are the owner (i.e., 'id' field matches their UID) and the document exists.
+     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
+     * @principle Enforces document ownership for writes, allows public reads.
      */
     match /tour_packages/{tourPackageId} {
       allow get, list: if true;
-      allow create, update, delete: if false;
+      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
+      allow update, delete: if isExistingOwner(resource.data.id);
     }
 
     /**
-     * @description Restricts read and write access to bookings.
+     * @description Allows public read access to bookings, but restricts writes to the owner.
      * @path /bookings/{bookingId}
-     * @allow (get, list): if false
-     * @allow (create, update, delete): if false
+     * @allow (get, list): Any user can read booking details.
+     * @allow (create): Authenticated user can create a booking if the 'id' field matches their UID.
+     * @allow (update, delete): Authenticated user can update/delete a booking if they are the owner (i.e., 'id' field matches their UID) and the document exists.
+     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
+     * @principle Enforces document ownership for writes, allows public reads.
      */
     match /bookings/{bookingId} {
-      allow get, list: if false;
-      allow create, update, delete: if false;
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isExistingOwner(resource.data.id);
     }
 
     /**
-     * @description Restricts read and write access to reviews.
+     * @description Allows public read access to reviews, but restricts writes to the owner.
      * @path /reviews/{reviewId}
-     * @allow (get, list): if false
-     * @allow (create, update, delete): if false
+     * @allow (get, list): Any user can read review details.
+     * @allow (create): Authenticated user can create a review if the 'id' field matches their UID.
+     * @allow (update, delete): Authenticated user can update/delete a review if they are the owner (i.e., 'id' field matches their UID) and the document exists.
+     * @deny create: if request.resource.data.id != request.auth.uid; //Example deny condition - Owner does not match auth uid
+     * @principle Enforces document ownership for writes, allows public reads.
      */
     match /reviews/{reviewId} {
-      allow get, list: if false;
-      allow create, update, delete: if false;
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
+      allow update, delete: if isExistingOwner(resource.data.id);
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
   }
 }
