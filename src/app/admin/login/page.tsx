@@ -49,6 +49,15 @@ export default function LoginPage() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
+    if (!auth) {
+        toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: 'Firebase auth is not initialized.',
+        });
+        setIsSubmitting(false);
+        return;
+    }
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
@@ -68,9 +77,16 @@ export default function LoginPage() {
     }
   };
 
-  if (isUserLoading || user) {
+  if (isUserLoading) {
     return <div className="flex h-screen items-center justify-center"><p>Loading...</p></div>;
   }
+  
+  if (user) {
+    // User is logged in, useEffect will handle redirection.
+    // Show a loading state while redirecting.
+     return <div className="flex h-screen items-center justify-center"><p>Redirecting...</p></div>;
+  }
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
