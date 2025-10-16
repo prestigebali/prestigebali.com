@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
-import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
+import { Poppins, Plus_Jakarta_Sans } from 'next/font/google';
 
-const playfairDisplay = Playfair_Display({
+const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-playfair-display',
+  variable: '--font-poppins',
   display: 'swap',
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfairDisplay.variable} ${plusJakartaSans.variable} !scroll-smooth`}>
+    <html lang="en" className={`${poppins.variable} ${plusJakartaSans.variable} !scroll-smooth`}>
       <body className="font-body antialiased">
         {children}
         <Toaster />

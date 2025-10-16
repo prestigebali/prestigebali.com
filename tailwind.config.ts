@@ -17,7 +17,7 @@ export default {
       },
       fontFamily: {
         body: ['var(--font-plus-jakarta-sans)', 'sans-serif'],
-        headline: ['var(--font-playfair-display)', 'serif'],
+        headline: ['var(--font-poppins)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
