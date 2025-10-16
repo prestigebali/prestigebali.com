@@ -66,10 +66,21 @@
           "type": "string",
           "description": "Duration of the tour (e.g., '7 days')."
         },
-        "imageUrl": {
-          "type": "string",
-          "description": "URL of the image representing the tour package.",
-          "format": "uri"
+        "image": {
+          "type": "object",
+          "description": "Image object for the tour package.",
+          "properties": {
+            "imageUrl": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL of the image representing the tour package."
+            },
+            "imageHint": {
+              "type": "string",
+              "description": "Hint for AI image generation or search."
+            }
+          },
+          "required": ["imageUrl"]
         }
       },
       "required": [
@@ -79,7 +90,7 @@
         "description",
         "price",
         "duration",
-        "imageUrl"
+        "image"
       ]
     },
     "Booking": {
@@ -200,3 +211,5 @@
     ]
   }
 }
+
+    

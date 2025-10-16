@@ -42,13 +42,15 @@ export function TourCard({ id, image, title, description, price, rating, destina
     <>
       <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
         <div className="relative aspect-[4/3] overflow-hidden">
-          <Image
-            src={image.imageUrl}
-            alt={title}
-            data-ai-hint={image.imageHint}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          {image?.imageUrl && (
+            <Image
+              src={image.imageUrl}
+              alt={title}
+              data-ai-hint={image.imageHint}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )}
           <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
         </div>
         <div className="flex flex-col flex-grow">
@@ -86,3 +88,5 @@ export function TourCard({ id, image, title, description, price, rating, destina
     </>
   );
 }
+
+    

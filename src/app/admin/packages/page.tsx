@@ -26,6 +26,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { collection, deleteDoc, doc } from 'firebase/firestore';
 import Link from 'next/link';
+import type { TourPackage } from '@/lib/packages';
 
 export default function PackagesDashboardPage() {
   const firestore = useFirestore();
@@ -35,7 +36,7 @@ export default function PackagesDashboardPage() {
     return collection(firestore, 'tour_packages');
   }, [firestore]);
 
-  const { data: packages, isLoading } = useCollection(packagesCollection);
+  const { data: packages, isLoading } = useCollection<TourPackage>(packagesCollection);
 
   const handleDelete = async (packageId: string) => {
     if (firestore) {
@@ -133,3 +134,5 @@ export default function PackagesDashboardPage() {
     </main>
   );
 }
+
+    

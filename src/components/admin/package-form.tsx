@@ -24,16 +24,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
 import type { TourPackage } from '@/lib/packages';
-import { v4 as uuidv4 } from 'uuid';
 import { uploadImage } from '@/lib/storage';
 import { Progress } from '@/components/ui/progress';
 import { UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
+import { v4 as uuidv4 } from 'uuid';
 
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -51,43 +51,42 @@ const packageSchema = z.object({
 type PackageFormValues = z.infer<typeof packageSchema>;
 
 interface PackageFormProps {
-    initialData?: TourPackage & { id: string };
+  initialData?: TourPackage & { id: string };
 }
 
 export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image?.imageUrl || null);
   
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
   const storage = useStorage();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditMode = !!initialData;
 
   const form = useForm<PackageFormValues>({
     resolver: zodResolver(packageSchema),
     defaultValues: initialData || {
-        title: '',
-        description: '',
-        price: 0,
-        destination: '',
-        category: '',
-        rating: 4.5,
-        image: {
-            imageUrl: '',
-            imageHint: ''
-        }
+      title: '',
+      description: '',
+      price: 0,
+      destination: '',
+      category: '',
+      rating: 4.5,
+      image: {
+        imageUrl: '',
+        imageHint: ''
+      }
     },
   });
+
+  const imagePreview = form.watch('image.imageUrl');
 
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
-      setImagePreview(initialData.image.imageUrl);
     }
   }, [initialData, form]);
 
@@ -112,7 +111,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
         });
 
         form.setValue('image.imageUrl', downloadURL, { shouldValidate: true });
-        setImagePreview(downloadURL);
         toast({ title: 'Upload Successful', description: 'Image has been uploaded and URL is set.' });
 
     } catch (error) {
@@ -143,10 +141,9 @@ export function PackageForm({ initialData }: PackageFormProps) {
                 description: 'The tour package has been updated successfully.',
             });
         } else {
-            const packagesCollection = collection(firestore, 'tour_packages');
-            const newDocRef = await addDoc(packagesCollection, data);
-            // We'll update the document with its own ID, which is a common pattern for easier lookups.
-            await updateDoc(newDocRef, { id: newDocRef.id });
+            const newId = uuidv4();
+            const packageDocRef = doc(firestore, 'tour_packages', newId);
+            await updateDoc(packageDocRef, { ...data, id: newId });
             toast({
                 title: 'Package Created',
                 description: 'The new tour package has been added successfully.',
@@ -276,14 +273,14 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                 <input 
                                     type="file" 
                                     className="hidden" 
-                                    ref={fileInputRef} 
+                                    id="file-upload"
                                     onChange={handleFileChange} 
                                     accept="image/png, image/jpeg, image/gif"
                                     disabled={isFormBusy}
                                 />
                                 <div 
                                     className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors border-input"
-                                    onClick={() => !isFormBusy && fileInputRef.current?.click()}
+                                    onClick={() => !isFormBusy && document.getElementById('file-upload')?.click()}
                                 >
                                     {isUploading ? (
                                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -293,7 +290,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                         </div>
                                     ) : imagePreview ? (
                                         <>
-                                            <Image src={imagePreview} alt="Package preview" layout="fill" className="object-contain rounded-md" />
+                                            <Image src={imagePreview} alt="Package preview" layout="fill" className="object-contain rounded-md p-2" />
                                             <Button
                                                 type="button"
                                                 variant="destructive"
@@ -301,7 +298,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                                 className="absolute top-2 right-2 h-7 w-7"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setImagePreview(null);
                                                     form.setValue('image.imageUrl', '', { shouldValidate: true });
                                                 }}
                                                 disabled={isFormBusy}
@@ -321,10 +317,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     className="mt-4" 
                                     placeholder="Or paste an image URL here" 
                                     {...field}
-                                    onChange={(e) => {
-                                        field.onChange(e);
-                                        setImagePreview(e.target.value);
-                                    }}
                                     disabled={isFormBusy}
                                 />
                             </div>
@@ -347,3 +339,5 @@ export function PackageForm({ initialData }: PackageFormProps) {
     </Form>
   );
 }
+
+    
