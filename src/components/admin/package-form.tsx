@@ -90,11 +90,10 @@ export function PackageForm({ initialData }: PackageFormProps) {
     }
   }, [initialData, form]);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setImageFile(file);
-      // Create a temporary URL for immediate preview
       const tempUrl = URL.createObjectURL(file);
       form.setValue('image.imageUrl', tempUrl, { shouldValidate: true });
     }
@@ -108,12 +107,11 @@ export function PackageForm({ initialData }: PackageFormProps) {
     setIsSubmitting(true);
     setUploadProgress(0);
 
-    let finalImageUrl = data.image.imageUrl;
-
     try {
-      // 1. Handle Image Upload if a new file is selected
+      let finalImageUrl = data.image.imageUrl;
+
       if (imageFile) {
-        toast({ title: 'Uploading Image...', description: 'Please wait while the image is being uploaded.' });
+        toast({ title: 'Uploading Image...', description: 'Please wait.' });
         const fileId = uuidv4();
         const filePath = `tour_packages/${fileId}-${imageFile.name}`;
         
@@ -124,40 +122,42 @@ export function PackageForm({ initialData }: PackageFormProps) {
         toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
       }
 
-      // 2. Prepare data for Firestore
       const finalData = { ...data, image: { ...data.image, imageUrl: finalImageUrl } };
 
-      // 3. Save data to Firestore
-      toast({ title: 'Saving Package...', description: 'Please wait while the package details are being saved.' });
-      
-      if (isEditMode && initialData?.id) {
-        const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
-        await updateDoc(packageDocRef, finalData);
-      } else {
-        const newId = uuidv4();
-        const packageDocRef = doc(firestore, 'tour_packages', newId);
-        await setDoc(packageDocRef, { ...finalData, id: newId });
-      }
+      const operationPromise = isEditMode && initialData?.id
+        ? updateDoc(doc(firestore, 'tour_packages', initialData.id), finalData)
+        : setDoc(doc(firestore, 'tour_packages', uuidv4()), { ...finalData, id: uuidv4() });
 
+      operationPromise.catch((error: any) => {
+        console.error("Firestore operation failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Operation Failed",
+            description: error.message || "Could not save package details.",
+        });
+        // The error will be handled globally by the FirebaseErrorListener,
+        // so we don't need to re-throw, just inform the user.
+        setIsSubmitting(false); // Only reset on failure
+      });
+
+      // Optimistic UI update
       toast({
           title: isEditMode ? 'Package Updated!' : 'Package Created!',
-          description: `The tour package "${data.title}" has been saved successfully.`,
+          description: `The tour package "${data.title}" has been saved.`,
       });
 
       router.push('/admin/packages');
       router.refresh();
+      // No need to set isSubmitting to false here, as we are navigating away.
 
     } catch (error: any) {
-        console.error("Operation failed:", error);
+        console.error("Upload or preparation failed:", error);
         toast({
             variant: "destructive",
             title: "Operation Failed",
             description: error.message || "An unexpected error occurred. Please try again.",
         });
-    } finally {
         setIsSubmitting(false);
-        setUploadProgress(0);
-        setImageFile(null);
     }
   };
 
@@ -298,7 +298,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                                     e.stopPropagation();
                                                     form.setValue('image.imageUrl', '', { shouldValidate: true });
                                                     setImageFile(null);
-                                                    // Also reset the file input
                                                     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
                                                     if(fileInput) fileInput.value = '';
                                                 }}
