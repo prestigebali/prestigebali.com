@@ -168,11 +168,11 @@ function HeroSection() {
           alt={heroImage.imageHint}
           data-ai-hint={heroImage.imageHint}
           fill
-          className="object-cover brightness-50"
+          className="object-cover brightness-75"
           priority
         />
       )}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
@@ -313,7 +313,7 @@ function ExperiencesSection() {
 
 function ReviewsSection() {
   return (
-    <section id="reviews" className="py-16 md:py-24 bg-background">
+    <section id="reviews" className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 relative">
            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
