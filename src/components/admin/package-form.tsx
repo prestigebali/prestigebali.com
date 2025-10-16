@@ -46,7 +46,7 @@ const packageSchema = z.object({
   image: z.object({
     imageUrl: z.string().url('Please upload an image or provide a valid URL.').or(z.literal('')),
     imageHint: z.string().optional().default(''),
-  }).optional(),
+  }),
 });
 
 type PackageFormValues = z.infer<typeof packageSchema>;
@@ -71,7 +71,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
     resolver: zodResolver(packageSchema),
     defaultValues: isEditMode && initialData ? {
         ...initialData,
-        image: initialData.image || { imageUrl: '', imageHint: '' }
     } : {
       title: '',
       description: '',
@@ -92,7 +91,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
     if (initialData) {
       form.reset({
         ...initialData,
-        image: initialData.image || { imageUrl: '', imageHint: '' }
       });
     }
   }, [initialData, form]);
@@ -112,7 +110,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
         let finalImageUrl = data.image?.imageUrl || '';
         const finalData = { ...data };
 
-        // Step 1: Handle file upload if a new file is selected
         if (imageFile) {
             if (!storage) {
                 throw new Error('Storage service is not available.');
@@ -120,20 +117,15 @@ export function PackageForm({ initialData }: PackageFormProps) {
             toast({ title: 'Uploading Image...', description: 'Please wait.' });
             
             const filePath = `tour_packages/${uuidv4()}-${imageFile.name}`;
-            finalImageUrl = await uploadImage(storage, imageFile, (progress) => {
+            finalImageUrl = await uploadImage(storage, imageFile, filePath, (progress) => {
                 setUploadProgress(progress);
             });
             
             toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
             
-            if (finalData.image) {
-                finalData.image.imageUrl = finalImageUrl;
-            } else {
-                 finalData.image = { imageUrl: finalImageUrl, imageHint: '' };
-            }
+            finalData.image.imageUrl = finalImageUrl;
         }
         
-        // Step 2: Save data to Firestore using the non-blocking pattern
         if (isEditMode && initialData?.id) {
             const docRef = doc(firestore, 'tour_packages', initialData.id);
             updateDocumentNonBlocking(docRef, finalData);
