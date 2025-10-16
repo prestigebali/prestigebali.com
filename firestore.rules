@@ -1,0 +1,68 @@
+/**
+ * @fileOverview Firestore Security Rules for the Voyage Zen application.
+ *
+ * Core Philosophy:
+ * This ruleset provides public read access to destinations and tour packages
+ * while restricting write access to bookings and reviews.
+ *
+ * Data Structure:
+ * - /destinations/{destinationId}: Stores information about destinations.
+ * - /tour_packages/{tourPackageId}: Stores information about tour packages.
+ * - /bookings/{bookingId}: Stores user bookings.
+ * - /reviews/{reviewId}: Stores user reviews.
+ *
+ * Key Security Decisions:
+ * - Destinations and tour packages are publicly readable.
+ * - Bookings and reviews are publicly writable.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows public read access to destinations.
+     * @path /destinations/{destinationId}
+     * @allow (get, list): Any user can read destination details.
+     * @deny (create, update, delete): No user can create, update, or delete destination details.
+     * @principle Allows public read access while restricting write access.
+     */
+    match /destinations/{destinationId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Allows public read access to tour packages.
+     * @path /tour_packages/{tourPackageId}
+     * @allow (get, list): Any user can read tour package details.
+     * @deny (create, update, delete): No user can create, update, or delete tour package details.
+     * @principle Allows public read access while restricting write access.
+     */
+    match /tour_packages/{tourPackageId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Allows anyone to create, read, update, and delete bookings.
+     * @path /bookings/{bookingId}
+     * @allow (create, update, delete): Any user can create, update, or delete a booking.
+     * @allow (get, list): Any user can read booking details.
+     * @principle Allows public read and write access.
+     */
+    match /bookings/{bookingId} {
+      allow get, list, create, update, delete: if true;
+    }
+
+    /**
+     * @description Allows anyone to create, read, update, and delete reviews.
+     * @path /reviews/{reviewId}
+     * @allow (create, update, delete): Any user can create, update, or delete a review.
+     * @allow (get, list): Any user can read review details.
+     * @principle Allows public read and write access.
+     */
+    match /reviews/{reviewId} {
+      allow get, list, create, update, delete: if true;
+    }
+  }
+}
