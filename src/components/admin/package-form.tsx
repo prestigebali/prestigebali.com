@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -112,7 +111,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
             setUploadProgress(progress);
         });
 
-        form.setValue('image.imageUrl', downloadURL);
+        form.setValue('image.imageUrl', downloadURL, { shouldValidate: true });
         setImagePreview(downloadURL);
         toast({ title: 'Upload Successful', description: 'Image has been uploaded and URL is set.' });
 
@@ -146,6 +145,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
         } else {
             const packagesCollection = collection(firestore, 'tour_packages');
             const newDocRef = await addDoc(packagesCollection, data);
+            // We'll update the document with its own ID, which is a common pattern for easier lookups.
             await updateDoc(newDocRef, { id: newDocRef.id });
             toast({
                 title: 'Package Created',
@@ -176,7 +176,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
             <CardTitle>Package Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Text and Select fields */}
             <FormField
               control={form.control}
               name="title"
@@ -266,7 +265,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     )}
                     />
             </div>
-            {/* Image Upload Section */}
             <FormField
                 control={form.control}
                 name="image.imageUrl"
@@ -285,7 +283,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                 />
                                 <div 
                                     className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors border-input"
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() => !isFormBusy && fileInputRef.current?.click()}
                                 >
                                     {isUploading ? (
                                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -295,7 +293,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                         </div>
                                     ) : imagePreview ? (
                                         <>
-                                            <Image src={imagePreview} alt="Package preview" fill className="object-contain rounded-md" />
+                                            <Image src={imagePreview} alt="Package preview" layout="fill" className="object-contain rounded-md" />
                                             <Button
                                                 type="button"
                                                 variant="destructive"
@@ -304,8 +302,9 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setImagePreview(null);
-                                                    form.setValue('image.imageUrl', '');
+                                                    form.setValue('image.imageUrl', '', { shouldValidate: true });
                                                 }}
+                                                disabled={isFormBusy}
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
