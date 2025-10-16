@@ -199,22 +199,20 @@ function ExperiencesSection() {
             <Link
               href={`/packages?category=${encodeURIComponent(exp.title)}`}
               key={exp.title}
-              className="group"
+              className="relative group aspect-[1/1.2] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
             >
-              <Card className="relative overflow-hidden h-full rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                <Image
-                  src={exp.image.imageUrl}
-                  alt={exp.title}
-                  data-ai-hint={exp.image.imageHint}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <CardContent className="relative flex flex-col justify-end h-full p-6">
-                  <CardTitle className="text-white text-2xl !font-bold text-shadow-md shadow-black/50">{exp.title}</CardTitle>
-                  <CardDescription className="text-primary-foreground/80 mt-2 line-clamp-2">{exp.description}</CardDescription>
-                </CardContent>
-              </Card>
+              <Image
+                src={exp.image.imageUrl}
+                alt={exp.title}
+                data-ai-hint={exp.image.imageHint}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-6 text-white">
+                <h3 className="text-2xl font-bold text-shadow-md shadow-black/50">{exp.title}</h3>
+                <p className="mt-2 text-sm text-primary-foreground/80 line-clamp-2">{exp.description}</p>
+              </div>
             </Link>
           ))}
         </div>
