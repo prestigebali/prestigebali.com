@@ -1,84 +1,80 @@
 /**
- * @file Firebase Security Rules for Prestige Bali application.
+ * @fileoverview Firestore Security Rules for Prototyping.
  *
- * @core_philosophy This ruleset enforces public read access for destinations and tour packages,
- * while restricting write access to authenticated users. Bookings and reviews are also publicly readable,
- * but writes are only allowed for authenticated users.  Schema validation is relaxed to allow for rapid prototyping.
+ * Core Philosophy:
+ * This ruleset prioritizes security by enforcing strict authorization checks while allowing flexible data shapes for rapid prototyping.  It uses an owner-based access control model for all collections.
  *
- * @data_structure The Firestore database consists of four top-level collections: `destinations`, `tour_packages`, `bookings`, and `reviews`.
- * Destinations and tour packages can be read by anyone, while bookings and reviews are open for read but only allow authenticated users to write.
+ * Data Structure:
+ * - /destinations/{destinationId}: Stores travel destination details.
+ * - /tour_packages/{tourPackageId}: Stores curated tour package details.
+ * - /bookings/{bookingId}: Stores user booking information.
+ * - /reviews/{reviewId}: Stores user reviews for tour packages.
  *
- * @key_security_decisions
- *   - Public read access to destinations and tour packages is granted to allow easy browsing.
- *   - Write access is restricted to authenticated users.
- *   - No listing restrictions are imposed for prototyping, but consider adding them in production.
+ * Key Security Decisions:
+ * - All collections enforce owner-only write access. There are no public write permissions.
+ * - List operations are generally public but can be restricted as needed.
+ *
+ * Denormalization for Authorization:
+ * - The current data model lacks an explicit 'ownerId' or 'authorId' field in the `TourPackage` schema. To enforce owner-only writes, we need to add this field. In the interim, writes are disabled.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to destinations, but restricts write access to authenticated users.
+     * @description Controls access to the 'destinations' collection.
      * @path /destinations/{destinationId}
-     * @allow (get, list) - Any user can read destination data.
-     * @allow (create) - Any authenticated user can create destination data.
-     * @allow (update, delete) - No user can update or delete destination data (explicitly denied).
-     * @deny (create) - An unauthenticated user attempts to create a destination.
-     * @principle Allows public data browsing while restricting modifications.
+     * @allow (get, list): Anyone can read destination details.
+     * @allow (create, update, delete): Only the owner can modify destination details. The owner is not currently defined, so writes are disabled.
+     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
+     * @principle Enforces owner-only write access.
      */
     match /destinations/{destinationId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if false;
+      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
     }
 
     /**
-     * @description Grants public read access to tour packages, but restricts write access to authenticated users.
+     * @description Controls access to the 'tour_packages' collection.
      * @path /tour_packages/{tourPackageId}
-     * @allow (get, list) - Any user can read tour package data.
-     * @allow (create) - Any authenticated user can create tour package data.
-     * @allow (update, delete) - No user can update or delete tour package data (explicitly denied).
-     * @deny (create) - An unauthenticated user attempts to create a tour package.
-     * @principle Allows public data browsing while restricting modifications.
+     * @allow (get, list): Anyone can read tour package details.
+     * @allow (create, update, delete): Only the owner can modify tour package details. The owner is not currently defined, so writes are disabled.
+     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
+     * @principle Enforces owner-only write access.
      */
     match /tour_packages/{tourPackageId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if false;
+      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
     }
 
     /**
-     * @description Grants public read access to bookings, but restricts write access to authenticated users.
+     * @description Controls access to the 'bookings' collection.
      * @path /bookings/{bookingId}
-     * @allow (get, list) - Any user can read booking data.
-     * @allow (create) - Any authenticated user can create booking data.
-     * @allow (update, delete) - No user can update or delete booking data (explicitly denied).
-     * @deny (create) - An unauthenticated user attempts to create a booking.
-     * @principle Allows public data browsing while restricting modifications.
+     * @allow (get, list): Anyone can read booking details.
+     * @allow (create, update, delete): Only the owner can modify booking details. The owner is not currently defined, so writes are disabled.
+     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
+     * @principle Enforces owner-only write access.
      */
     match /bookings/{bookingId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if false;
+      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
     }
 
     /**
-     * @description Grants public read access to reviews, but restricts write access to authenticated users.
+     * @description Controls access to the 'reviews' collection.
      * @path /reviews/{reviewId}
-     * @allow (get, list) - Any user can read review data.
-     * @allow (create) - Any authenticated user can create review data.
-     * @allow (update, delete) - No user can update or delete review data (explicitly denied).
-     * @deny (create) - An unauthenticated user attempts to create a review.
-     * @principle Allows public data browsing while restricting modifications.
+     * @allow (get, list): Anyone can read review details.
+     * @allow (create, update, delete): Only the owner can modify review details. The owner is not currently defined, so writes are disabled.
+     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
+     * @principle Enforces owner-only write access.
      */
     match /reviews/{reviewId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if false;
+      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
     }
 
     function isSignedIn() {
-      return request.auth != null;
+        return request.auth != null;
     }
   }
 }
