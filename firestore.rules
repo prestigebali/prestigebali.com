@@ -1,68 +1,84 @@
 /**
- * @fileOverview Firestore Security Rules for the Voyage Zen application.
+ * @file Firebase Security Rules for Prestige Bali application.
  *
- * Core Philosophy:
- * This ruleset provides public read access to destinations and tour packages
- * while restricting write access to bookings and reviews.
+ * @core_philosophy This ruleset enforces public read access for destinations and tour packages,
+ * while restricting write access to authenticated users. Bookings and reviews are also publicly readable,
+ * but writes are only allowed for authenticated users.  Schema validation is relaxed to allow for rapid prototyping.
  *
- * Data Structure:
- * - /destinations/{destinationId}: Stores information about destinations.
- * - /tour_packages/{tourPackageId}: Stores information about tour packages.
- * - /bookings/{bookingId}: Stores user bookings.
- * - /reviews/{reviewId}: Stores user reviews.
+ * @data_structure The Firestore database consists of four top-level collections: `destinations`, `tour_packages`, `bookings`, and `reviews`.
+ * Destinations and tour packages can be read by anyone, while bookings and reviews are open for read but only allow authenticated users to write.
  *
- * Key Security Decisions:
- * - Destinations and tour packages are publicly readable.
- * - Bookings and reviews are publicly writable.
+ * @key_security_decisions
+ *   - Public read access to destinations and tour packages is granted to allow easy browsing.
+ *   - Write access is restricted to authenticated users.
+ *   - No listing restrictions are imposed for prototyping, but consider adding them in production.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to destinations.
+     * @description Grants public read access to destinations, but restricts write access to authenticated users.
      * @path /destinations/{destinationId}
-     * @allow (get, list): Any user can read destination details.
-     * @deny (create, update, delete): No user can create, update, or delete destination details.
-     * @principle Allows public read access while restricting write access.
+     * @allow (get, list) - Any user can read destination data.
+     * @allow (create) - Any authenticated user can create destination data.
+     * @allow (update, delete) - No user can update or delete destination data (explicitly denied).
+     * @deny (create) - An unauthenticated user attempts to create a destination.
+     * @principle Allows public data browsing while restricting modifications.
      */
     match /destinations/{destinationId} {
       allow get, list: if true;
-      allow create, update, delete: if false;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
     }
 
     /**
-     * @description Allows public read access to tour packages.
+     * @description Grants public read access to tour packages, but restricts write access to authenticated users.
      * @path /tour_packages/{tourPackageId}
-     * @allow (get, list): Any user can read tour package details.
-     * @deny (create, update, delete): No user can create, update, or delete tour package details.
-     * @principle Allows public read access while restricting write access.
+     * @allow (get, list) - Any user can read tour package data.
+     * @allow (create) - Any authenticated user can create tour package data.
+     * @allow (update, delete) - No user can update or delete tour package data (explicitly denied).
+     * @deny (create) - An unauthenticated user attempts to create a tour package.
+     * @principle Allows public data browsing while restricting modifications.
      */
     match /tour_packages/{tourPackageId} {
       allow get, list: if true;
-      allow create, update, delete: if false;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
     }
 
     /**
-     * @description Allows anyone to create, read, update, and delete bookings.
+     * @description Grants public read access to bookings, but restricts write access to authenticated users.
      * @path /bookings/{bookingId}
-     * @allow (create, update, delete): Any user can create, update, or delete a booking.
-     * @allow (get, list): Any user can read booking details.
-     * @principle Allows public read and write access.
+     * @allow (get, list) - Any user can read booking data.
+     * @allow (create) - Any authenticated user can create booking data.
+     * @allow (update, delete) - No user can update or delete booking data (explicitly denied).
+     * @deny (create) - An unauthenticated user attempts to create a booking.
+     * @principle Allows public data browsing while restricting modifications.
      */
     match /bookings/{bookingId} {
-      allow get, list, create, update, delete: if true;
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
     }
 
     /**
-     * @description Allows anyone to create, read, update, and delete reviews.
+     * @description Grants public read access to reviews, but restricts write access to authenticated users.
      * @path /reviews/{reviewId}
-     * @allow (create, update, delete): Any user can create, update, or delete a review.
-     * @allow (get, list): Any user can read review details.
-     * @principle Allows public read and write access.
+     * @allow (get, list) - Any user can read review data.
+     * @allow (create) - Any authenticated user can create review data.
+     * @allow (update, delete) - No user can update or delete review data (explicitly denied).
+     * @deny (create) - An unauthenticated user attempts to create a review.
+     * @principle Allows public data browsing while restricting modifications.
      */
     match /reviews/{reviewId} {
-      allow get, list, create, update, delete: if true;
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
     }
   }
 }
