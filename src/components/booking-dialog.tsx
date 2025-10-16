@@ -114,8 +114,8 @@ export function BookingDialog({
   const whatsAppMessage = `Hello, I'm interested in booking the "${tourPackage.title}" package. My details have been submitted.`;
   const emailSubject = `Booking Inquiry for: ${tourPackage.title}`;
   
-  const WHATSAPP_NUMBER = "6281234567890"; // Replace with your WhatsApp number
-  const EMAIL_ADDRESS = "info@prestigebali.com"; // Replace with your email
+  const WHATSAPP_NUMBER = "6287764161803"; // Replace with your WhatsApp number
+  const EMAIL_ADDRESS = "sales@prestigebali.com"; // Replace with your email
 
   return (
     <>

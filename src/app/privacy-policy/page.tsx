@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
 
               <h2 className="text-2xl font-bold text-foreground">Contact Us</h2>
               <p>
-                If you have any questions about this Privacy Policy, please contact us at: info@prestigebali.com
+                If you have any questions about this Privacy Policy, please contact us at: sales@prestigebali.com
               </p>
             </div>
           </div>

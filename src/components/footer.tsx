@@ -34,8 +34,8 @@ export function Footer() {
           <div className="md:col-span-1">
              <h4 className="font-semibold text-white mb-4">Contact Us</h4>
              <ul className="space-y-2 text-sm text-gray-400">
-                <li>info@prestigebali.com</li>
-                <li>+62 123 4567 890</li>
+                <li>sales@prestigebali.com</li>
+                <li>+62 877 6416 1803</li>
              </ul>
           </div>
           <div className="md:col-span-1">
