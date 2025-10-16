@@ -1,80 +1,81 @@
 /**
- * @fileoverview Firestore Security Rules for Prototyping.
+ * @fileoverview Firestore Security Rules for the Tour Package Booking App.
  *
  * Core Philosophy:
- * This ruleset prioritizes security by enforcing strict authorization checks while allowing flexible data shapes for rapid prototyping.  It uses an owner-based access control model for all collections.
+ * This ruleset prioritizes security by enforcing strict access control to Firestore data.
+ * Read access is generally public for core data (destinations, tour packages), while writes are restricted.
+ * User-generated content (bookings, reviews) can be created by any authenticated user.
  *
  * Data Structure:
- * - /destinations/{destinationId}: Stores travel destination details.
- * - /tour_packages/{tourPackageId}: Stores curated tour package details.
- * - /bookings/{bookingId}: Stores user booking information.
+ * - /destinations/{destinationId}: Stores destination information.
+ * - /tour_packages/{tourPackageId}: Stores tour package details.
+ * - /bookings/{bookingId}: Stores booking information.
  * - /reviews/{reviewId}: Stores user reviews for tour packages.
  *
  * Key Security Decisions:
- * - All collections enforce owner-only write access. There are no public write permissions.
- * - List operations are generally public but can be restricted as needed.
- *
- * Denormalization for Authorization:
- * - The current data model lacks an explicit 'ownerId' or 'authorId' field in the `TourPackage` schema. To enforce owner-only writes, we need to add this field. In the interim, writes are disabled.
+ * - Public read access for destinations and tour packages to allow browsing without authentication.
+ * - Bookings and reviews can be created by any logged-in user, reflecting an open contribution model.
+ * - No listing of bookings or reviews is allowed to prevent data scraping.
+ * - No update/delete operations are allowed on bookings.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to the 'destinations' collection.
+     * @description Allows public read access to destination details. Write access is not allowed.
      * @path /destinations/{destinationId}
-     * @allow (get, list): Anyone can read destination details.
-     * @allow (create, update, delete): Only the owner can modify destination details. The owner is not currently defined, so writes are disabled.
-     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
-     * @principle Enforces owner-only write access.
+     * @allow get, list: if true;
+     * @deny create, update, delete: if false;
+     * @principle Allows public access to destination data while restricting modifications.
      */
     match /destinations/{destinationId} {
       allow get, list: if true;
-      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
+      allow create, update, delete: if false;
     }
 
     /**
-     * @description Controls access to the 'tour_packages' collection.
+     * @description Allows public read access to tour package details. Write access is not allowed.
      * @path /tour_packages/{tourPackageId}
-     * @allow (get, list): Anyone can read tour package details.
-     * @allow (create, update, delete): Only the owner can modify tour package details. The owner is not currently defined, so writes are disabled.
-     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
-     * @principle Enforces owner-only write access.
+     * @allow get, list: if true;
+     * @deny create, update, delete: if false;
+     * @principle Allows public access to tour package data while restricting modifications.
      */
     match /tour_packages/{tourPackageId} {
       allow get, list: if true;
-      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
+      allow create, update, delete: if false;
     }
 
     /**
-     * @description Controls access to the 'bookings' collection.
+     * @description Allows creation of bookings by any authenticated user. Reads and updates are not allowed.
      * @path /bookings/{bookingId}
-     * @allow (get, list): Anyone can read booking details.
-     * @allow (create, update, delete): Only the owner can modify booking details. The owner is not currently defined, so writes are disabled.
-     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
-     * @principle Enforces owner-only write access.
+     * @allow create: if isSignedIn();
+     * @deny get, list, update, delete: if false;
+     * @principle Allows any authenticated user to create a booking.
      */
     match /bookings/{bookingId} {
-      allow get, list: if true;
-      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
+      allow create: if isSignedIn();
+      allow get, list, update, delete: if false;
     }
 
     /**
-     * @description Controls access to the 'reviews' collection.
+     * @description Allows creation of reviews by any authenticated user. Reads and updates are not allowed.
      * @path /reviews/{reviewId}
-     * @allow (get, list): Anyone can read review details.
-     * @allow (create, update, delete): Only the owner can modify review details. The owner is not currently defined, so writes are disabled.
-     * @deny (create, update, delete): If the user is not the owner (once the owner is defined).
-     * @principle Enforces owner-only write access.
+     * @allow create: if isSignedIn();
+     * @deny get, list, update, delete: if false;
+     * @principle Allows any authenticated user to create a review.
      */
     match /reviews/{reviewId} {
-      allow get, list: if true;
-      allow create, update, delete: if isSignedIn(); // Only signed-in users can create, update, or delete
+      allow create: if isSignedIn();
+      allow get, list, update, delete: if false;
     }
 
+    /**
+     * @description Checks if the user is signed in.
+     * @return {boolean} True if the user is signed in, false otherwise.
+     */
     function isSignedIn() {
-        return request.auth != null;
+      return request.auth != null;
     }
   }
 }
