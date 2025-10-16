@@ -21,9 +21,11 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { collection, deleteDoc, doc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useToast } from '@/hooks/use-toast';
 
 type Booking = {
     id: string;
@@ -35,6 +37,7 @@ type Booking = {
 
 export default function LeadsPage() {
   const firestore = useFirestore();
+  const { toast } = useToast();
   
   const bookingsCollection = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -43,10 +46,15 @@ export default function LeadsPage() {
 
   const { data: bookings, isLoading } = useCollection<Booking>(bookingsCollection);
 
-  const handleDelete = async (bookingId: string) => {
+  const handleDelete = (bookingId: string) => {
     if (firestore) {
       if (confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
-        await deleteDoc(doc(firestore, 'bookings', bookingId));
+        const docRef = doc(firestore, 'bookings', bookingId);
+        deleteDocumentNonBlocking(docRef);
+        toast({
+          title: 'Lead Deleted',
+          description: 'The booking lead has been scheduled for deletion.',
+        });
       }
     }
   };
