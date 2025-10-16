@@ -101,12 +101,12 @@ function DestinationsSection() {
               Explore Captivating Islands
             </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {packageDestinations.map((dest) => (
             <Link 
               key={dest.name} 
               href={`/packages?destination=${encodeURIComponent(dest.name)}`} 
-              className="relative group aspect-[4/5] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
+              className="relative group aspect-video overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
             >
               <Image
                 src={dest.image.imageUrl}
