@@ -48,14 +48,13 @@ export default function LeadsPage() {
 
   const handleDelete = (bookingId: string) => {
     if (firestore) {
-      if (confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
-        const docRef = doc(firestore, 'bookings', bookingId);
-        deleteDocumentNonBlocking(docRef);
-        toast({
-          title: 'Lead Deleted',
-          description: 'The booking lead has been scheduled for deletion.',
-        });
-      }
+      // Removing confirm() to ensure delete is triggered directly.
+      const docRef = doc(firestore, 'bookings', bookingId);
+      deleteDocumentNonBlocking(docRef);
+      toast({
+        title: 'Lead Deletion Initiated',
+        description: 'The booking lead has been scheduled for deletion.',
+      });
     }
   };
 
