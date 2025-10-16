@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  getStorage,
   ref,
   getDownloadURL,
   FirebaseStorage,
@@ -50,3 +49,5 @@ export function uploadImage(
     );
   });
 }
+
+    

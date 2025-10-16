@@ -105,7 +105,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
     setUploadProgress(0);
     try {
         if (!storage) {
-            throw new Error("Firebase Storage is not initialized.");
+            throw new Error("Firebase Storage is not initialized. Please wait and try again.");
         }
         const imageId = generateId();
         const path = `package-images/${imageId}`;
@@ -362,3 +362,5 @@ export function PackageForm({ initialData }: PackageFormProps) {
     </Form>
   );
 }
+
+    
