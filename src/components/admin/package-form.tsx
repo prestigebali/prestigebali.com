@@ -34,6 +34,7 @@ import Image from 'next/image';
 import { generateId, uploadImage } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 import type { TourPackage } from '@/lib/packages';
+import { Progress } from '@/components/ui/progress';
 
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -57,6 +58,7 @@ interface PackageFormProps {
 export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -84,7 +86,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
   });
 
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && initialData) {
       form.reset(initialData);
     }
   }, [initialData, isEditMode, form]);
@@ -100,13 +102,16 @@ export function PackageForm({ initialData }: PackageFormProps) {
     }
     
     setIsUploading(true);
+    setUploadProgress(0);
     try {
         if (!storage) {
             throw new Error("Firebase Storage is not initialized.");
         }
         const imageId = generateId();
         const path = `package-images/${imageId}`;
-        const url = await uploadImage(storage, file, path);
+        const url = await uploadImage(storage, file, path, (progress) => {
+          setUploadProgress(progress);
+        });
         form.setValue('image.imageUrl', url, { shouldValidate: true });
     } catch(e: any) {
         console.error("Upload failed", e);
@@ -117,6 +122,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
         });
     } finally {
         setIsUploading(false);
+        setUploadProgress(null);
     }
   };
   
@@ -150,7 +156,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
     }
     setIsSubmitting(true);
     try {
-        if (isEditMode) {
+        if (isEditMode && initialData) {
             const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
             await updateDoc(packageDocRef, data);
              toast({
@@ -289,6 +295,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     ref={fileInputRef}
                                     onChange={(e) => handleFileChange(e.target.files)}
                                     accept="image/*"
+                                    disabled={isUploading}
                                 />
                                 {imageUrl ? (
                                     <div className="relative w-full max-w-sm h-64 rounded-md overflow-hidden border">
@@ -299,6 +306,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                             size="icon"
                                             className="absolute top-2 right-2 rounded-full h-8 w-8"
                                             onClick={removeImage}
+                                            disabled={isUploading}
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -309,17 +317,20 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                         onDragLeave={handleDrag}
                                         onDragOver={handleDrag}
                                         onDrop={handleDrop}
-                                        onClick={() => fileInputRef.current?.click()}
+                                        onClick={() => !isUploading && fileInputRef.current?.click()}
                                         className={cn(
-                                            "relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors",
+                                            "relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md transition-colors",
+                                            isUploading ? "cursor-not-allowed" : "cursor-pointer hover:border-primary",
                                             dragActive ? "border-primary bg-primary/10" : "border-input"
                                         )}
                                     >
                                         {isUploading ? (
-                                            <>
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                                                <p className="mt-4 text-sm text-muted-foreground">Uploading...</p>
-                                            </>
+                                            <div className="flex flex-col items-center gap-4 text-center w-full px-8">
+                                                <Progress value={uploadProgress} className="w-full" />
+                                                <p className="text-sm font-medium text-muted-foreground">
+                                                  Uploading... {uploadProgress !== null ? `${Math.round(uploadProgress)}%` : ''}
+                                                </p>
+                                            </div>
                                         ) : (
                                             <>
                                                 <Upload className="w-10 h-10 text-muted-foreground" />
