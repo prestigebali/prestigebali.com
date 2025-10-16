@@ -16,8 +16,8 @@ export default {
         lg: '0 8px 16px var(--tw-shadow-color, rgba(0, 0, 0, 0.5))',
       },
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['var(--font-inter)', 'sans-serif'],
+        headline: ['var(--font-poppins)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

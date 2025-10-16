@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/header';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Heart, Users, Mountain, Waves, Building } from 'lucide-react';
@@ -172,7 +172,7 @@ function HeroSection() {
           priority
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
@@ -353,25 +353,3 @@ function ReviewsSection() {
     </section>
   );
 }
-
-
-// Add animation styles to globals.css if they don't exist
-// This is a placeholder for custom animation utility classes.
-// You can define them in globals.css or tailwind.config.js
-const animationStyles = `
-  .animation-delay-300 { animation-delay: 300ms; }
-  .animation-delay-600 { animation-delay: 600ms; }
-  @keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out forwards;
-    opacity: 0;
-  }
-`;
-// To use these styles, you'd typically add a style tag or put them in your CSS file.
-// For this case, we'll just acknowledge their conceptual presence.
-// In a real app, these would be in globals.css or configured in Tailwind.
-
-    
