@@ -25,17 +25,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
-import { useFirestore, useStorage } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
-import { Upload, X } from 'lucide-react';
-import Image from 'next/image';
-import { generateId, uploadImage } from '@/lib/storage';
-import { cn } from '@/lib/utils';
 import type { TourPackage } from '@/lib/packages';
-import { Progress } from '@/components/ui/progress';
 
+// Simplified schema: image is now an object with a URL string.
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
@@ -44,7 +40,7 @@ const packageSchema = z.object({
   category: z.string().min(1, 'Please select a category.'),
   rating: z.coerce.number().min(1).max(5).default(4.5),
   image: z.object({
-    imageUrl: z.string().url('Please upload an image.'),
+    imageUrl: z.string().url('Please enter a valid image URL.'),
     imageHint: z.string().optional().default(''),
   }),
 });
@@ -57,15 +53,9 @@ interface PackageFormProps {
 
 export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const isEditMode = !!initialData;
 
@@ -90,71 +80,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
       form.reset(initialData);
     }
   }, [initialData, form]);
-  
-  const imageUrl = form.watch('image.imageUrl');
-
-  const handleFileSelect = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    const file = files[0];
-    if (!file.type.startsWith('image/')) {
-        toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image file.' });
-        return;
-    }
-    
-    if (!storage) {
-        toast({
-            variant: 'destructive',
-            title: 'Storage Not Ready',
-            description: 'Firebase Storage is not initialized. Please wait and try again.'
-        });
-        return;
-    }
-    
-    setIsUploading(true);
-    setUploadProgress(0);
-    try {
-        const imageId = generateId();
-        const path = `package-images/${imageId}`;
-        const url = await uploadImage(storage, file, path, (progress) => {
-          setUploadProgress(progress);
-        });
-        form.setValue('image.imageUrl', url, { shouldValidate: true });
-        toast({ title: 'Image Uploaded', description: 'Image has been successfully uploaded.'});
-    } catch(error: any) {
-        console.error("Upload failed", error);
-        toast({
-            variant: 'destructive',
-            title: 'Upload Failed',
-            description: error.message || 'Could not upload the image. Please try again.'
-        });
-    } finally {
-        setIsUploading(false);
-        setUploadProgress(null);
-    }
-  };
-  
-  const handleDrag = (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.type === "dragenter" || e.type === "dragover") {
-        setDragActive(true);
-      } else if (e.type === "dragleave") {
-        setDragActive(false);
-      }
-  };
-  
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileSelect(e.dataTransfer.files);
-    }
-  };
-  
-  const removeImage = () => {
-    form.setValue('image.imageUrl', '', { shouldValidate: true });
-  }
 
   const onSubmit = async (data: PackageFormValues) => {
     if (!firestore) {
@@ -173,6 +98,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
         } else {
             const packagesCollection = collection(firestore, 'tour_packages');
             const newDocRef = await addDoc(packagesCollection, data);
+            // We need to add the generated ID to the document for consistency.
             await updateDoc(newDocRef, { id: newDocRef.id });
             toast({
                 title: 'Package Created',
@@ -294,64 +220,13 @@ export function PackageForm({ initialData }: PackageFormProps) {
                 name="image.imageUrl"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Package Image</FormLabel>
+                        <FormLabel>Package Image URL</FormLabel>
                         <FormControl>
-                            <div>
-                                <input 
-                                    type="file" 
-                                    className="hidden"
-                                    ref={fileInputRef}
-                                    onChange={(e) => handleFileSelect(e.target.files)}
-                                    accept="image/*"
-                                    disabled={isUploading}
-                                />
-                                {imageUrl ? (
-                                    <div className="relative w-full max-w-sm h-64 rounded-md overflow-hidden border">
-                                        <Image src={imageUrl} alt="Package preview" fill className="object-cover" />
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="icon"
-                                            className="absolute top-2 right-2 rounded-full h-8 w-8"
-                                            onClick={removeImage}
-                                            disabled={isUploading || isSubmitting}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ) : (
-                                    <div
-                                        onDragEnter={handleDrag}
-                                        onDragLeave={handleDrag}
-                                        onDragOver={handleDrag}
-                                        onDrop={handleDrop}
-                                        onClick={() => !isUploading && fileInputRef.current?.click()}
-                                        className={cn(
-                                            "relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md transition-colors",
-                                            isUploading ? "cursor-not-allowed" : "cursor-pointer hover:border-primary",
-                                            dragActive ? "border-primary bg-primary/10" : "border-input"
-                                        )}
-                                    >
-                                        {isUploading ? (
-                                            <div className="flex flex-col items-center gap-4 text-center w-full px-8">
-                                                <Progress value={uploadProgress} className="w-full" />
-                                                <p className="text-sm font-medium text-muted-foreground">
-                                                  Uploading... {uploadProgress !== null ? `${Math.round(uploadProgress)}%` : ''}
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <Upload className="w-10 h-10 text-muted-foreground" />
-                                                <p className="mt-4 text-sm text-muted-foreground">
-                                                    <span className="font-semibold text-primary">Click to upload</span> or drag and drop
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                           <Input placeholder="https://example.com/image.jpg" {...field} />
                         </FormControl>
+                        <FormDescription>
+                            Paste the full URL of the image here.
+                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -362,7 +237,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
             <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
                 Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || isUploading}>
+            <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Package')}
             </Button>
         </div>
