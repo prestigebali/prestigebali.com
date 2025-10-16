@@ -27,7 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useStorage } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -63,6 +63,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
+  const storage = useStorage();
 
   const isEditMode = !!initialData;
 
@@ -102,7 +103,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
     try {
         const imageId = generateId();
         const path = `package-images/${imageId}`;
-        const url = await uploadImage(file, path);
+        const url = await uploadImage(storage, file, path);
         form.setValue('image.imageUrl', url, { shouldValidate: true });
     } catch(e) {
         console.error("Upload failed", e);
