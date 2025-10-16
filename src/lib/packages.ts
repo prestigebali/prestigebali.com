@@ -1,5 +1,16 @@
-import { PlaceHolderImages } from './placeholder-images';
+import { PlaceHolderImages, type ImagePlaceholder } from './placeholder-images';
 import { Heart, Users, Mountain, Waves, Building } from 'lucide-react';
+
+export type TourPackage = {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    rating: number;
+    image: ImagePlaceholder;
+    category: string;
+    destination: string;
+}
 
 const destinationImages = PlaceHolderImages.filter(p => p.description === 'destination').slice(0, 4);
 const curatedTours = PlaceHolderImages.filter(p => p.description === 'tour');
@@ -47,7 +58,7 @@ export const experienceTypes = [
 
 export const tourCategories = [...new Set(experienceTypes.map(exp => exp.title))];
 
-export const allPackages = [
+export const allPackages: TourPackage[] = [
   {
     id: "tour-1",
     title: "Enchanting Bali Discovery",

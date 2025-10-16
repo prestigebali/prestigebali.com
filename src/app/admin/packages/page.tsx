@@ -117,7 +117,9 @@ export default function PackagesDashboardPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/admin/packages/${pkg.id}/edit`}>Edit</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(pkg.id)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

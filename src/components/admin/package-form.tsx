@@ -25,14 +25,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState, useRef } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
+import { useState, useRef, useEffect } from 'react';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { generateId, uploadImage } from '@/lib/storage';
 import { cn } from '@/lib/utils';
+import type { TourPackage } from '@/lib/packages';
 
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -49,7 +50,11 @@ const packageSchema = z.object({
 
 type PackageFormValues = z.infer<typeof packageSchema>;
 
-export function PackageForm() {
+interface PackageFormProps {
+    initialData?: TourPackage & { id: string };
+}
+
+export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -58,6 +63,8 @@ export function PackageForm() {
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
+
+  const isEditMode = !!initialData;
 
   const form = useForm<PackageFormValues>({
     resolver: zodResolver(packageSchema),
@@ -74,6 +81,12 @@ export function PackageForm() {
         }
     },
   });
+
+  useEffect(() => {
+    if (isEditMode) {
+      form.reset(initialData);
+    }
+  }, [initialData, isEditMode, form]);
   
   const imageUrl = form.watch('image.imageUrl');
 
@@ -129,20 +142,29 @@ export function PackageForm() {
     }
     setIsSubmitting(true);
     try {
-      const packagesCollection = collection(firestore, 'tour_packages');
-      await addDoc(packagesCollection, data);
-
-      toast({
-        title: 'Package Created',
-        description: 'The new tour package has been added successfully.',
-      });
+        if (isEditMode) {
+            const packageDocRef = doc(firestore, 'tour_packages', initialData.id);
+            await updateDoc(packageDocRef, data);
+             toast({
+                title: 'Package Updated',
+                description: 'The tour package has been updated successfully.',
+            });
+        } else {
+            const packagesCollection = collection(firestore, 'tour_packages');
+            await addDoc(packagesCollection, data);
+            toast({
+                title: 'Package Created',
+                description: 'The new tour package has been added successfully.',
+            });
+        }
       router.push('/admin/packages');
+      router.refresh(); // To ensure the list is updated
     } catch (error) {
-      console.error('Failed to create package:', error);
+      console.error('Failed to save package:', error);
       toast({
         variant: 'destructive',
         title: 'Operation Failed',
-        description: 'Could not create the package. Please try again.',
+        description: 'Could not save the package. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -206,7 +228,7 @@ export function PackageForm() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Destination</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a destination" />
@@ -228,7 +250,7 @@ export function PackageForm() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
@@ -314,12 +336,10 @@ export function PackageForm() {
                 Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting || isUploading}>
-                {isSubmitting ? 'Creating...' : 'Create Package'}
+                {isSubmitting ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Package')}
             </Button>
         </div>
       </form>
     </Form>
   );
 }
-
-    
