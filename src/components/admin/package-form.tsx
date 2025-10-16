@@ -26,11 +26,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
-import { useFirestore, useStorage } from '@/firebase';
-import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useFirestore } from '@/firebase';
+import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { destinations, tourCategories } from '@/lib/packages';
 import type { TourPackage } from '@/lib/packages';
-import { uploadImage } from '@/lib/storage';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import { Progress } from '@/components/ui/progress';
 import { UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
@@ -57,13 +57,12 @@ interface PackageFormProps {
 
 export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  
+
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const isEditMode = !!initialData;
 
@@ -95,44 +94,55 @@ export function PackageForm({ initialData }: PackageFormProps) {
     }
   }, [initialData, form]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const tempUrl = URL.createObjectURL(file);
-      form.setValue('image.imageUrl', tempUrl, { shouldValidate: true });
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const imageUrl = await uploadToCloudinary(file, (progress) => {
+        setUploadProgress(progress);
+      });
+      form.setValue('image.imageUrl', imageUrl, { shouldValidate: true });
+      toast({
+        title: 'Upload Successful',
+        description: 'Image has been uploaded to Cloudinary.',
+      });
+    } catch (error: any) {
+      console.error("Cloudinary upload failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: error.message || "Could not upload image. Please try again.",
+      });
+      form.setValue('image.imageUrl', '', { shouldValidate: true });
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const onSubmit = async (data: PackageFormValues) => {
     setIsSubmitting(true);
     try {
-        let finalImageUrl = data.image?.imageUrl || '';
-        const finalData = { ...data };
-
-        if (imageFile) {
-            if (!storage) {
-                throw new Error('Storage service is not available.');
-            }
-            toast({ title: 'Uploading Image...', description: 'Please wait.' });
-            
-            const filePath = `tour_packages/${uuidv4()}-${imageFile.name}`;
-            finalImageUrl = await uploadImage(storage, imageFile, filePath, (progress) => {
-                setUploadProgress(progress);
+        if (!data.image.imageUrl) {
+            toast({
+                variant: "destructive",
+                title: "Missing Image",
+                description: "Please upload an image for the package.",
             });
-            
-            toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
-            
-            finalData.image.imageUrl = finalImageUrl;
+            setIsSubmitting(false);
+            return;
         }
         
         if (isEditMode && initialData?.id) {
             const docRef = doc(firestore, 'tour_packages', initialData.id);
-            updateDocumentNonBlocking(docRef, finalData);
+            updateDocumentNonBlocking(docRef, data);
         } else {
             const newId = uuidv4();
             const docRef = doc(firestore, 'tour_packages', newId);
-            setDocumentNonBlocking(docRef, { ...finalData, id: newId });
+            setDocumentNonBlocking(docRef, { ...data, id: newId });
         }
 
         toast({
@@ -151,12 +161,13 @@ export function PackageForm({ initialData }: PackageFormProps) {
             description: error.message || "An unexpected error occurred. Please try again.",
         });
     } finally {
-        setIsSubmitting(false);
-        setUploadProgress(0);
+        // The non-blocking nature means we don't wait, so we can set submitting to false sooner.
+        // A short delay can give a better UX feel.
+        setTimeout(() => setIsSubmitting(false), 500);
     }
   };
   
-  const isUploading = isSubmitting && uploadProgress > 0 && uploadProgress < 100;
+  const disableForm = isSubmitting || isUploading;
 
   return (
     <Form {...form}>
@@ -173,7 +184,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                 <FormItem>
                   <FormLabel>Package Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Enchanting Bali Discovery" {...field} disabled={isSubmitting} />
+                    <Input placeholder="e.g., Enchanting Bali Discovery" {...field} disabled={disableForm} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,7 +200,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     <Textarea
                       placeholder="Describe the tour package in detail..."
                       {...field}
-                      disabled={isSubmitting}
+                      disabled={disableForm}
                     />
                   </FormControl>
                   <FormMessage />
@@ -204,7 +215,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                         <FormItem>
                         <FormLabel>Price ($)</FormLabel>
                         <FormControl>
-                            <Input type="number" placeholder="1500" {...field} disabled={isSubmitting} />
+                            <Input type="number" placeholder="1500" {...field} disabled={disableForm} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -216,7 +227,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Destination</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={disableForm}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a destination" />
@@ -238,7 +249,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={disableForm}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
@@ -267,21 +278,21 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     type="file" 
                                     className="hidden" 
                                     id="file-upload"
-                                    onChange={handleFileChange} 
+                                    onChange={handleImageUpload} 
                                     accept="image/png, image/jpeg, image/gif"
-                                    disabled={isSubmitting}
+                                    disabled={disableForm}
                                 />
                                 <div 
                                     className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors border-input"
-                                    onClick={() => !isSubmitting && document.getElementById('file-upload')?.click()}
+                                    onClick={() => !disableForm && document.getElementById('file-upload')?.click()}
                                 >
                                     {isUploading ? (
                                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                                            <p>Uploading...</p>
+                                            <p>Uploading to Cloudinary...</p>
                                             <Progress value={uploadProgress} className="w-48" />
                                             <p className="text-sm font-semibold">{Math.round(uploadProgress)}%</p>
                                         </div>
-                                    ) : imagePreview && (imagePreview.startsWith('http') || imagePreview.startsWith('blob')) ? (
+                                    ) : imagePreview ? (
                                         <>
                                             <Image src={imagePreview} alt="Package preview" layout="fill" className="object-contain rounded-md p-2" />
                                             <Button
@@ -292,11 +303,10 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     form.setValue('image.imageUrl', '', { shouldValidate: true });
-                                                    setImageFile(null);
                                                     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
                                                     if(fileInput) fileInput.value = '';
                                                 }}
-                                                disabled={isSubmitting}
+                                                disabled={disableForm}
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
@@ -313,13 +323,11 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     className="mt-4" 
                                     placeholder="Or paste an image URL here"
                                     {...field}
-                                    value={imagePreview && !(imagePreview.startsWith('blob:')) ? imagePreview : ''}
                                     onChange={(e) => {
                                       field.onChange(e);
-                                      setImageFile(null);
                                       form.setValue('image.imageUrl', e.target.value, { shouldValidate: true });
                                     }}
-                                    disabled={isSubmitting}
+                                    disabled={disableForm}
                                 />
                             </div>
                         </FormControl>
@@ -330,10 +338,10 @@ export function PackageForm({ initialData }: PackageFormProps) {
           </CardContent>
         </Card>
         <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
+            <Button type="button" variant="outline" onClick={() => router.back()} disabled={disableForm}>
                 Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={disableForm}>
                 {isUploading ? 'Uploading...' : isSubmitting ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Package')}
             </Button>
         </div>
