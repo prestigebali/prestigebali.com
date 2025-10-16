@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAuth, useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
@@ -53,25 +53,26 @@ export default function LoginPage() {
     if (!auth) {
         toast({
             variant: 'destructive',
-            title: 'Login Failed',
+            title: 'Registration Failed',
             description: 'Firebase auth is not initialized.',
         });
         setIsSubmitting(false);
         return;
     }
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      // TEMPORARILY changed to createUserWithEmailAndPassword
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
-        title: 'Login Successful',
+        title: 'Account Created Successfully',
         description: 'Redirecting to dashboard...',
       });
       // No need to manually push, the useEffect will catch the user change and redirect.
     } catch (error: any) {
-      console.error('Login failed:', error);
+      console.error('Registration failed:', error);
       toast({
         variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message || 'Invalid email or password. Please try again.',
+        title: 'Registration Failed',
+        description: error.message || 'Could not create account. The email might already be in use.',
       });
     } finally {
       setIsSubmitting(false);
@@ -94,8 +95,8 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
+          <CardTitle className="text-2xl">Create Admin Account</CardTitle>
+          <CardDescription>Enter your desired credentials to create the first admin user.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -127,7 +128,7 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Logging in...' : 'Login'}
+                {isSubmitting ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
           </Form>
