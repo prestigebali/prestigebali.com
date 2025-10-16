@@ -81,13 +81,14 @@ export default function LoginPage() {
     return <div className="flex h-screen items-center justify-center"><p>Loading...</p></div>;
   }
   
+  // If the user is already logged in, the useEffect will handle the redirection.
+  // We can show a minimal loading state or nothing while that happens.
+  // A logged-in user should not see the login form.
   if (user) {
-    // User is logged in, useEffect will handle redirection.
-    // Show a loading state while redirecting.
      return <div className="flex h-screen items-center justify-center"><p>Redirecting...</p></div>;
   }
 
-
+  // Only show the login form if not loading and no user is present.
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
