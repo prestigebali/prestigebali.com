@@ -101,13 +101,20 @@ export function PackageForm({ initialData }: PackageFormProps) {
     
     setIsUploading(true);
     try {
+        if (!storage) {
+            throw new Error("Firebase Storage is not initialized.");
+        }
         const imageId = generateId();
         const path = `package-images/${imageId}`;
         const url = await uploadImage(storage, file, path);
         form.setValue('image.imageUrl', url, { shouldValidate: true });
-    } catch(e) {
+    } catch(e: any) {
         console.error("Upload failed", e);
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not upload the image. Please try again.' });
+        toast({
+            variant: 'destructive',
+            title: 'Upload Failed',
+            description: e.message || 'Could not upload the image. Please try again.'
+        });
     } finally {
         setIsUploading(false);
     }
