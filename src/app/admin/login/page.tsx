@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAuth, useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
@@ -53,26 +53,25 @@ export default function LoginPage() {
     if (!auth) {
         toast({
             variant: 'destructive',
-            title: 'Registration Failed',
+            title: 'Login Failed',
             description: 'Firebase auth is not initialized.',
         });
         setIsSubmitting(false);
         return;
     }
     try {
-      // TEMPORARILY changed to createUserWithEmailAndPassword
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
-        title: 'Account Created Successfully',
+        title: 'Login Successful',
         description: 'Redirecting to dashboard...',
       });
       // No need to manually push, the useEffect will catch the user change and redirect.
     } catch (error: any) {
-      console.error('Registration failed:', error);
+      console.error('Login failed:', error);
       toast({
         variant: 'destructive',
-        title: 'Registration Failed',
-        description: error.message || 'Could not create account. The email might already be in use.',
+        title: 'Login Failed',
+        description: 'Invalid email or password. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -95,8 +94,8 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create Admin Account</CardTitle>
-          <CardDescription>Enter your desired credentials to create the first admin user.</CardDescription>
+          <CardTitle className="text-2xl">Admin Login</CardTitle>
+          <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -128,7 +127,7 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                {isSubmitting ? 'Logging in...' : 'Login'}
               </Button>
             </form>
           </Form>
