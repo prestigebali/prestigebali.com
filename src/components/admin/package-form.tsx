@@ -25,10 +25,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
+import { generateId, uploadImage } from '@/lib/storage';
+import { cn } from '@/lib/utils';
 
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -36,10 +40,10 @@ const packageSchema = z.object({
   price: z.coerce.number().positive('Price must be a positive number.'),
   destination: z.string().min(1, 'Please select a destination.'),
   category: z.string().min(1, 'Please select a category.'),
-  rating: z.coerce.number().min(1).max(5).default(4.5), // default rating
+  rating: z.coerce.number().min(1).max(5).default(4.5),
   image: z.object({
-    imageUrl: z.string().url('Please enter a valid image URL.'),
-    imageHint: z.string().optional(),
+    imageUrl: z.string().url('Please upload an image.'),
+    imageHint: z.string().optional().default(''),
   }),
 });
 
@@ -47,6 +51,10 @@ type PackageFormValues = z.infer<typeof packageSchema>;
 
 export function PackageForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
@@ -66,6 +74,53 @@ export function PackageForm() {
         }
     },
   });
+  
+  const imageUrl = form.watch('image.imageUrl');
+
+  const handleFileChange = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+        toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image file.' });
+        return;
+    }
+    
+    setIsUploading(true);
+    try {
+        const imageId = generateId();
+        const path = `package-images/${imageId}`;
+        const url = await uploadImage(file, path);
+        form.setValue('image.imageUrl', url, { shouldValidate: true });
+    } catch(e) {
+        console.error("Upload failed", e);
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not upload the image. Please try again.' });
+    } finally {
+        setIsUploading(false);
+    }
+  };
+  
+  const handleDrag = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.type === "dragenter" || e.type === "dragover") {
+        setDragActive(true);
+      } else if (e.type === "dragleave") {
+        setDragActive(false);
+      }
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFileChange(e.dataTransfer.files);
+    }
+  };
+  
+  const removeImage = () => {
+    form.setValue('image.imageUrl', '', { shouldValidate: true });
+  }
 
   const onSubmit = async (data: PackageFormValues) => {
     if (!firestore) {
@@ -195,25 +250,70 @@ export function PackageForm() {
                 name="image.imageUrl"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Image URL</FormLabel>
-                    <FormControl>
-                        <Input type="url" placeholder="https://images.unsplash.com/..." {...field} />
-                    </FormControl>
-                    <FormDescription>
-                        Link to a high-quality image for the package.
-                    </FormDescription>
-                    <FormMessage />
+                        <FormLabel>Package Image</FormLabel>
+                        <FormControl>
+                            <>
+                                <input 
+                                    type="file" 
+                                    className="hidden"
+                                    ref={fileInputRef}
+                                    onChange={(e) => handleFileChange(e.target.files)}
+                                    accept="image/*"
+                                />
+                                {imageUrl ? (
+                                    <div className="relative w-full max-w-sm h-64 rounded-md overflow-hidden border">
+                                        <Image src={imageUrl} alt="Package preview" fill className="object-cover" />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon"
+                                            className="absolute top-2 right-2 rounded-full h-8 w-8"
+                                            onClick={removeImage}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div
+                                        onDragEnter={handleDrag}
+                                        onDragLeave={handleDrag}
+                                        onDragOver={handleDrag}
+                                        onDrop={handleDrop}
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className={cn(
+                                            "relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors",
+                                            dragActive ? "border-primary bg-primary/10" : "border-input"
+                                        )}
+                                    >
+                                        {isUploading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                                <p className="mt-4 text-sm text-muted-foreground">Uploading...</p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="w-10 h-10 text-muted-foreground" />
+                                                <p className="mt-4 text-sm text-muted-foreground">
+                                                    <span className="font-semibold text-primary">Click to upload</span> or drag and drop
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        </FormControl>
+                        <FormMessage />
                     </FormItem>
                 )}
                 />
-
           </CardContent>
         </Card>
         <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => router.back()}>
                 Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || isUploading}>
                 {isSubmitting ? 'Creating...' : 'Create Package'}
             </Button>
         </div>
