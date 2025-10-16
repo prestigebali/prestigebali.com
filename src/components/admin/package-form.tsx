@@ -25,13 +25,17 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useStorage } from '@/firebase';
 import { destinations, tourCategories } from '@/lib/packages';
 import type { TourPackage } from '@/lib/packages';
+import { v4 as uuidv4 } from 'uuid';
+import { uploadImage } from '@/lib/storage';
+import { Progress } from '@/components/ui/progress';
+import { UploadCloud, X } from 'lucide-react';
+import Image from 'next/image';
 
-// Simplified schema: image is now an object with a URL string.
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
@@ -40,7 +44,7 @@ const packageSchema = z.object({
   category: z.string().min(1, 'Please select a category.'),
   rating: z.coerce.number().min(1).max(5).default(4.5),
   image: z.object({
-    imageUrl: z.string().url('Please enter a valid image URL.'),
+    imageUrl: z.string().url('Please provide a valid image URL. Upload an image or paste a URL.'),
     imageHint: z.string().optional().default(''),
   }),
 });
@@ -53,9 +57,15 @@ interface PackageFormProps {
 
 export function PackageForm({ initialData }: PackageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image?.imageUrl || null);
+  
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
+  const storage = useStorage();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditMode = !!initialData;
 
@@ -78,8 +88,46 @@ export function PackageForm({ initialData }: PackageFormProps) {
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
+      setImagePreview(initialData.image.imageUrl);
     }
   }, [initialData, form]);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!storage) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Storage service is not available.' });
+        return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+        const fileId = uuidv4();
+        const filePath = `tour_packages/${fileId}-${file.name}`;
+        
+        const downloadURL = await uploadImage(storage, file, filePath, (progress) => {
+            setUploadProgress(progress);
+        });
+
+        form.setValue('image.imageUrl', downloadURL);
+        setImagePreview(downloadURL);
+        toast({ title: 'Upload Successful', description: 'Image has been uploaded and URL is set.' });
+
+    } catch (error) {
+        console.error("Upload failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Upload Failed",
+            description: error instanceof Error ? error.message : "Could not upload image. Please try again.",
+        });
+    } finally {
+        setIsUploading(false);
+    }
+  };
+
 
   const onSubmit = async (data: PackageFormValues) => {
     if (!firestore) {
@@ -98,7 +146,6 @@ export function PackageForm({ initialData }: PackageFormProps) {
         } else {
             const packagesCollection = collection(firestore, 'tour_packages');
             const newDocRef = await addDoc(packagesCollection, data);
-            // We need to add the generated ID to the document for consistency.
             await updateDoc(newDocRef, { id: newDocRef.id });
             toast({
                 title: 'Package Created',
@@ -106,7 +153,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
             });
         }
       router.push('/admin/packages');
-      router.refresh(); // To ensure the list is updated
+      router.refresh();
     } catch (error) {
       console.error('Failed to save package:', error);
       toast({
@@ -119,6 +166,8 @@ export function PackageForm({ initialData }: PackageFormProps) {
     }
   };
 
+  const isFormBusy = isSubmitting || isUploading;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -127,6 +176,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
             <CardTitle>Package Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Text and Select fields */}
             <FormField
               control={form.control}
               name="title"
@@ -134,7 +184,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                 <FormItem>
                   <FormLabel>Package Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Enchanting Bali Discovery" {...field} />
+                    <Input placeholder="e.g., Enchanting Bali Discovery" {...field} disabled={isFormBusy} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,6 +200,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     <Textarea
                       placeholder="Describe the tour package in detail..."
                       {...field}
+                      disabled={isFormBusy}
                     />
                   </FormControl>
                   <FormMessage />
@@ -164,7 +215,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                         <FormItem>
                         <FormLabel>Price ($)</FormLabel>
                         <FormControl>
-                            <Input type="number" placeholder="1500" {...field} />
+                            <Input type="number" placeholder="1500" {...field} disabled={isFormBusy} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -176,7 +227,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Destination</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isFormBusy}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a destination" />
@@ -198,7 +249,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isFormBusy}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
@@ -215,30 +266,82 @@ export function PackageForm({ initialData }: PackageFormProps) {
                     )}
                     />
             </div>
-             <FormField
+            {/* Image Upload Section */}
+            <FormField
                 control={form.control}
                 name="image.imageUrl"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Package Image URL</FormLabel>
+                        <FormLabel>Package Image</FormLabel>
                         <FormControl>
-                           <Input placeholder="https://example.com/image.jpg" {...field} />
+                            <div>
+                                <input 
+                                    type="file" 
+                                    className="hidden" 
+                                    ref={fileInputRef} 
+                                    onChange={handleFileChange} 
+                                    accept="image/png, image/jpeg, image/gif"
+                                    disabled={isFormBusy}
+                                />
+                                <div 
+                                    className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer hover:border-primary transition-colors border-input"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {isUploading ? (
+                                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                            <p>Uploading...</p>
+                                            <Progress value={uploadProgress} className="w-48" />
+                                            <p className="text-sm font-semibold">{Math.round(uploadProgress)}%</p>
+                                        </div>
+                                    ) : imagePreview ? (
+                                        <>
+                                            <Image src={imagePreview} alt="Package preview" fill className="object-contain rounded-md" />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="icon"
+                                                className="absolute top-2 right-2 h-7 w-7"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setImagePreview(null);
+                                                    form.setValue('image.imageUrl', '');
+                                                }}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                            <UploadCloud className="w-10 h-10" />
+                                            <p>Click to upload or drag & drop</p>
+                                            <p className="text-xs">PNG, JPG, GIF up to 10MB</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <Input 
+                                    className="mt-4" 
+                                    placeholder="Or paste an image URL here" 
+                                    {...field}
+                                    onChange={(e) => {
+                                        field.onChange(e);
+                                        setImagePreview(e.target.value);
+                                    }}
+                                    disabled={isFormBusy}
+                                />
+                            </div>
                         </FormControl>
-                        <FormDescription>
-                            Paste the full URL of the image here.
-                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
-                />
+            />
           </CardContent>
         </Card>
         <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
+            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isFormBusy}>
                 Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Package')}
+            <Button type="submit" disabled={isFormBusy}>
+                {isFormBusy ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Package')}
             </Button>
         </div>
       </form>
