@@ -35,7 +35,6 @@ import { generateId, uploadImage } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 import type { TourPackage } from '@/lib/packages';
 import { Progress } from '@/components/ui/progress';
-import { FirebaseStorage } from 'firebase/storage';
 
 const packageSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -121,12 +120,12 @@ export function PackageForm({ initialData }: PackageFormProps) {
         });
         form.setValue('image.imageUrl', url, { shouldValidate: true });
         toast({ title: 'Image Uploaded', description: 'Image has been successfully uploaded.'});
-    } catch(e: any) {
-        console.error("Upload failed", e);
+    } catch(error: any) {
+        console.error("Upload failed", error);
         toast({
             variant: 'destructive',
             title: 'Upload Failed',
-            description: e.message || 'Could not upload the image. Please try again.'
+            description: error.message || 'Could not upload the image. Please try again.'
         });
     } finally {
         setIsUploading(false);
