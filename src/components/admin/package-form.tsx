@@ -252,7 +252,7 @@ export function PackageForm() {
                     <FormItem>
                         <FormLabel>Package Image</FormLabel>
                         <FormControl>
-                            <>
+                            <div>
                                 <input 
                                     type="file" 
                                     className="hidden"
@@ -301,7 +301,7 @@ export function PackageForm() {
                                         )}
                                     </div>
                                 )}
-                            </>
+                            </div>
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -321,3 +321,5 @@ export function PackageForm() {
     </Form>
   );
 }
+
+    
