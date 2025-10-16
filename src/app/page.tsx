@@ -72,7 +72,7 @@ function HeroSection() {
           priority
         />
       )}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/10" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
