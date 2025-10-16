@@ -100,67 +100,53 @@ export function PackageForm({ initialData }: PackageFormProps) {
   };
 
   const onSubmit = async (data: PackageFormValues) => {
-    if (!firestore || !storage) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Firebase services are not available.' });
-        return;
-    }
     setIsSubmitting(true);
-    setUploadProgress(0);
-
     try {
+      if (!firestore || !storage) {
+        throw new Error('Firebase services are not available.');
+      }
+
       let finalImageUrl = data.image.imageUrl;
 
       if (imageFile) {
         toast({ title: 'Uploading Image...', description: 'Please wait.' });
-        const fileId = uuidv4();
-        const filePath = `tour_packages/${fileId}-${imageFile.name}`;
-        
-        finalImageUrl = await uploadImage(storage, imageFile, filePath, (progress) => {
-            setUploadProgress(progress);
-        });
-
+        setUploadProgress(0);
+        const filePath = `tour_packages/${uuidv4()}-${imageFile.name}`;
+        finalImageUrl = await uploadImage(storage, imageFile, filePath, setUploadProgress);
         toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
       }
 
       const finalData = { ...data, image: { ...data.image, imageUrl: finalImageUrl } };
+      
+      if (isEditMode && initialData?.id) {
+        const docRef = doc(firestore, 'tour_packages', initialData.id);
+        await updateDoc(docRef, finalData);
+      } else {
+        const newId = uuidv4();
+        const docRef = doc(firestore, 'tour_packages', newId);
+        await setDoc(docRef, { ...finalData, id: newId });
+      }
 
-      const operationPromise = isEditMode && initialData?.id
-        ? updateDoc(doc(firestore, 'tour_packages', initialData.id), finalData)
-        : setDoc(doc(firestore, 'tour_packages', uuidv4()), { ...finalData, id: uuidv4() });
-
-      operationPromise.catch((error: any) => {
-        console.error("Firestore operation failed:", error);
-        toast({
-            variant: "destructive",
-            title: "Operation Failed",
-            description: error.message || "Could not save package details.",
-        });
-        // The error will be handled globally by the FirebaseErrorListener,
-        // so we don't need to re-throw, just inform the user.
-        setIsSubmitting(false); // Only reset on failure
-      });
-
-      // Optimistic UI update
       toast({
-          title: isEditMode ? 'Package Updated!' : 'Package Created!',
-          description: `The tour package "${data.title}" has been saved.`,
+        title: isEditMode ? 'Package Updated!' : 'Package Created!',
+        description: `The tour package "${data.title}" has been saved successfully.`,
       });
 
       router.push('/admin/packages');
       router.refresh();
-      // No need to set isSubmitting to false here, as we are navigating away.
 
     } catch (error: any) {
-        console.error("Upload or preparation failed:", error);
-        toast({
-            variant: "destructive",
-            title: "Operation Failed",
-            description: error.message || "An unexpected error occurred. Please try again.",
-        });
-        setIsSubmitting(false);
+      console.error("Operation failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Operation Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
+  
   const isUploading = isSubmitting && uploadProgress > 0 && uploadProgress < 100;
 
   return (
