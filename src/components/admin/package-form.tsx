@@ -25,8 +25,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase';
+import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { destinations, tourCategories } from '@/lib/packages';
 import type { TourPackage } from '@/lib/packages';
 import { uploadImage } from '@/lib/storage';
@@ -101,17 +102,22 @@ export function PackageForm({ initialData }: PackageFormProps) {
 
   const onSubmit = async (data: PackageFormValues) => {
     setIsSubmitting(true);
+    
     try {
-      if (!firestore || !storage) {
-        throw new Error('Firebase services are not available.');
+      if (!firestore) {
+        throw new Error('Firestore service is not available.');
       }
 
       let finalImageUrl = data.image.imageUrl;
 
       if (imageFile) {
+        if (!storage) {
+          throw new Error('Storage service is not available.');
+        }
         toast({ title: 'Uploading Image...', description: 'Please wait.' });
         setUploadProgress(0);
         const filePath = `tour_packages/${uuidv4()}-${imageFile.name}`;
+        // Await the upload process as we need the URL before saving to Firestore
         finalImageUrl = await uploadImage(storage, imageFile, filePath, setUploadProgress);
         toast({ title: 'Upload Successful', description: 'Image has been uploaded.' });
       }
@@ -120,18 +126,19 @@ export function PackageForm({ initialData }: PackageFormProps) {
       
       if (isEditMode && initialData?.id) {
         const docRef = doc(firestore, 'tour_packages', initialData.id);
-        await updateDoc(docRef, finalData);
+        updateDocumentNonBlocking(docRef, finalData);
       } else {
         const newId = uuidv4();
         const docRef = doc(firestore, 'tour_packages', newId);
-        await setDoc(docRef, { ...finalData, id: newId });
+        setDocumentNonBlocking(docRef, { ...finalData, id: newId });
       }
 
       toast({
         title: isEditMode ? 'Package Updated!' : 'Package Created!',
-        description: `The tour package "${data.title}" has been saved successfully.`,
+        description: `The tour package "${data.title}" has been saved.`,
       });
 
+      // Optimistic UI update: navigate away immediately.
       router.push('/admin/packages');
       router.refresh();
 
@@ -143,6 +150,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
         description: error.message || "An unexpected error occurred. Please try again.",
       });
     } finally {
+      // This is crucial: ensure isSubmitting is always reset.
       setIsSubmitting(false);
     }
   };
@@ -272,7 +280,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                             <Progress value={uploadProgress} className="w-48" />
                                             <p className="text-sm font-semibold">{Math.round(uploadProgress)}%</p>
                                         </div>
-                                    ) : imagePreview ? (
+                                    ) : imagePreview && imagePreview.startsWith('http') ? (
                                         <>
                                             <Image src={imagePreview} alt="Package preview" layout="fill" className="object-contain rounded-md p-2" />
                                             <Button
@@ -304,10 +312,11 @@ export function PackageForm({ initialData }: PackageFormProps) {
                                     className="mt-4" 
                                     placeholder="Or paste an image URL here" 
                                     {...field}
-                                    value={imagePreview && !imageFile ? imagePreview : field.value}
+                                    value={imagePreview && !imageFile ? imagePreview : ''}
                                     onChange={(e) => {
                                       field.onChange(e);
                                       setImageFile(null);
+                                      form.setValue('image.imageUrl', e.target.value, { shouldValidate: true });
                                     }}
                                     disabled={isSubmitting}
                                 />
