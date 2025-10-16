@@ -25,7 +25,6 @@ export function Header() {
     { name: 'Destinations', href: '/#destinations' },
     { name: 'Tours', href: '/#tours' },
     { name: 'Experiences', href: '/#experiences' },
-    { name: 'Reviews', href: '/#reviews' },
   ];
 
   return (

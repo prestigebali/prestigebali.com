@@ -28,7 +28,6 @@ export function Footer() {
               <li><a href="/#destinations" className="text-sm text-gray-400 hover:text-primary">Destinations</a></li>
               <li><a href="/#tours" className="text-sm text-gray-400 hover:text-primary">Tours</a></li>
               <li><a href="/#experiences" className="text-sm text-gray-400 hover:text-primary">Experiences</a></li>
-              <li><a href="/#reviews" className="text-sm text-gray-400 hover:text-primary">Reviews</a></li>
             </ul>
           </div>
           <div className="md:col-span-1">
