@@ -2,6 +2,8 @@
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import * as React from 'react';
+
 
 export default function PrivacyPolicyPage() {
   // We use useEffect to get the current date on the client-side to avoid hydration mismatch
@@ -89,6 +91,3 @@ export default function PrivacyPolicyPage() {
     </div>
   );
 }
-
-// Added React import to solve build issues
-import * as React from 'react';

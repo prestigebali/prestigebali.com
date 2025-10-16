@@ -88,15 +88,7 @@
       "type": "object",
       "description": "Represents a user booking for a tour package.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Booking entity."
-        },
-        "tourPackageId": {
-          "type": "string",
-          "description": "Reference to TourPackage. (Relationship: TourPackage 1:N Booking)"
-        },
-        "userName": {
+        "name": {
           "type": "string",
           "description": "Name of the user making the booking."
         },
@@ -105,21 +97,25 @@
           "description": "Email address of the user making the booking.",
           "format": "email"
         },
+        "tourPackageId": {
+          "type": "string",
+          "description": "Reference to TourPackage."
+        },
+        "tourPackageName": {
+          "type": "string",
+          "description": "Name of the tour package being booked."
+        },
         "bookingDate": {
           "type": "string",
           "description": "Date and time when the booking was made.",
           "format": "date-time"
-        },
-        "contactPreference": {
-          "type": "string",
-          "description": "Users preferred way to be contacted"
         }
       },
       "required": [
-        "id",
-        "tourPackageId",
-        "userName",
+        "name",
         "email",
+        "tourPackageId",
+        "tourPackageName",
         "bookingDate"
       ]
     },
@@ -172,72 +168,35 @@
     ]
   },
   "firestore": {
-    "structure": [
+    "collections": [
       {
         "path": "/destinations/{destinationId}",
-        "definition": {
-          "entityName": "Destination",
-          "schema": {
-            "$ref": "#/backend/entities/Destination"
-          },
-          "description": "Stores travel destination details.",
-          "params": [
-            {
-              "name": "destinationId",
-              "description": "Unique identifier for the destination."
-            }
-          ]
-        }
+        "schema": {
+          "$ref": "#/entities/Destination"
+        },
+        "description": "Stores travel destination details."
       },
       {
         "path": "/tour_packages/{tourPackageId}",
-        "definition": {
-          "entityName": "TourPackage",
-          "schema": {
-            "$ref": "#/backend/entities/TourPackage"
-          },
-          "description": "Stores curated tour package details.",
-          "params": [
-            {
-              "name": "tourPackageId",
-              "description": "Unique identifier for the tour package."
-            }
-          ]
-        }
+        "schema": {
+          "$ref": "#/entities/TourPackage"
+        },
+        "description": "Stores curated tour package details."
       },
       {
         "path": "/bookings/{bookingId}",
-        "definition": {
-          "entityName": "Booking",
-          "schema": {
-            "$ref": "#/backend/entities/Booking"
-          },
-          "description": "Stores user booking information. Includes denormalized `tourPackageId`, `userName`, and `email` for authorization independence.",
-          "params": [
-            {
-              "name": "bookingId",
-              "description": "Unique identifier for the booking."
-            }
-          ]
-        }
+        "schema": {
+          "$ref": "#/entities/Booking"
+        },
+        "description": "Stores user booking information."
       },
       {
         "path": "/reviews/{reviewId}",
-        "definition": {
-          "entityName": "Review",
-          "schema": {
-            "$ref": "#/backend/entities/Review"
-          },
-          "description": "Stores user reviews for tour packages. Includes the `tourPackageId` and `userName`.",
-          "params": [
-            {
-              "name": "reviewId",
-              "description": "Unique identifier for the review."
-            }
-          ]
-        }
+        "schema": {
+          "$ref": "#/entities/Review"
+        },
+        "description": "Stores user reviews for tour packages."
       }
-    ],
-    "reasoning": "The Firestore structure is designed to organize data for the Voyage Zen application, focusing on destinations, tour packages, bookings, and user reviews. The structure prioritizes authorization independence and efficient data retrieval while adhering to the design principles of clarity, DBAC, and QAPs.\n\n*   `/destinations` collection: Stores destination details. This collection allows for easy listing and display of available destinations.\n*   `/tour_packages` collection: Contains information about each tour package.  Each document includes the `destinationId` to reference the destination.  This facilitates listing tour packages and displaying details.\n*   `/bookings` collection: Stores user bookings. Bookings are stored at the root level to simplify listing all bookings for admin/reporting purposes. Data includes denormalized `tourPackageId`, `userName`, and `email` for direct access without additional lookups. This supports QAPs as bookings are independent of user authentication state.\n*   `/reviews` collection: Holds user reviews for tour packages. Similar to bookings, reviews are stored at the root level to simplify querying and listing all reviews. Data includes the `tourPackageId` and `userName`. This supports QAPs, and reviews can be listed and managed independently.\n\n**Authorization Independence (Denormalization):**\n\n*   The structure avoids hierarchical dependencies by storing authorization-related data directly within the relevant documents. For example, the `bookings` collection stores `tourPackageId`, `userName`, and `email` directly.\n\n**QAPs (Rules are not Filters):**\n\n*   The collections are designed to support secure `list` operations.  Each collection contains data that can be queried and listed without requiring complex filtering based on user roles or permissions.\n\n**Considerations:**\n\n*   The root-level collections for `bookings` and `reviews` simplify data management and reporting. If the application scales significantly, consider partitioning these collections into subcollections under users to improve scalability and manageability.\n*   For advanced user-specific data (e.g., user profiles, saved tours), consider using a `/users/{userId}` structure."
+    ]
   }
 }

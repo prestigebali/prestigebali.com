@@ -31,18 +31,12 @@ const PackagesContent = () => {
     useEffect(() => {
         const destinationParam = searchParams.get('destination');
         const categoryParam = searchParams.get('category');
-        const titleParam = searchParams.get('title');
-
+        
         setFilters(prev => ({
             ...prev,
             destinations: destinationParam ? [destinationParam] : [],
             categories: categoryParam ? [categoryParam] : [],
         }));
-
-        if (titleParam) {
-            // This is a simple implementation. In a real app, you might want to scroll to the specific package.
-            console.log(`Deep link to package: ${titleParam}`);
-        }
 
     }, [searchParams]);
 

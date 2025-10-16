@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { Star, StarHalf, Pin } from 'lucide-react';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
@@ -5,10 +7,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Badge } from './ui/badge';
-import Link from 'next/link';
+import React from 'react';
+import { BookingDialog } from './booking-dialog';
 
 interface TourCardProps {
-  id?: string;
+  id: string; // id is required now
   image: ImagePlaceholder;
   title: string;
   description: string;
@@ -33,42 +36,53 @@ const renderStars = (rating: number) => {
 };
 
 export function TourCard({ id, image, title, description, price, rating, destination, category, className }: TourCardProps) {
+  const [isBookingOpen, setBookingOpen] = React.useState(false);
+  
   return (
-    <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={image.imageUrl}
-          alt={title}
-          data-ai-hint={image.imageHint}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
-      </div>
-      <div className="flex flex-col flex-grow">
-        <CardHeader className="p-6">
-          <CardTitle className="text-xl mb-2 leading-tight font-bold">{title}</CardTitle>
-          <CardDescription className="text-muted-foreground line-clamp-2">{description}</CardDescription>
-        </CardHeader>
-        <CardFooter className="p-6 pt-0 mt-auto flex justify-between items-end">
-          <div>
-            <div className='flex items-center gap-1 text-sm text-muted-foreground mb-1'>
-                <Pin className='w-3.5 h-3.5'/>
-                <span>{destination}</span>
+    <>
+      <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <Image
+            src={image.imageUrl}
+            alt={title}
+            data-ai-hint={image.imageHint}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
+        </div>
+        <div className="flex flex-col flex-grow">
+          <CardHeader className="p-6">
+            <CardTitle className="text-xl mb-2 leading-tight font-bold">{title}</CardTitle>
+            <CardDescription className="text-muted-foreground line-clamp-2">{description}</CardDescription>
+          </CardHeader>
+          <CardFooter className="p-6 pt-0 mt-auto flex justify-between items-end">
+            <div>
+              <div className='flex items-center gap-1 text-sm text-muted-foreground mb-1'>
+                  <Pin className='w-3.5 h-3.5'/>
+                  <span>{destination}</span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                {renderStars(rating)}
+                <span className="text-xs text-muted-foreground font-medium">{rating.toFixed(1)}</span>
+              </div>
+              <div className="text-2xl font-bold text-primary">
+                ${price}
+              </div>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              {renderStars(rating)}
-              <span className="text-xs text-muted-foreground font-medium">{rating.toFixed(1)}</span>
-            </div>
-            <div className="text-2xl font-bold text-primary">
-              ${price}
-            </div>
-          </div>
-          <Button asChild variant="link" className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full px-0 text-primary">
-            <Link href={`/packages?title=${encodeURIComponent(title)}`}>Book Now &rarr;</Link>
-          </Button>
-        </CardFooter>
-      </div>
-    </Card>
+            <Button variant="link" className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full px-0 text-primary" onClick={() => setBookingOpen(true)}>
+              Book Now &rarr;
+            </Button>
+          </CardFooter>
+        </div>
+      </Card>
+      {isBookingOpen && (
+         <BookingDialog 
+            tourPackage={{ id, title }}
+            isOpen={isBookingOpen}
+            onOpenChange={setBookingOpen}
+         />
+      )}
+    </>
   );
 }
