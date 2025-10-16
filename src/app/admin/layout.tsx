@@ -3,7 +3,25 @@
 import { useUser } from '@/firebase';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { Sidebar, SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import {
+  Sidebar,
+  SidebarProvider,
+  SidebarInset,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarTrigger,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupLabel,
+} from '@/components/ui/sidebar';
+import Link from 'next/link';
+import { LayoutDashboard, Package, LogOut } from 'lucide-react';
+import { useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { Button } from '@/components/ui/button';
 
 export default function AdminLayout({
   children,
@@ -13,14 +31,11 @@ export default function AdminLayout({
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
+  const auth = useAuth();
 
   useEffect(() => {
-    // When the initial user check is done...
     if (!isUserLoading) {
-      // ...and there's no user...
       if (!user) {
-        // ...redirect to login, but only if we are not already on the login page
-        // to prevent a redirect loop.
         if (pathname !== '/admin/login') {
           router.push('/admin/login');
         }
@@ -28,7 +43,13 @@ export default function AdminLayout({
     }
   }, [user, isUserLoading, router, pathname]);
 
-  // While checking for the user, show a global loading screen.
+  const handleLogout = async () => {
+    if (auth) {
+      await signOut(auth);
+      router.push('/admin/login');
+    }
+  };
+
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -37,29 +58,66 @@ export default function AdminLayout({
     );
   }
 
-  // If the user is NOT logged in and we are ON the login page,
-  // we should render the children, which is the LoginPage component.
   if (!user && pathname === '/admin/login') {
     return <>{children}</>;
   }
 
-  // If the user is NOT logged in and we are NOT on the login page,
-  // show a loading/redirecting message while the useEffect redirects.
   if (!user) {
     return (
-       <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen">
         <p>Redirecting to login...</p>
       </div>
     );
   }
-  
-  // If we reach here, the user is authenticated, so render the full dashboard layout.
+
   return (
     <SidebarProvider>
       <Sidebar>
-        {/* Sidebar content will go here */}
+        <SidebarHeader>
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
+          </SidebarGroup>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/admin/dashboard'}
+              >
+                <Link href="/admin/dashboard">
+                  <LayoutDashboard />
+                  Dashboard
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/admin/packages')}
+              >
+                <Link href="/admin/packages">
+                  <Package />
+                  Kelola Paket
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+        <SidebarFooter>
+            <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
+                <LogOut size={16} />
+                <span>Logout</span>
+            </Button>
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
+          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
+              <SidebarTrigger className="md:hidden"/>
+              <div className="flex-1">
+                  {/* Header content can go here */}
+              </div>
+          </header>
         {children}
       </SidebarInset>
     </SidebarProvider>
