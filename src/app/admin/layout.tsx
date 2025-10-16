@@ -18,7 +18,7 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { LayoutDashboard, Package, LogOut, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Users } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -108,6 +108,17 @@ export default function AdminLayout({
                 <Link href="/admin/packages">
                   <Package />
                   Kelola Paket
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/admin/leads')}
+              >
+                <Link href="/admin/leads">
+                  <Users />
+                  Leads
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
