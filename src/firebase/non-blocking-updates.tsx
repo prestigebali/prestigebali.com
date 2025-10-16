@@ -2,10 +2,8 @@
     
 import {
   setDoc,
-  addDoc,
   updateDoc,
   deleteDoc,
-  CollectionReference,
   DocumentReference,
   SetOptions,
 } from 'firebase/firestore';
@@ -29,26 +27,6 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
   })
   // Execution continues immediately
 }
-
-
-/**
- * Initiates an addDoc operation for a collection reference.
- * Does NOT await the write operation internally.
- */
-export function addDocumentNonBlocking(colRef: CollectionReference, data: any) {
-  addDoc(colRef, data)
-    .catch(error => {
-      errorEmitter.emit(
-        'permission-error',
-        new FirestorePermissionError({
-          path: colRef.path,
-          operation: 'create',
-          requestResourceData: data,
-        })
-      )
-    });
-}
-
 
 /**
  * Initiates an updateDoc operation for a document reference.

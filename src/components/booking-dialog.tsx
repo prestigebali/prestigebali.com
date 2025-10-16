@@ -31,8 +31,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { addDocumentNonBlocking, useFirestore } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 import { Mail, MessageCircle } from 'lucide-react';
 
 interface BookingDialogProps {
@@ -67,7 +67,15 @@ export function BookingDialog({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof bookingSchema>) => {
+  const onSubmit = async (values: z.infer<typeof bookingSchema>) => {
+    if (!firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Database connection is not available.',
+      });
+      return;
+    }
     setIsSubmitting(true);
     try {
       const bookingData = {
@@ -78,7 +86,7 @@ export function BookingDialog({
       };
       
       const bookingsCol = collection(firestore, 'bookings');
-      addDocumentNonBlocking(bookingsCol, bookingData);
+      await addDoc(bookingsCol, bookingData);
 
       toast({
         title: 'Booking Submitted!',
