@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from '@/components/ui/badge';
 import { collection, deleteDoc, doc } from 'firebase/firestore';
+import Link from 'next/link';
 
 export default function PackagesDashboardPage() {
   const firestore = useFirestore();
@@ -52,8 +53,10 @@ export default function PackagesDashboardPage() {
             <p className="text-muted-foreground">Tambah, edit, atau hapus paket wisata.</p>
         </div>
         <div className="flex gap-2">
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Tambah Paket Baru
+          <Button asChild>
+            <Link href="/admin/packages/new">
+              <PlusCircle className="mr-2 h-4 w-4" /> Tambah Paket Baru
+            </Link>
           </Button>
         </div>
       </div>
@@ -83,13 +86,15 @@ export default function PackagesDashboardPage() {
               {!isLoading && packages?.map((pkg) => (
                 <TableRow key={pkg.id}>
                   <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt={pkg.title}
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src={pkg.image.imageUrl}
-                      width="64"
-                    />
+                    {pkg.image?.imageUrl && (
+                      <Image
+                        alt={pkg.title}
+                        className="aspect-square rounded-md object-cover"
+                        height="64"
+                        src={pkg.image.imageUrl}
+                        width="64"
+                      />
+                    )}
                   </TableCell>
                   <TableCell className="font-medium">{pkg.title}</TableCell>
                   <TableCell>
