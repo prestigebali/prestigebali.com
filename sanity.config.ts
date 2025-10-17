@@ -1,4 +1,3 @@
-// Ganti 'your-project-id' dan 'your-dataset-name' dengan kredensial Sanity Anda
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
