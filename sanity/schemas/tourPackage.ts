@@ -3,13 +3,13 @@ import {Package as PackageIcon} from 'lucide-react'
 
 export default defineType({
   name: 'tourPackage',
-  title: 'Paket Tur',
+  title: 'Tour Package',
   type: 'document',
   icon: PackageIcon,
   fields: [
     defineField({
       name: 'title',
-      title: 'Nama Paket',
+      title: 'Package Name',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -25,39 +25,39 @@ export default defineType({
     }),
     defineField({
       name: 'destination',
-      title: 'Destinasi',
+      title: 'Destination',
       type: 'reference',
       to: [{type: 'destination'}],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',
-      title: 'Deskripsi Paket',
+      title: 'Package Description',
       type: 'text',
     }),
     defineField({
       name: 'price',
-      title: 'Harga (USD)',
+      title: 'Price (USD)',
       type: 'number',
       validation: (Rule) => Rule.required().positive(),
     }),
     defineField({
       name: 'duration',
-      title: 'Durasi',
+      title: 'Duration',
       type: 'string',
-      description: "Contoh: '7 Hari' atau '3 Hari 2 Malam'",
+      description: "Example: '7 Days' or '3 Days 2 Nights'",
     }),
     defineField({
       name: 'rating',
       title: 'Rating',
       type: 'number',
-      description: 'Nilai antara 1 dan 5',
+      description: 'A number between 1 and 5',
       validation: (Rule) => Rule.min(1).max(5),
       initialValue: 4.5,
     }),
     defineField({
       name: 'category',
-      title: 'Kategori Pengalaman',
+      title: 'Experience Category',
       type: 'string',
       options: {
         list: [
@@ -71,7 +71,7 @@ export default defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Gambar Paket',
+      title: 'Package Image',
       type: 'image',
       options: {
         hotspot: true,
