@@ -1,8 +1,0 @@
-[
-  {
-    "origin": ["https://9000-firebase-studio-1760512916270.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev"],
-    "method": ["GET", "PUT", "POST", "DELETE"],
-    "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin"]
-  }
-]
