@@ -78,15 +78,11 @@ export function TourCard({ id, image, title, description, price, rating, destina
           </CardFooter>
         </div>
       </Card>
-      {isBookingOpen && (
-         <BookingDialog 
-            tourPackage={{ id, title }}
-            isOpen={isBookingOpen}
-            onOpenChange={setBookingOpen}
-         />
-      )}
+      <BookingDialog 
+          tourPackage={{ id, title }}
+          isOpen={isBookingOpen}
+          onOpenChange={setBookingOpen}
+      />
     </>
   );
 }
-
-    
