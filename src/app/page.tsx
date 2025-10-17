@@ -85,19 +85,21 @@ function HeroSection() {
   };
 
   const youTubeEmbedUrl = heroSettings?.youtubeVideoUrl ? getYouTubeEmbedUrl(heroSettings.youtubeVideoUrl) : null;
+  const backgroundVideoAssetUrl = heroSettings?.backgroundVideo?.asset?._ref ? urlFor(heroSettings.backgroundVideo.asset).url() : null;
+
 
   return (
     <section className="relative h-screen w-full flex items-center justify-center text-center text-primary-foreground overflow-hidden">
-      {heroSettings?.backgroundType === 'image' && heroSettings.backgroundImage && (
+      {heroSettings?.backgroundType === 'Image' && heroSettings.backgroundImage && (
         <Image
           src={urlFor(heroSettings.backgroundImage).url()}
           alt={heroSettings.headline || 'Travel background'}
           fill
-          className="object-cover"
+          className="object-cover brightness-75"
           priority
         />
       )}
-      {heroSettings?.backgroundType === 'video' && youTubeEmbedUrl && (
+      {heroSettings?.backgroundType === 'Video' && youTubeEmbedUrl && (
         <iframe
           src={youTubeEmbedUrl}
           className="absolute top-1/2 left-1/2 w-[110vw] h-[110vh] min-w-[177.77vh] min-h-[56.25vw] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -106,15 +108,16 @@ function HeroSection() {
           allowFullScreen
         ></iframe>
       )}
-      {heroSettings?.backgroundType === 'video' && heroSettings.backgroundVideoUrl && !youTubeEmbedUrl && (
+       {heroSettings?.backgroundType === 'Video' && !youTubeEmbedUrl && (backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl) && (
          <video
             autoPlay
             loop
             muted
             playsInline
             className="absolute top-0 left-0 w-full h-full object-cover"
+            key={backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl}
          >
-           <source src={heroSettings.backgroundVideoUrl} type="video/mp4" />
+           <source src={backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl} type="video/mp4" />
            Your browser does not support the video tag.
          </video>
       )}

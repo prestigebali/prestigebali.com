@@ -57,6 +57,9 @@ export default defineType({
       name: 'backgroundVideo',
       title: 'Background Video File',
       type: 'file',
+      options: {
+        accept: 'video/mp4'
+      },
       description: 'Upload a video file (e.g., MP4). This has priority over a URL if both are provided.',
       hidden: ({document}) => document?.backgroundType !== 'Video',
     }),
