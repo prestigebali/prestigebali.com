@@ -69,7 +69,7 @@ export function BookingDialog({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof bookingSchema>) => {
+  const onSubmit = (values: z.infer<typeof bookingSchema>) => {
     if (!firestore) {
       toast({
         variant: 'destructive',
@@ -79,32 +79,38 @@ export function BookingDialog({
       return;
     }
     setIsSubmitting(true);
-    try {
-      const bookingData = {
-        ...values,
-        tourPackageId: tourPackage.id,
-        tourPackageName: tourPackage.title,
-        bookingDate: new Date().toISOString(),
-      };
-      
-      const bookingsCol = collection(firestore, 'bookings');
-      await addDoc(bookingsCol, bookingData);
-
-      onOpenChange(false); // Close the form dialog FIRST
-      setShowConfirmation(true); // THEN show the confirmation dialog
-      form.reset();
-
-    } catch (error) {
-      console.error('Error submitting booking:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: 'There was a problem with your request. Please try again.',
+    
+    const bookingData = {
+      ...values,
+      tourPackageId: tourPackage.id,
+      tourPackageName: tourPackage.title,
+      bookingDate: new Date().toISOString(),
+    };
+    
+    const bookingsCol = collection(firestore, 'bookings');
+    
+    // Use .then() and .catch() instead of async/await to avoid blocking
+    addDoc(bookingsCol, bookingData)
+      .then(() => {
+        // Success case
+        onOpenChange(false); // Close the form dialog FIRST
+        setShowConfirmation(true); // THEN show the confirmation dialog
+        form.reset();
+      })
+      .catch((error) => {
+        // Error case
+        console.error('Error submitting booking:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem with your request. Please try again.',
+        });
+        onOpenChange(false); // Also close on error
+      })
+      .finally(() => {
+        // This will run for both success and error
+        setIsSubmitting(false);
       });
-      onOpenChange(false); // Also close on error
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleConfirmationClose = () => {
