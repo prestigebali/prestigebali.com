@@ -24,8 +24,9 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
-import { client, getSanityWriteClient } from '@/lib/sanity-client';
+import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
+import { deleteBooking } from '@/lib/sanity-actions';
 
 interface Booking extends SanityDocument {
     name: string;
@@ -76,31 +77,20 @@ export default function LeadsPage() {
         return;
     }
 
-    const writeClient = getSanityWriteClient();
-    if (!writeClient) {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Sanity write client is not configured. Cannot delete lead.',
-        });
-        return;
-    }
+    const result = await deleteBooking(bookingId);
 
-    try {
-        await writeClient.delete(bookingId);
-        toast({
-            title: 'Lead Deleted',
-            description: 'The booking lead has been successfully deleted.',
-        });
-        // Refetch bookings to update the list
-        fetchBookings();
-    } catch (error) {
-        console.error('Failed to delete booking:', error);
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Failed to delete the booking lead.',
-        });
+    if (result.success) {
+      toast({
+          title: 'Lead Deleted',
+          description: 'The booking lead has been successfully deleted.',
+      });
+      fetchBookings(); // Refetch bookings to update the list
+    } else {
+      toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.message || 'Failed to delete the booking lead.',
+      });
     }
   };
 

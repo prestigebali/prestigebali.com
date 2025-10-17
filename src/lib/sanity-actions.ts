@@ -37,3 +37,19 @@ export async function createBooking(bookingData: BookingData) {
         return { success: false, message: 'An unexpected error occurred while creating the booking.' };
     }
 }
+
+export async function deleteBooking(bookingId: string) {
+    const writeClient = getSanityWriteClient();
+
+    if (!writeClient) {
+        return { success: false, message: 'Sanity write client is not configured. Cannot delete lead.' };
+    }
+
+    try {
+        await writeClient.delete(bookingId);
+        return { success: true, message: 'Booking deleted successfully.' };
+    } catch (error) {
+        console.error('Failed to delete booking from Sanity:', error);
+        return { success: false, message: 'An unexpected error occurred while deleting the booking.' };
+    }
+}
