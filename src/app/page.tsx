@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { client, urlFor } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { cn } from '@/lib/utils';
 
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
 
@@ -87,6 +88,7 @@ function HeroSection() {
   const youTubeEmbedUrl = heroSettings?.youtubeVideoUrl ? getYouTubeEmbedUrl(heroSettings.youtubeVideoUrl) : null;
   const backgroundVideoAssetUrl = heroSettings?.backgroundVideo?.asset?._ref ? urlFor(heroSettings.backgroundVideo.asset).url() : null;
 
+  const brightnessClass = heroSettings?.imageBrightness || 'brightness-75';
 
   return (
     <section className="relative h-screen w-full flex items-center justify-center text-center text-primary-foreground overflow-hidden">
@@ -95,7 +97,7 @@ function HeroSection() {
           src={urlFor(heroSettings.backgroundImage).url()}
           alt={heroSettings.headline || 'Travel background'}
           fill
-          className="object-cover brightness-75"
+          className={cn("object-cover", brightnessClass)}
           priority
         />
       )}

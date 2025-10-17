@@ -53,6 +53,22 @@ export default defineType({
       description: 'Upload or select an image for the background.',
       hidden: ({document}) => document?.backgroundType !== 'Image',
     }),
+     defineField({
+      name: 'imageBrightness',
+      title: 'Image Brightness',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Normal (100%)', value: 'brightness-100'},
+          {title: 'Dim (75%)', value: 'brightness-75'},
+          {title: 'Dark (50%)', value: 'brightness-50'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'brightness-75',
+      description: 'Adjust the brightness of the background image to ensure text is readable.',
+      hidden: ({document}) => document?.backgroundType !== 'Image',
+    }),
     defineField({
       name: 'backgroundVideo',
       title: 'Background Video File',
