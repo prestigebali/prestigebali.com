@@ -16,8 +16,8 @@
           "description": "Primary contact phone number."
         },
         "address": {
-            "type": "string",
-            "description": "The physical address of the business."
+          "type": "string",
+          "description": "The physical address of the business."
         },
         "facebookUrl": {
           "type": "string",
@@ -33,6 +33,23 @@
           "type": "string",
           "description": "URL for the company's Instagram profile.",
           "format": "uri"
+        },
+        "bankName": {
+          "type": "string",
+          "description": "Official bank name for payments."
+        },
+        "bankAccountHolder": {
+          "type": "string",
+          "description": "Name of the bank account holder."
+        },
+        "bankAccountNumber": {
+          "type": "string",
+          "description": "Official bank account number."
+        },
+        "paypalEmail": {
+          "type": "string",
+          "description": "Email address for PayPal payments.",
+          "format": "email"
         }
       },
       "required": [

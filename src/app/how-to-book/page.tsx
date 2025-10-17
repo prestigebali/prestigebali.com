@@ -6,8 +6,22 @@ import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Land
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { client } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
+import { useState, useEffect } from 'react';
 
 export default function HowToBookPage() {
+  const [settings, setSettings] = useState<SanityDocument | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const query = `*[_type == "siteSettings" && _id == "siteSettings"][0]`;
+      const data = await client.fetch(query);
+      setSettings(data);
+    };
+    fetchSettings();
+  }, []);
+  
   const steps = [
     {
       icon: <Search className="w-12 h-12 text-primary" />,
@@ -94,9 +108,9 @@ export default function HowToBookPage() {
                             <CardTitle>Bank Transfer</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3 text-muted-foreground text-lg">
-                            <p><strong className="text-foreground font-medium">Bank Name:</strong> Bank Central Asia (BCA)</p>
-                            <p><strong className="text-foreground font-medium">Account Holder:</strong> PT. PRESTIGE BALI</p>
-                            <p><strong className="text-foreground font-medium">Account Number:</strong> 123-456-7890 (IDR)</p>
+                            <p><strong className="text-foreground font-medium">Bank Name:</strong> {settings?.bankName || 'Not configured'}</p>
+                            <p><strong className="text-foreground font-medium">Account Holder:</strong> {settings?.bankAccountHolder || 'Not configured'}</p>
+                            <p><strong className="text-foreground font-medium">Account Number:</strong> {settings?.bankAccountNumber || 'Not configured'}</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -106,7 +120,7 @@ export default function HowToBookPage() {
                         </CardHeader>
                         <CardContent className="space-y-3 text-muted-foreground text-lg">
                             <p><strong className="text-foreground font-medium">PayPal Email:</strong></p>
-                            <p>payment@prestigebali.com</p>
+                            <p>{settings?.paypalEmail || 'Not configured'}</p>
                             <p className="text-sm">Please ensure to cover any transaction fees.</p>
                         </CardContent>
                     </Card>
