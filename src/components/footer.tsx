@@ -62,6 +62,18 @@ export function Footer() {
                 <li>{settings?.phoneNumber || '+62 877 6416 1803'}</li>
                 <li>{settings?.address || 'Jl. Sunset Road No.8, Kuta, Bali'}</li>
              </ul>
+             {socialLinks.length > 0 && (
+                <div className="mt-6">
+                    <h4 className="font-semibold text-white mb-4">Follow Us</h4>
+                    <div className="flex space-x-4">
+                    {socialLinks.map(social => (
+                        <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
+                        <social.icon className="w-5 h-5" />
+                        </a>
+                    ))}
+                    </div>
+                </div>
+              )}
           </div>
            <div className="lg:col-span-2">
             <h4 className="font-semibold text-white mb-4">Official Payment</h4>
@@ -76,18 +88,6 @@ export function Footer() {
                   <div className='flex gap-2 items-center font-medium text-white'><Wallet className='w-4 h-4'/> PayPal</div>
                   <p>{settings?.paypalEmail || 'Not configured'}</p>
                 </div>
-             </div>
-             <div className="mt-6">
-                <h4 className="font-semibold text-white mb-4">Follow Us</h4>
-                {socialLinks.length > 0 && (
-                    <div className="flex space-x-4">
-                    {socialLinks.map(social => (
-                        <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
-                        <social.icon className="w-5 h-5" />
-                        </a>
-                    ))}
-                    </div>
-                )}
              </div>
           </div>
         </div>
