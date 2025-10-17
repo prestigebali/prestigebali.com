@@ -1,4 +1,4 @@
-'use client';
+'use server';
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -6,17 +6,11 @@ import { Header } from '@/components/header';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Footer } from '@/components/footer';
-import { useState, useMemo, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { tourCategories as staticTourCategories } from '@/lib/packages';
 import Link from 'next/link';
 import { client, urlFor } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Building, Heart, Mountain, Users, Waves } from 'lucide-react';
-
-const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
 
 const reviewData = [
   {
@@ -25,7 +19,7 @@ const reviewData = [
     handle: "@emilyc",
     review: "Our honeymoon in Bali was a dream, all thanks to Prestige Bali. Every detail was perfect, from the luxury villa to the private tours. Truly seamless service!",
     rating: 5,
-    avatar: reviews[0]
+    avatarUrl: "https://picsum.photos/seed/avatar1/100/100"
   },
   {
     id: "review-2",
@@ -33,7 +27,7 @@ const reviewData = [
     handle: "@davidchen",
     review: "The family trip to Lombok and Labuan Bajo exceeded all expectations. The team was fantastic, and the experiences were unforgettable. Highly recommended for a premium holiday.",
     rating: 5,
-    avatar: reviews[1]
+    avatarUrl: "https://picsum.photos/seed/avatar2/100/100"
   },
   {
     id: "review-3",
@@ -41,11 +35,12 @@ const reviewData = [
     handle: "@sarahw",
     review: "A truly authentic and luxurious adventure in Sumbawa. Prestige Bali crafted a journey that felt both indulgent and connected to the local culture. Exceptional!",
     rating: 5,
-    avatar: reviews[2]
+    avatarUrl: "https://picsum.photos/seed/avatar3/100/100"
   }
 ];
 
-export default function Home() {
+
+export default async function Home() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
@@ -61,17 +56,8 @@ export default function Home() {
   );
 }
 
-function HeroSection() {
-  const [heroSettings, setHeroSettings] = useState<SanityDocument | null>(null);
-
-  useEffect(() => {
-    const fetchHeroSettings = async () => {
-      const query = `*[_type == "heroSettings" && _id == "heroSettings"][0]`;
-      const data = await client.fetch(query);
-      setHeroSettings(data);
-    };
-    fetchHeroSettings();
-  }, []);
+async function HeroSection() {
+  const heroSettings = await client.fetch<SanityDocument>(`*[_type == "heroSettings" && _id == "heroSettings"][0]`);
 
   const getYouTubeEmbedUrl = (url: string) => {
     if (!url) return null;
@@ -88,7 +74,6 @@ function HeroSection() {
 
   const youTubeEmbedUrl = heroSettings?.youtubeVideoUrl ? getYouTubeEmbedUrl(heroSettings.youtubeVideoUrl) : null;
   const backgroundVideoAssetUrl = heroSettings?.backgroundVideo?.asset?._ref ? urlFor(heroSettings.backgroundVideo.asset).url() : null;
-
   const brightnessClass = heroSettings?.imageBrightness || 'brightness-75';
 
   return (
@@ -108,7 +93,6 @@ function HeroSection() {
           className="absolute top-1/2 left-1/2 w-[110vw] h-[110vh] min-w-[177.77vh] min-h-[56.25vw] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           frameBorder="0"
           allow="autoplay; encrypted-media"
-          allowFullScreen
         ></iframe>
       )}
        {heroSettings?.backgroundType === 'Video' && !youTubeEmbedUrl && (backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl) && (
@@ -145,22 +129,13 @@ function HeroSection() {
   );
 }
 
-function DestinationsSection() {
-  const [destinations, setDestinations] = useState<SanityDocument[]>([]);
-
-  useEffect(() => {
-    const fetchDestinations = async () => {
-      const query = `*[_type == "destination"]{
-        _id,
-        name,
-        slug,
-        image
-      }`;
-      const data = await client.fetch(query);
-      setDestinations(data);
-    };
-    fetchDestinations();
-  }, []);
+async function DestinationsSection() {
+  const destinations = await client.fetch<SanityDocument[]>(`*[_type == "destination"]{
+    _id,
+    name,
+    slug,
+    image
+  }`);
 
   return (
     <section id="destinations" className="py-16 md:py-24 bg-background">
@@ -199,116 +174,92 @@ function DestinationsSection() {
 }
 
 function ToursSection() {
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [allPackages, setAllPackages] = useState<SanityDocument[]>([]);
-  const [tourCategories, setTourCategories] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchPackages = async () => {
-      const query = `*[_type == "tourPackage"]{
-        _id,
-        title,
-        description,
-        price,
-        rating,
-        image,
-        category,
-        "destination": destination->name
-      }`;
-      const data = await client.fetch(query);
-      setAllPackages(data);
-    };
-    const fetchCategories = async () => {
-      const query = `*[_type == "experience"].title`;
-      const data = await client.fetch(query);
-      setTourCategories(data);
-    };
-    fetchPackages();
-    fetchCategories();
-  }, []);
-
-  const filteredTours = useMemo(() => {
-    if (!allPackages) return [];
-    if (activeFilter === "All") {
-      return allPackages.slice(0, 6);
-    }
-    return allPackages.filter(tour => tour.category === activeFilter);
-  }, [allPackages, activeFilter]);
-
   return (
     <section id="tours" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Exclusive Packages</p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
-              Find Your Perfect Journey
-            </h2>
+          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Exclusive Packages</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
+            Find Your Perfect Journey
+          </h2>
         </div>
-
-        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
-          {["All", ...tourCategories].map(category => (
-            <Button
-              key={category}
-              variant={activeFilter === category ? "default" : "outline"}
-              onClick={() => setActiveFilter(category)}
-              className="rounded-full transition-all duration-300"
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredTours.map((tour) => (
-            <TourCard
-              key={tour._id}
-              id={tour._id}
-              image={tour.image}
-              title={tour.title}
-              description={tour.description}
-              price={tour.price}
-              rating={tour.rating}
-              destination={tour.destination}
-              category={tour.category}
-            />
-          ))}
-        </div>
-        <div className="text-center mt-12">
-          <Button asChild size="lg" variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            <Link href="/packages">View All Packages</Link>
-          </Button>
-        </div>
+        <ToursContent />
       </div>
     </section>
   );
 }
 
-const iconMap: { [key: string]: React.ElementType } = {
-  Heart,
-  Users,
-  Mountain,
-  Waves,
-  Building,
-};
+async function ToursContent() {
+  const allPackages = await client.fetch<SanityDocument[]>(`*[_type == "tourPackage"]{
+      _id,
+      "slug": slug.current,
+      title,
+      description,
+      price,
+      rating,
+      image,
+      category,
+      "destination": destination->name
+    }`);
+  
+  const tourCategories = await client.fetch<string[]>(`*[_type == "experience"].title`);
 
-function ExperiencesSection() {
-  const [experiences, setExperiences] = useState<SanityDocument[]>([]);
+  const packagesToShow = allPackages.slice(0, 6);
 
-  useEffect(() => {
-    const fetchExperiences = async () => {
-      const query = `*[_type == "experience"]{
-        _id,
-        title,
-        description,
-        image,
-        icon
-      }`;
-      const data = await client.fetch(query);
-      setExperiences(data);
-    };
-    fetchExperiences();
-  }, []);
+  return (
+    <>
+      <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
+        <Button
+          variant={"default"}
+          className="rounded-full transition-all duration-300"
+        >
+          <Link href="/packages">All</Link>
+        </Button>
+        {tourCategories.map(category => (
+          <Button
+            key={category}
+            variant={"outline"}
+            className="rounded-full transition-all duration-300"
+          >
+            <Link href={`/packages?category=${encodeURIComponent(category)}`}>{category}</Link>
+          </Button>
+        ))}
+      </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {packagesToShow.map((tour) => (
+          <TourCard
+            key={tour._id}
+            id={tour._id}
+            slug={tour.slug}
+            image={tour.image}
+            title={tour.title}
+            description={tour.description}
+            price={tour.price}
+            rating={tour.rating}
+            destination={tour.destination}
+            category={tour.category}
+          />
+        ))}
+      </div>
+      <div className="text-center mt-12">
+        <Button asChild size="lg" variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+          <Link href="/packages">View All Packages</Link>
+        </Button>
+      </div>
+    </>
+  );
+}
+
+async function ExperiencesSection() {
+  const experiences = await client.fetch<SanityDocument[]>(`*[_type == "experience"]{
+    _id,
+    title,
+    description,
+    image,
+    icon
+  }`);
+  
   return (
     <section id="experiences" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -347,7 +298,16 @@ function ExperiencesSection() {
   );
 }
 
-function ReviewsSection() {
+async function ReviewsSection() {
+  const reviews = await client.fetch<SanityDocument[]>(`*[_type == "review"]{
+    _id,
+    name,
+    handle,
+    rating,
+    comment,
+    avatar
+  }`);
+
   return (
     <section id="reviews" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -360,19 +320,19 @@ function ReviewsSection() {
         <Carousel
           opts={{
             align: "start",
-            loop: true,
+            loop: reviews.length > 2,
           }}
           className="w-full max-w-6xl mx-auto"
         >
           <CarouselContent className="-ml-4">
-            {reviewData.map((review) => (
-              <CarouselItem key={review.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+            {reviews.map((review) => (
+              <CarouselItem key={review._id} className="pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-1 h-full">
                   <ReviewCard
-                    avatar={review.avatar}
+                    avatarUrl={review.avatar ? urlFor(review.avatar).url() : "https://picsum.photos/seed/avatar/100/100"}
                     name={review.name}
                     handle={review.handle}
-                    review={review.review}
+                    review={review.comment}
                     rating={review.rating}
                     className="h-full"
                   />
@@ -380,10 +340,12 @@ function ReviewsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
-            <CarouselPrevious className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
-            <CarouselNext className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
-          </div>
+           {reviews.length > 1 && (
+            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
+              <CarouselPrevious className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
+              <CarouselNext className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
+            </div>
+           )}
         </Carousel>
       </div>
     </section>

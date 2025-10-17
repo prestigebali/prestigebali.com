@@ -1,12 +1,11 @@
 import Image from 'next/image';
 import { Star, StarHalf, Quote } from 'lucide-react';
-import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 interface ReviewCardProps {
-  avatar: ImagePlaceholder;
+  avatarUrl: string;
   name: string;
   handle: string;
   review: string;
@@ -27,7 +26,7 @@ const renderStars = (rating: number) => {
   );
 };
 
-export function ReviewCard({ avatar, name, handle, review, rating, className }: ReviewCardProps) {
+export function ReviewCard({ avatarUrl, name, handle, review, rating, className }: ReviewCardProps) {
   return (
     <Card className={cn('flex flex-col bg-card p-6 transition-all duration-300 border shadow-sm hover:shadow-xl hover:-translate-y-1', className)}>
       <CardContent className="flex-1 p-0 flex flex-col">
@@ -35,8 +34,8 @@ export function ReviewCard({ avatar, name, handle, review, rating, className }: 
         <p className="text-muted-foreground leading-relaxed mb-6 flex-grow">"{review}"</p>
         <div className="flex items-center gap-4 pt-4 border-t">
           <Avatar className="w-12 h-12">
-            <AvatarImage src={avatar.imageUrl} alt={name} data-ai-hint={avatar.imageHint} />
-            <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={avatarUrl} alt={name} />
+            <AvatarFallback>{name ? name.charAt(0) : 'A'}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <p className="font-semibold text-foreground font-headline">{name}</p>

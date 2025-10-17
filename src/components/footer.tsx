@@ -1,23 +1,13 @@
-'use client';
+'use server';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Instagram, Landmark, Wallet } from 'lucide-react';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
-import { useState, useEffect } from 'react';
 
-export function Footer() {
-  const [settings, setSettings] = useState<SanityDocument | null>(null);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const query = `*[_type == "siteSettings" && _id == "siteSettings"][0]`;
-      const data = await client.fetch(query);
-      setSettings(data);
-    };
-    fetchSettings();
-  }, []);
+export async function Footer() {
+  const settings = await client.fetch<SanityDocument>(`*[_type == "siteSettings" && _id == "siteSettings"][0]`);
   
   const socialLinks = [
     { name: 'Facebook', url: settings?.facebookUrl, icon: Facebook },

@@ -9,9 +9,11 @@ import { Badge } from './ui/badge';
 import React from 'react';
 import { BookingDialog } from './booking-dialog';
 import { urlFor } from '@/lib/sanity';
+import Link from 'next/link';
 
 interface TourCardProps {
   id: string;
+  slug?: string;
   image: any; // Sanity image object
   title: string;
   description: string;
@@ -35,28 +37,41 @@ const renderStars = (rating: number) => {
   );
 };
 
-export function TourCard({ id, image, title, description, price, rating, destination, category, className }: TourCardProps) {
+export function TourCard({ id, slug, image, title, description, price, rating, destination, category, className }: TourCardProps) {
   const [isBookingOpen, setBookingOpen] = React.useState(false);
   
   const imageUrl = image ? urlFor(image).width(600).height(400).url() : '/placeholder.png';
 
+  const CardContentLink = ({children}: {children: React.ReactNode}) => {
+    if (slug) {
+      return <Link href={`/packages/${slug}`}>{children}</Link>
+    }
+    return <>{children}</>
+  }
+
   return (
     <>
       <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
-        <div className="relative aspect-[4/3] overflow-hidden">
-          {imageUrl && (
-            <Image
-              src={imageUrl}
-              alt={title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          )}
-          <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
-        </div>
+        <CardContentLink>
+          <div className="relative aspect-[4/3] overflow-hidden">
+            {imageUrl && (
+              <Image
+                src={imageUrl}
+                alt={title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            )}
+            <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
+          </div>
+        </CardContentLink>
         <div className="flex flex-col flex-grow">
           <CardHeader className="p-6">
-            <CardTitle className="text-xl mb-2 leading-tight font-bold">{title}</CardTitle>
+            <CardTitle className="text-xl mb-2 leading-tight font-bold">
+               <CardContentLink>
+                  {title}
+               </CardContentLink>
+            </CardTitle>
             <CardDescription className="text-muted-foreground line-clamp-2">{description}</CardDescription>
           </CardHeader>
           <CardFooter className="p-6 pt-0 mt-auto flex justify-between items-end">
