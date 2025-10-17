@@ -65,7 +65,7 @@ export function Footer() {
              <ul className="space-y-2 text-sm text-gray-400">
                 <li>{settings?.email || 'sales@prestigebali.com'}</li>
                 <li>{settings?.phoneNumber || '+62 877 6416 1803'}</li>
-                <li>{settings?.address || 'Jl. Sunset Road No.8, Kuta, Bali'}</li>
+                <li>Jl. Sunset Road No.8, Kuta, Bali</li>
              </ul>
           </div>
           <div className="md:col-span-1">
