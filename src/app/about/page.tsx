@@ -1,4 +1,4 @@
-'use client';
+'use server';
 
 import Image from 'next/image';
 import { Header } from '@/components/header';
@@ -8,7 +8,6 @@ import { Building, Heart, Mountain, Users, Waves } from 'lucide-react';
 import Link from 'next/link';
 import { client, urlFor } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
-import { useState, useEffect } from 'react';
 
 const aboutHeroImage = PlaceHolderImages.find(p => p.id === 'about-hero');
 
@@ -21,7 +20,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 
-export default function AboutPage() {
+export default async function AboutPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
@@ -60,17 +59,8 @@ function AboutHeroSection() {
   );
 }
 
-function AboutContentSection() {
-  const [experienceTypes, setExperienceTypes] = useState<SanityDocument[]>([]);
-
-  useEffect(() => {
-    const fetchExperiences = async () => {
-      const query = `*[_type == "experience"] | order(title asc)`;
-      const data = await client.fetch(query);
-      setExperienceTypes(data);
-    };
-    fetchExperiences();
-  }, []);
+async function AboutContentSection() {
+  const experienceTypes = await client.fetch<SanityDocument[]>(`*[_type == "experience"] | order(title asc)`);
 
   return (
     <section className="py-16 md:py-24 bg-background">

@@ -1,4 +1,4 @@
-'use client';
+'use server';
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -8,19 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
-import { useState, useEffect } from 'react';
 
-export default function HowToBookPage() {
-  const [settings, setSettings] = useState<SanityDocument | null>(null);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const query = `*[_type == "siteSettings" && _id == "siteSettings"][0]`;
-      const data = await client.fetch(query);
-      setSettings(data);
-    };
-    fetchSettings();
-  }, []);
+export default async function HowToBookPage() {
+  const settings = await client.fetch<SanityDocument | null>(`*[_type == "siteSettings" && _id == "siteSettings"][0]`);
   
   const steps = [
     {
