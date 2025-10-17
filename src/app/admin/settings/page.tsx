@@ -19,7 +19,9 @@ import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { Facebook, Instagram, Mail, Phone, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, Twitter, Database } from 'lucide-react';
+import { migratePackagesToSanity } from '@/lib/seed-sanity';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const settingsSchema = z.object({
   email: z.string().email('Please enter a valid email.').default(''),
@@ -37,6 +39,7 @@ interface SiteSettings extends SettingsFormValues {
 
 export default function SettingsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMigrating, setIsMigrating] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
 
@@ -88,6 +91,31 @@ export default function SettingsPage() {
     }
   };
 
+  const handleMigration = async () => {
+    setIsMigrating(true);
+    toast({
+      title: 'Migration Started',
+      description: 'Starting to migrate package data to Sanity. This may take a moment...',
+    });
+
+    const result = await migratePackagesToSanity();
+
+    if (result.success) {
+      toast({
+        title: 'Migration Successful!',
+        description: 'Package data has been migrated to Sanity. Please verify the data in your Sanity Studio.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Migration Failed',
+        description: result.message || 'An unknown error occurred.',
+        duration: 9000,
+      });
+    }
+    setIsMigrating(false);
+  };
+
   if (isLoading) {
     return (
         <main className="flex-1 p-4 sm:p-6">
@@ -106,6 +134,25 @@ export default function SettingsPage() {
             <h1 className="text-3xl font-bold">Pengaturan Website</h1>
             <p className="text-muted-foreground">Perbarui informasi kontak dan tautan sosial media Anda di sini.</p>
         </div>
+        <Card className="mb-8">
+            <CardHeader>
+                <CardTitle>Migrasi Data</CardTitle>
+                <CardDescription>Pindahkan data dari aplikasi Anda ke Sanity CMS.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Alert>
+                  <Database className="h-4 w-4" />
+                  <AlertTitle>Migrate to Sanity</AlertTitle>
+                  <AlertDescription>
+                    Klik tombol di bawah ini untuk memigrasikan data paket wisata statis Anda ke Sanity. Ini adalah tindakan satu kali. Pastikan Anda telah menambahkan `SANITY_API_WRITE_TOKEN` Anda ke file `.env`.
+                  </AlertDescription>
+                </Alert>
+                <Button onClick={handleMigration} disabled={isMigrating} className="mt-4">
+                  {isMigrating ? 'Memigrasi...' : 'Migrasikan Data Paket ke Sanity'}
+                </Button>
+            </CardContent>
+        </Card>
+
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <Card>
@@ -207,7 +254,7 @@ export default function SettingsPage() {
             </Card>
 
             <div className="flex justify-end gap-2">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || isMigrating}>
                     {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </Button>
             </div>
