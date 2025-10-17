@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { MoreHorizontal } from 'lucide-react';
 import {
     DropdownMenu,
@@ -21,40 +20,87 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
+import { client, getSanityWriteClient } from '@/lib/sanity-client';
+import type { SanityDocument } from 'next-sanity';
 
-type Booking = {
-    id: string;
+interface Booking extends SanityDocument {
     name: string;
     email: string;
-    tourPackageName: string;
+    phoneNumber: string;
+    tourPackage: {
+        title: string;
+    };
     bookingDate: string;
 }
 
 export default function LeadsPage() {
-  const firestore = useFirestore();
   const { toast } = useToast();
-  
-  const bookingsCollection = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'bookings');
-  }, [firestore]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: bookings, isLoading } = useCollection<Booking>(bookingsCollection);
+  const fetchBookings = async () => {
+    setIsLoading(true);
+    const query = `*[_type == "booking"]{
+        _id,
+        name,
+        email,
+        phoneNumber,
+        bookingDate,
+        tourPackage->{title}
+    } | order(bookingDate desc)`;
+    try {
+        const data = await client.fetch(query);
+        setBookings(data);
+    } catch (error) {
+        console.error('Failed to fetch bookings from Sanity:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to fetch booking leads from CMS.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  };
 
-  const handleDelete = (bookingId: string) => {
-    if (firestore) {
-      // Removing confirm() to ensure delete is triggered directly.
-      const docRef = doc(firestore, 'bookings', bookingId);
-      deleteDocumentNonBlocking(docRef);
-      toast({
-        title: 'Lead Deletion Initiated',
-        description: 'The booking lead has been scheduled for deletion.',
-      });
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const handleDelete = async (bookingId: string) => {
+    if (!confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
+        return;
+    }
+
+    const writeClient = getSanityWriteClient();
+    if (!writeClient) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Sanity write client is not configured. Cannot delete lead.',
+        });
+        return;
+    }
+
+    try {
+        await writeClient.delete(bookingId);
+        toast({
+            title: 'Lead Deleted',
+            description: 'The booking lead has been successfully deleted.',
+        });
+        // Refetch bookings to update the list
+        fetchBookings();
+    } catch (error) {
+        console.error('Failed to delete booking:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to delete the booking lead.',
+        });
     }
   };
 
@@ -103,10 +149,10 @@ export default function LeadsPage() {
                 </TableRow>
               )}
               {!isLoading && bookings?.map((booking) => (
-                <TableRow key={booking.id}>
+                <TableRow key={booking._id}>
                   <TableCell className="font-medium">{booking.name}</TableCell>
                   <TableCell>{booking.email}</TableCell>
-                  <TableCell>{booking.tourPackageName}</TableCell>
+                  <TableCell>{booking.tourPackage?.title || 'N/A'}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {formatBookingDate(booking.bookingDate)}
                   </TableCell>
@@ -124,7 +170,7 @@ export default function LeadsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleDelete(booking.id)}>Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(booking._id)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

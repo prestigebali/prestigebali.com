@@ -31,9 +31,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore } from '@/firebase';
-import { collection, addDoc } from 'firebase/firestore';
 import { Mail, MessageCircle } from 'lucide-react';
+import { createBooking } from '@/lib/sanity-actions';
 
 interface BookingDialogProps {
   tourPackage: {
@@ -58,7 +57,6 @@ export function BookingDialog({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const firestore = useFirestore();
 
   const form = useForm({
     resolver: zodResolver(bookingSchema),
@@ -69,48 +67,34 @@ export function BookingDialog({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof bookingSchema>) => {
-    if (!firestore) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Database connection is not available.',
-      });
-      return;
-    }
+  const onSubmit = async (values: z.infer<typeof bookingSchema>) => {
     setIsSubmitting(true);
     
     const bookingData = {
       ...values,
       tourPackageId: tourPackage.id,
-      tourPackageName: tourPackage.title,
-      bookingDate: new Date().toISOString(),
     };
-    
-    const bookingsCol = collection(firestore, 'bookings');
-    
-    // Use .then() and .catch() instead of async/await to avoid blocking
-    addDoc(bookingsCol, bookingData)
-      .then(() => {
-        // Success case
-        onOpenChange(false); // Close the form dialog FIRST
-        setShowConfirmation(true); // THEN show the confirmation dialog
+
+    try {
+      const result = await createBooking(bookingData);
+      if (result.success) {
+        onOpenChange(false);
+        setShowConfirmation(true);
         form.reset();
-      })
-      .catch((error) => {
-        // Error case
-        console.error('Error submitting booking:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: 'There was a problem with your request. Please try again.',
-        });
-        onOpenChange(false); // Also close on error
-      })
-      .finally(() => {
-        // This will run for both success and error
-        setIsSubmitting(false);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error: any) {
+      console.error('Error submitting booking:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: error.message || 'There was a problem with your request. Please try again.',
       });
+      onOpenChange(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleConfirmationClose = () => {

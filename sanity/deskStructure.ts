@@ -6,6 +6,7 @@ import {
   Tag as TagIcon,
   Presentation,
   Heart,
+  Users,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
@@ -34,6 +35,11 @@ export const deskStructure: StructureResolver = (S) =>
         ),
       S.divider(),
       // Document types
+      S.listItem()
+        .title('Bookings')
+        .icon(Users)
+        .schemaType('booking')
+        .child(S.documentTypeList('booking').title('Bookings')),
       S.listItem()
         .title('Promotions')
         .icon(TagIcon)
@@ -64,6 +70,7 @@ export const deskStructure: StructureResolver = (S) =>
             'tourPackage',
             'promotion',
             'experience',
+            'booking',
           ].includes(listItem.getId()!),
       ),
     ])
