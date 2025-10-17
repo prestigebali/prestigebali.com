@@ -46,13 +46,13 @@ export default function HowToBookPage() {
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
       <main className="flex-1">
-        <section className="relative h-[40vh] w-full flex items-center justify-center text-center text-white bg-gray-800 pt-20">
+        <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-gray-800 pt-20">
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative z-10 max-w-4xl mx-auto px-4">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-shadow-lg shadow-black/50">
               Cara Memesan
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mt-4 text-shadow-md shadow-black/50">
+            <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mt-4 mb-8 text-shadow-md shadow-black/50">
               Panduan langkah demi langkah untuk merencanakan perjalanan impian Anda bersama kami.
             </p>
           </div>
