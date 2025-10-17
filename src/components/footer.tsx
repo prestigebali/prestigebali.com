@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Twitter, Instagram } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Landmark, Wallet } from 'lucide-react';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 import { useState, useEffect } from 'react';
@@ -29,8 +29,8 @@ export function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+          <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 font-bold text-2xl mb-4 text-white">
               <Image 
                 src="https://res.cloudinary.com/dfinkfssq/image/upload/v1760581094/logo_th6oyh.png" 
@@ -44,7 +44,7 @@ export function Footer() {
               Crafting premium leisure and tour experiences across Indonesia’s most captivating islands.
             </p>
           </div>
-          <div className="md:col-span-1">
+          <div className="lg:col-span-1">
             <h4 className="font-semibold text-white mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link href="/about" className="text-sm text-gray-400 hover:text-primary">About Us</Link></li>
@@ -55,7 +55,7 @@ export function Footer() {
               <li><Link href="/privacy-policy" className="text-sm text-gray-400 hover:text-primary">Privacy Policy</Link></li>
             </ul>
           </div>
-          <div className="md:col-span-1">
+          <div className="lg:col-span-1">
              <h4 className="font-semibold text-white mb-4">Contact Us</h4>
              <ul className="space-y-2 text-sm text-gray-400">
                 <li>{settings?.email || 'sales@prestigebali.com'}</li>
@@ -63,17 +63,32 @@ export function Footer() {
                 <li>{settings?.address || 'Jl. Sunset Road No.8, Kuta, Bali'}</li>
              </ul>
           </div>
-          <div className="md:col-span-1">
-            <h4 className="font-semibold text-white mb-4">Follow Us</h4>
-             {socialLinks.length > 0 && (
-                <div className="flex space-x-4">
-                  {socialLinks.map(social => (
-                    <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
-                      <social.icon className="w-5 h-5" />
-                    </a>
-                  ))}
+           <div className="lg:col-span-2">
+            <h4 className="font-semibold text-white mb-4">Official Payment</h4>
+             <div className='flex flex-col md:flex-row gap-8'>
+                <div className="space-y-2 text-sm text-gray-400">
+                  <div className='flex gap-2 items-center font-medium text-white'><Landmark className='w-4 h-4'/> Bank Transfer</div>
+                  <p>{settings?.bankName || 'Not configured'}</p>
+                  <p>A/N: {settings?.bankAccountHolder || 'Not configured'}</p>
+                  <p>Acc: {settings?.bankAccountNumber || 'Not configured'}</p>
                 </div>
-              )}
+                <div className="space-y-2 text-sm text-gray-400">
+                  <div className='flex gap-2 items-center font-medium text-white'><Wallet className='w-4 h-4'/> PayPal</div>
+                  <p>{settings?.paypalEmail || 'Not configured'}</p>
+                </div>
+             </div>
+             <div className="mt-6">
+                <h4 className="font-semibold text-white mb-4">Follow Us</h4>
+                {socialLinks.length > 0 && (
+                    <div className="flex space-x-4">
+                    {socialLinks.map(social => (
+                        <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
+                        <social.icon className="w-5 h-5" />
+                        </a>
+                    ))}
+                    </div>
+                )}
+             </div>
           </div>
         </div>
         <div className="border-t border-gray-700 pt-8 text-center text-sm text-gray-500">
