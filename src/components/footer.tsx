@@ -1,8 +1,36 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Instagram } from 'lucide-react';
+import { useDocOnce, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+
+interface SiteSettings {
+  email?: string;
+  phoneNumber?: string;
+  facebookUrl?: string;
+  twitterUrl?: string;
+  instagramUrl?: string;
+}
 
 export function Footer() {
+  const firestore = useFirestore();
+
+  const settingsDocRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'settings', 'global');
+  }, [firestore]);
+
+  const { data: settings } = useDocOnce<SiteSettings>(settingsDocRef);
+  
+  const socialLinks = [
+    { name: 'Facebook', url: settings?.facebookUrl, icon: Facebook },
+    { name: 'Twitter', url: settings?.twitterUrl, icon: Twitter },
+    { name: 'Instagram', url: settings?.instagramUrl, icon: Instagram },
+  ].filter(link => link.url);
+
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
@@ -34,17 +62,21 @@ export function Footer() {
           <div className="md:col-span-1">
              <h4 className="font-semibold text-white mb-4">Contact Us</h4>
              <ul className="space-y-2 text-sm text-gray-400">
-                <li>sales@prestigebali.com</li>
-                <li>+62 877 6416 1803</li>
+                <li>{settings?.email || 'sales@prestigebali.com'}</li>
+                <li>{settings?.phoneNumber || '+62 877 6416 1803'}</li>
              </ul>
           </div>
           <div className="md:col-span-1">
             <h4 className="font-semibold text-white mb-4">Follow Us</h4>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-primary"><Facebook className="w-5 h-5" /></a>
-              <a href="#" className="text-gray-400 hover:text-primary"><Twitter className="w-5 h-5" /></a>
-              <a href="#" className="text-gray-400 hover:text-primary"><Instagram className="w-5 h-5" /></a>
-            </div>
+             {socialLinks.length > 0 && (
+                <div className="flex space-x-4">
+                  {socialLinks.map(social => (
+                    <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
+                      <social.icon className="w-5 h-5" />
+                    </a>
+                  ))}
+                </div>
+              )}
           </div>
         </div>
         <div className="border-t border-gray-700 pt-8 text-center text-sm text-gray-500">

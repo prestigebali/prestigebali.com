@@ -1,5 +1,41 @@
 {
   "entities": {
+    "SiteSettings": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SiteSettings",
+      "type": "object",
+      "description": "Global website settings including contact info and social media links.",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Primary contact email address.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Primary contact phone number."
+        },
+        "facebookUrl": {
+          "type": "string",
+          "description": "URL for the company's Facebook page.",
+          "format": "uri"
+        },
+        "twitterUrl": {
+          "type": "string",
+          "description": "URL for the company's Twitter profile.",
+          "format": "uri"
+        },
+        "instagramUrl": {
+          "type": "string",
+          "description": "URL for the company's Instagram profile.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "email",
+        "phoneNumber"
+      ]
+    },
     "Destination": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Destination",
@@ -185,6 +221,13 @@
   },
   "firestore": {
     "collections": [
+      {
+        "path": "/settings/global",
+        "schema": {
+          "$ref": "#/entities/SiteSettings"
+        },
+        "description": "Stores global website settings like contact info and social media links."
+      },
       {
         "path": "/destinations/{destinationId}",
         "schema": {
