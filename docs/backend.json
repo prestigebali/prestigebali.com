@@ -108,6 +108,10 @@
           "description": "Email address of the user making the booking.",
           "format": "email"
         },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Phone number of the user making the booking."
+        },
         "tourPackageId": {
           "type": "string",
           "description": "Reference to TourPackage."
@@ -125,6 +129,7 @@
       "required": [
         "name",
         "email",
+        "phoneNumber",
         "tourPackageId",
         "tourPackageName",
         "bookingDate"

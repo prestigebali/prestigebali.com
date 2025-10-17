@@ -47,6 +47,7 @@ interface BookingDialogProps {
 const bookingSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email('Please enter a valid email address.'),
+  phoneNumber: z.string().min(10, 'Please enter a valid phone number.'),
 });
 
 export function BookingDialog({
@@ -64,6 +65,7 @@ export function BookingDialog({
     defaultValues: {
       name: '',
       email: '',
+      phoneNumber: '',
     },
   });
 
@@ -128,7 +130,7 @@ export function BookingDialog({
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -150,6 +152,19 @@ export function BookingDialog({
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input placeholder="john.doe@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone/WhatsApp Number</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="+62 812 3456 7890" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
