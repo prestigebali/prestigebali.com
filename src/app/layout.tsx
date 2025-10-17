@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
 import { Poppins, Plus_Jakarta_Sans } from 'next/font/google';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -30,9 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${plusJakartaSans.variable} !scroll-smooth`}>
       <body className="font-body antialiased">
-        <FirebaseClientProvider>
-          {children}
-        </FirebaseClientProvider>
+        {children}
         <Toaster />
       </body>
     </html>
