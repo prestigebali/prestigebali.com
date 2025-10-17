@@ -1,4 +1,4 @@
-import {createClient} from 'next-sanity'
+import {createClient} from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!
