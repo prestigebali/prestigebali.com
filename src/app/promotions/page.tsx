@@ -1,6 +1,5 @@
-'use client';
+'use server';
 
-import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { client, urlFor } from '@/lib/sanity';
@@ -22,39 +21,35 @@ interface Promotion extends SanityDocument {
   image: any;
   tourPackage?: {
     _id: string;
+    slug: { current: string };
     title: string;
     price: number;
   };
 }
 
-export default function PromotionsPage() {
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPromotions = async () => {
-      setIsLoading(true);
-      const today = new Date().toISOString().split('T')[0];
-      const query = `*[_type == "promotion" && startDate <= "${today}" && endDate >= "${today}"]{
+async function getPromotions() {
+    const today = new Date().toISOString().split('T')[0];
+    const query = `*[_type == "promotion" && startDate <= "${today}" && endDate >= "${today}"]{
         ...,
         tourPackage->{
           _id,
+          "slug": slug.current,
           title,
           price
         }
-      }`;
-      try {
+    }`;
+    try {
         const data = await client.fetch(query);
-        setPromotions(data);
-      } catch (error) {
+        return data;
+    } catch (error) {
         console.error("Failed to fetch promotions:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+        return [];
+    }
+}
 
-    fetchPromotions();
-  }, []);
+
+export default async function PromotionsPage() {
+  const promotions = await getPromotions();
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -74,11 +69,9 @@ export default function PromotionsPage() {
 
         <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
-            {isLoading ? (
-              <div className="text-center text-muted-foreground">Loading promotions...</div>
-            ) : promotions.length > 0 ? (
+            {promotions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {promotions.map((promo) => (
+                {promotions.map((promo: Promotion) => (
                   <PromotionCard key={promo._id} promo={promo} />
                 ))}
               </div>
@@ -141,13 +134,13 @@ function PromotionCard({ promo }: { promo: Promotion }) {
                     ) : (
                         <div/> 
                     )}
-                    {promo.tourPackage ? (
+                    {promo.tourPackage?.slug ? (
                          <Button size="sm" className="rounded-full" asChild>
-                            <Link href={`/packages`}>View Package</Link>
+                            <Link href={`/packages/${promo.tourPackage.slug}`}>View Package</Link>
                         </Button>
                     ) : (
-                         <Button size="sm" className="rounded-full" disabled>
-                            Details Unavailable
+                         <Button size="sm" className="rounded-full" asChild>
+                            <Link href="/packages">View All</Link>
                         </Button>
                     )}
                 </CardFooter>
