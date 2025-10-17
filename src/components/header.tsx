@@ -22,7 +22,6 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Packages', href: '/packages' },
     { name: 'How to Book', href: '/how-to-book' },
