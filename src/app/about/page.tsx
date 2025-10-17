@@ -6,8 +6,20 @@ import { Footer } from '@/components/footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Building, Heart, Mountain, Users, Waves } from 'lucide-react';
 import Link from 'next/link';
+import { client, urlFor } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
+import { useState, useEffect } from 'react';
 
 const aboutHeroImage = PlaceHolderImages.find(p => p.id === 'about-hero');
+
+const iconMap: { [key: string]: React.ElementType } = {
+  Heart,
+  Users,
+  Mountain,
+  Waves,
+  Building,
+};
+
 
 export default function AboutPage() {
   return (
@@ -49,33 +61,16 @@ function AboutHeroSection() {
 }
 
 function AboutContentSection() {
-  const experienceTypes = [
-    {
-      icon: <Heart className="w-10 h-10 text-primary" />,
-      title: "Romantic Honeymoons",
-      category: "Romantic Honeymoons",
-    },
-    {
-      icon: <Users className="w-10 h-10 text-primary" />,
-      title: "Family Vacations",
-      category: "Family Vacations",
-    },
-    {
-      icon: <Mountain className="w-10 h-10 text-primary" />,
-      title: "Cultural Adventures",
-      category: "Cultural Adventures",
-    },
-    {
-      icon: <Waves className="w-10 h-10 text-primary" />,
-      title: "Wellness Retreats",
-      category: "Wellness Retreats",
-    },
-    {
-      icon: <Building className="w-10 h-10 text-primary" />,
-      title: "Company Outings",
-      category: "Company Outings",
-    },
-  ];
+  const [experienceTypes, setExperienceTypes] = useState<SanityDocument[]>([]);
+
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      const query = `*[_type == "experience"] | order(title asc)`;
+      const data = await client.fetch(query);
+      setExperienceTypes(data);
+    };
+    fetchExperiences();
+  }, []);
 
   return (
     <section className="py-16 md:py-24 bg-background">
@@ -108,20 +103,23 @@ function AboutContentSection() {
           
           <div className="mt-16">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 text-center">
-              {experienceTypes.map((exp) => (
-                <Link
-                  href={`/packages?category=${encodeURIComponent(exp.category)}`}
-                  key={exp.title}
-                  className="group"
-                >
-                  <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
-                      {exp.icon}
+              {experienceTypes.map((exp) => {
+                const Icon = exp.icon && iconMap[exp.icon] ? iconMap[exp.icon] : 'div';
+                return (
+                  <Link
+                    href={`/packages?category=${encodeURIComponent(exp.title)}`}
+                    key={exp._id}
+                    className="group"
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                        <Icon className="w-10 h-10 text-primary" />
+                      </div>
+                      <h3 className="text-base font-semibold text-foreground">{exp.title}</h3>
                     </div>
-                    <h3 className="text-base font-semibold text-foreground">{exp.title}</h3>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>

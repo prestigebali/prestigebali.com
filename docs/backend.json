@@ -331,6 +331,42 @@
         "endDate",
         "image"
       ]
+    },
+    "Experience": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Experience",
+      "type": "object",
+      "description": "Represents a type of travel experience offered.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Experience."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the experience (e.g., 'Romantic Honeymoons')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the experience."
+        },
+        "icon": {
+          "type": "string",
+          "description": "Name of the lucide-react icon to display."
+        },
+        "image": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for an image representing the experience."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "icon",
+        "image"
+      ]
     }
   },
   "auth": {
@@ -389,6 +425,13 @@
           "$ref": "#/entities/Promotion"
         },
         "description": "Stores promotion details for tour packages."
+      },
+      {
+        "path": "/experiences/{experienceId}",
+        "schema": {
+          "$ref": "#/entities/Experience"
+        },
+        "description": "Stores details for different travel experiences."
       }
     ]
   }

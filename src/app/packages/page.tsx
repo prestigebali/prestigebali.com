@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { TourCard } from '@/components/tour-card';
-import { destinations as staticDestinations, experienceTypes } from '@/lib/packages';
+import { destinations as staticDestinations } from '@/lib/packages';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -20,6 +20,7 @@ import type { SanityDocument } from 'next-sanity';
 const PackagesContent = () => {
     const searchParams = useSearchParams();
     const [allPackages, setAllPackages] = useState<SanityDocument[]>([]);
+    const [experienceTypes, setExperienceTypes] = useState<SanityDocument[]>([]);
     const [filters, setFilters] = useState<{
         destinations: string[];
         categories: string[];
@@ -45,7 +46,13 @@ const PackagesContent = () => {
             const data = await client.fetch(query);
             setAllPackages(data);
         };
+        const fetchExperiences = async () => {
+          const query = `*[_type == "experience"]{_id, title}`;
+          const data = await client.fetch(query);
+          setExperienceTypes(data);
+        }
         fetchPackages();
+        fetchExperiences();
     }, []);
 
     useEffect(() => {
@@ -130,7 +137,7 @@ const PackagesContent = () => {
                         <h4 className="font-semibold mb-3">Experience Type</h4>
                         <div className="space-y-2">
                             {experienceTypes.map(cat => (
-                                <div key={cat.title} className="flex items-center gap-2">
+                                <div key={cat._id} className="flex items-center gap-2">
                                     <Checkbox
                                         id={`cat-${cat.title}`}
                                         checked={filters.categories.includes(cat.title)}

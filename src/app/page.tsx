@@ -8,12 +8,13 @@ import { ReviewCard } from '@/components/review-card';
 import { Footer } from '@/components/footer';
 import { useState, useMemo, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { tourCategories, experienceTypes as staticExperienceTypes } from '@/lib/packages';
+import { tourCategories as staticTourCategories } from '@/lib/packages';
 import Link from 'next/link';
 import { client, urlFor } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
+import { Building, Heart, Mountain, Users, Waves } from 'lucide-react';
 
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
 
@@ -200,6 +201,7 @@ function DestinationsSection() {
 function ToursSection() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [allPackages, setAllPackages] = useState<SanityDocument[]>([]);
+  const [tourCategories, setTourCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -216,7 +218,13 @@ function ToursSection() {
       const data = await client.fetch(query);
       setAllPackages(data);
     };
+    const fetchCategories = async () => {
+      const query = `*[_type == "experience"].title`;
+      const data = await client.fetch(query);
+      setTourCategories(data);
+    };
     fetchPackages();
+    fetchCategories();
   }, []);
 
   const filteredTours = useMemo(() => {
@@ -275,8 +283,32 @@ function ToursSection() {
   );
 }
 
+const iconMap: { [key: string]: React.ElementType } = {
+  Heart,
+  Users,
+  Mountain,
+  Waves,
+  Building,
+};
+
 function ExperiencesSection() {
-  // Keeping this section with static data for now as a schema for it doesn't exist yet.
+  const [experiences, setExperiences] = useState<SanityDocument[]>([]);
+
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      const query = `*[_type == "experience"]{
+        _id,
+        title,
+        description,
+        image,
+        icon
+      }`;
+      const data = await client.fetch(query);
+      setExperiences(data);
+    };
+    fetchExperiences();
+  }, []);
+
   return (
     <section id="experiences" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -290,16 +322,15 @@ function ExperiencesSection() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {staticExperienceTypes.map((exp) => (
+          {experiences.map((exp) => (
             <Link
               href={`/packages?category=${encodeURIComponent(exp.title)}`}
-              key={exp.title}
+              key={exp._id}
               className="relative group aspect-[1/1.2] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
             >
               <Image
-                src={exp.image.imageUrl}
+                src={urlFor(exp.image).url()}
                 alt={exp.title}
-                data-ai-hint={exp.image.imageHint}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />

@@ -5,6 +5,7 @@ import {
   Map as MapIcon,
   Tag as TagIcon,
   Presentation,
+  Heart,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
@@ -39,6 +40,11 @@ export const deskStructure: StructureResolver = (S) =>
         .schemaType('promotion')
         .child(S.documentTypeList('promotion').title('Promotions')),
       S.listItem()
+        .title('Experiences')
+        .icon(Heart)
+        .schemaType('experience')
+        .child(S.documentTypeList('experience').title('Experiences')),
+      S.listItem()
         .title('Destinations')
         .icon(MapIcon)
         .schemaType('destination')
@@ -57,6 +63,7 @@ export const deskStructure: StructureResolver = (S) =>
             'destination',
             'tourPackage',
             'promotion',
+            'experience',
           ].includes(listItem.getId()!),
       ),
     ])
