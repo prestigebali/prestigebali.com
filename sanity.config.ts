@@ -3,10 +3,7 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './sanity/schema'
 import {deskStructure} from './sanity/deskStructure'
-
-export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!
-export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET!
-export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-05-01'
+import {projectId, dataset, apiVersion} from './src/lib/sanity-client-config'
 
 export default defineConfig({
   basePath: '/studio',

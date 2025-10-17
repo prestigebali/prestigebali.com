@@ -1,6 +1,6 @@
 import {createClient} from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
-import {projectId, dataset, apiVersion} from '../../sanity.config'
+import {projectId, dataset, apiVersion} from './sanity-client-config'
 
 export const client = createClient({
   projectId,

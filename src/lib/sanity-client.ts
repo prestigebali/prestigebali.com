@@ -1,5 +1,5 @@
 import { createClient, type SanityClient } from 'next-sanity';
-import { apiVersion, dataset, projectId } from './sanity';
+import { apiVersion, dataset, projectId } from './sanity-client-config';
 
 let sanityWriteClient: SanityClient | null = null;
 
