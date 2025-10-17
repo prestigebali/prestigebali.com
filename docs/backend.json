@@ -15,6 +15,10 @@
           "type": "string",
           "description": "Primary contact phone number."
         },
+        "address": {
+            "type": "string",
+            "description": "The physical address of the business."
+        },
         "facebookUrl": {
           "type": "string",
           "description": "URL for the company's Facebook page.",
@@ -33,7 +37,8 @@
       },
       "required": [
         "email",
-        "phoneNumber"
+        "phoneNumber",
+        "address"
       ]
     },
     "Destination": {

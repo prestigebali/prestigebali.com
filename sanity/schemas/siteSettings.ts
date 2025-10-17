@@ -20,6 +20,12 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'address',
+      title: 'Company Address',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'facebookUrl',
       title: 'Facebook URL',
       type: 'url',

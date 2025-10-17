@@ -19,13 +19,15 @@ import { useState, useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { Facebook, Instagram, Mail, Phone, Twitter, Database } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, Twitter, Database, MapPin } from 'lucide-react';
 import { migratePackagesToSanity } from '@/lib/seed-sanity';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
 
 const settingsSchema = z.object({
   email: z.string().email('Please enter a valid email.').default(''),
   phoneNumber: z.string().min(1, 'Please enter a phone number.').default(''),
+  address: z.string().min(1, 'Please enter an address.').default(''),
   facebookUrl: z.string().url('Please enter a valid URL.').or(z.literal('')).optional(),
   twitterUrl: z.string().url('Please enter a valid URL.').or(z.literal('')).optional(),
   instagramUrl: z.string().url('Please enter a valid URL.').or(z.literal('')).optional(),
@@ -55,6 +57,7 @@ export default function SettingsPage() {
     defaultValues: {
       email: '',
       phoneNumber: '',
+      address: '',
       facebookUrl: '',
       twitterUrl: '',
       instagramUrl: '',
@@ -187,6 +190,22 @@ export default function SettingsPage() {
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <FormControl>
                                 <Input placeholder="+62 877 6416 1803" {...field} className="pl-10"/>
+                            </FormControl>
+                        </div>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                 />
+                 <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Alamat Perusahaan</FormLabel>
+                         <div className="relative">
+                            <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <FormControl>
+                                <Textarea placeholder="Jl. Sunset Road No.8, Kuta, Bali" {...field} className="pl-10"/>
                             </FormControl>
                         </div>
                         <FormMessage />
