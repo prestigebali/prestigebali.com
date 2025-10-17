@@ -94,8 +94,11 @@ export function BookingDialog({
         title: 'Booking Submitted!',
         description: 'Your booking request has been received. We will contact you shortly.',
       });
-      setShowConfirmation(true);
+      
+      onOpenChange(false); // Close the form dialog FIRST
+      setShowConfirmation(true); // THEN show the confirmation dialog
       form.reset();
+
     } catch (error) {
       console.error('Error submitting booking:', error);
       toast({
@@ -103,9 +106,9 @@ export function BookingDialog({
         title: 'Uh oh! Something went wrong.',
         description: 'There was a problem with your request. Please try again.',
       });
+      onOpenChange(false); // Also close on error
     } finally {
       setIsSubmitting(false);
-      onOpenChange(false); // Close the form dialog
     }
   };
 
@@ -116,8 +119,8 @@ export function BookingDialog({
   const whatsAppMessage = `Hello, I'm interested in booking the "${tourPackage.title}" package. My details have been submitted.`;
   const emailSubject = `Booking Inquiry for: ${tourPackage.title}`;
   
-  const WHATSAPP_NUMBER = "6287764161803"; // Replace with your WhatsApp number
-  const EMAIL_ADDRESS = "sales@prestigebali.com"; // Replace with your email
+  const WHATSAPP_NUMBER = "6287764161803";
+  const EMAIL_ADDRESS = "sales@prestigebali.com";
 
   return (
     <>
