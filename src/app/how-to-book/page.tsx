@@ -10,35 +10,35 @@ export default function HowToBookPage() {
   const steps = [
     {
       icon: <Search className="w-12 h-12 text-primary" />,
-      title: '1. Jelajahi Paket Wisata',
-      description: 'Temukan paket wisata yang sempurna untuk Anda di halaman Paket kami. Gunakan filter untuk menyortir berdasarkan destinasi, tipe pengalaman, dan harga.',
+      title: '1. Explore Tour Packages',
+      description: 'Find the perfect tour package for you on our Packages page. Use the filters to sort by destination, experience type, and price.',
       link: '/packages',
-      linkLabel: 'Jelajahi Paket'
+      linkLabel: 'Explore Packages'
     },
     {
       icon: <List className="w-12 h-12 text-primary" />,
-      title: '2. Isi Formulir Booking',
-      description: 'Setelah Anda memilih paket, klik tombol "Book Now". Isi formulir dengan nama, email, dan nomor telepon Anda, lalu klik "Submit Booking".',
+      title: '2. Fill Out the Booking Form',
+      description: 'Once you have selected a package, click the "Book Now" button. Fill out the form with your name, email, and phone number, then click "Submit Booking".',
     },
     {
       icon: <MessageCircle className="w-12 h-12 text-primary" />,
-      title: '3. Hubungi Kami (Opsional)',
-      description: 'Untuk respon yang lebih cepat, Anda dapat langsung menghubungi kami melalui WhatsApp atau Email setelah mengirimkan formulir. Tim kami akan segera membantu Anda.',
+      title: '3. Contact Us (Optional)',
+      description: 'For a faster response, you can contact us directly via WhatsApp or Email after submitting the form. Our team will assist you promptly.',
     },
     {
       icon: <CreditCard className="w-12 h-12 text-primary" />,
-      title: '4. Konfirmasi & Pembayaran',
-      description: 'Tim kami akan mengonfirmasi ketersediaan dan detail pesanan Anda. Kami akan mengirimkan instruksi untuk proses pembayaran yang aman dan mudah.',
+      title: '4. Confirmation & Payment',
+      description: 'Our team will confirm the availability and details of your order. We will send you instructions for a secure and easy payment process.',
     },
     {
       icon: <CheckCircle className="w-12 h-12 text-primary" />,
-      title: '5. Pemesanan Selesai!',
-      description: 'Setelah pembayaran dikonfirmasi, pemesanan Anda selesai! Anda akan menerima semua detail perjalanan dan itinerary Anda melalui email.',
+      title: '5. Booking Complete!',
+      description: 'Once payment is confirmed, your booking is complete! You will receive all your travel details and itinerary via email.',
     },
     {
         icon: <Plane className="w-12 h-12 text-primary" />,
-        title: '6. Nikmati Liburan Anda',
-        description: 'Sekarang Anda siap untuk petualangan yang tak terlupakan. Tim kami akan memastikan semua berjalan lancar dari awal hingga akhir. Selamat menikmati liburan Anda!',
+        title: '6. Enjoy Your Holiday',
+        description: 'Now you are ready for an unforgettable adventure. Our team will ensure everything runs smoothly from start to finish. Enjoy your holiday!',
     }
   ];
 
@@ -50,10 +50,10 @@ export default function HowToBookPage() {
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative z-10 max-w-4xl mx-auto px-4">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-shadow-lg shadow-black/50">
-              Cara Memesan
+              How to Book
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mt-4 mb-8 text-shadow-md shadow-black/50">
-              Panduan langkah demi langkah untuk merencanakan perjalanan impian Anda bersama kami.
+              A step-by-step guide to planning your dream trip with us.
             </p>
           </div>
         </section>
