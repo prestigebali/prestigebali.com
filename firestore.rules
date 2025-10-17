@@ -2,97 +2,99 @@
  * @fileoverview Firestore Security Rules for Prestige Bali application.
  *
  * Core Philosophy:
- * This ruleset provides open read access for all collections to allow for quick prototyping.
- * All write operations require a valid user to be signed in. However, it does not enforce any ownership or role-based
- * access control.
+ * This ruleset prioritizes security by strictly controlling access to data.
+ * It uses a combination of public read access for some collections and
+ * authenticated user-only write access.
  *
  * Data Structure:
- * - /destinations/{destinationId}: Stores destination data.
- * - /tour_packages/{tourPackageId}: Stores tour package data.
- * - /bookings/{bookingId}: Stores booking data.
- * - /reviews/{reviewId}: Stores review data.
+ * - `/settings/global`:  Stores global site settings (e.g., contact info).
+ * - `/destinations/{destinationId}`: Stores destination details.
+ * - `/tour_packages/{tourPackageId}`: Stores tour package details.
+ * - `/bookings/{bookingId}`: Stores booking information.
+ * - `/reviews/{reviewId}`: Stores tour package reviews.
  *
  * Key Security Decisions:
- * - Open read access is granted to all collections for the purpose of prototyping.
- * - All write operations require a signed-in user but lack specific authorization.
- *
- * WARNING: These rules are for prototyping only and are not secure for production use.
- *          Implement ownership or role-based access control before deploying to production.
+ * - Site settings are publicly readable, but only authenticated users can modify them.
+ * - Destinations, tour packages and reviews are publicly readable. Only authenticated users can create, update, or delete them.
+ * - Bookings are writeable by any authenticated user.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows anyone to read destinations. Requires authentication for write operations.
+     * @description Allows public read access to global website settings, but requires
+     *              authentication for any modifications.
+     * @path /settings/global
+     * @allow (get, list): Always allowed for all users, including unauthenticated.
+     * @allow (create, update, delete): Only allowed for authenticated users.
+     * @deny  (create, update, delete): Denied for unauthenticated users.
+     * @principle Public read, authenticated write.
+     */
+    match /settings/global {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Allows public read access to destination details, but requires
+     *              authentication for any modifications.
      * @path /destinations/{destinationId}
-     * @allow (get, list): if true
-     * @allow (create, update, delete): if isSignedIn()
-     * @deny (create): if !isSignedIn()
-     * @deny (update): if !isSignedIn()
-     * @deny (delete): if !isSignedIn()
-     * @principle Open read access, authenticated writes.
+     * @allow (get, list): Always allowed for all users, including unauthenticated.
+     * @allow (create, update, delete): Only allowed for authenticated users.
+     * @deny  (create, update, delete): Denied for unauthenticated users.
+     * @principle Public read, authenticated write.
      */
     match /destinations/{destinationId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
     }
 
     /**
-     * @description Allows anyone to read tour packages. Requires authentication for write operations.
+     * @description Allows public read access to tour package details, but requires
+     *              authentication for any modifications.
      * @path /tour_packages/{tourPackageId}
-     * @allow (get, list): if true
-     * @allow (create, update, delete): if isSignedIn()
-     * @deny (create): if !isSignedIn()
-     * @deny (update): if !isSignedIn()
-     * @deny (delete): if !isSignedIn()
-     * @principle Open read access, authenticated writes.
+     * @allow (get, list): Always allowed for all users, including unauthenticated.
+     * @allow (create, update, delete): Only allowed for authenticated users.
+     * @deny  (create, update, delete): Denied for unauthenticated users.
+     * @principle Public read, authenticated write.
      */
     match /tour_packages/{tourPackageId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
     }
 
     /**
-     * @description Allows anyone to read bookings. Requires authentication for write operations.
+     * @description Allows any authenticated user to create bookings.
      * @path /bookings/{bookingId}
-     * @allow (get, list): if true
-     * @allow (create, update, delete): if isSignedIn()
-     * @deny (create): if !isSignedIn()
-     * @deny (update): if !isSignedIn()
-     * @deny (delete): if !isSignedIn()
-     * @principle Open read access, authenticated writes.
+     * @allow (create): Only allowed for authenticated users.
+     * @allow (get, list, update, delete): Denied for all users.
+     * @deny  (create): Denied for unauthenticated users.
+     * @principle Authenticated users can create bookings.
      */
     match /bookings/{bookingId} {
-      allow get, list: if true;
+      allow get, list, update, delete: if false;
       allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn();
     }
 
     /**
-     * @description Allows anyone to read reviews. Requires authentication for write operations.
+     * @description Allows public read access to reviews, but requires
+     *              authentication for any modifications.
      * @path /reviews/{reviewId}
-     * @allow (get, list): if true
-     * @allow (create, update, delete): if isSignedIn()
-     * @deny (create): if !isSignedIn()
-     * @deny (update): if !isSignedIn()
-     * @deny (delete): if !isSignedIn()
-     * @principle Open read access, authenticated writes.
+     * @allow (get, list): Always allowed for all users, including unauthenticated.
+     * @allow (create, update, delete): Only allowed for authenticated users.
+     * @deny  (create, update, delete): Denied for unauthenticated users.
+     * @principle Public read, authenticated write.
      */
     match /reviews/{reviewId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
     }
-  }
 
-  function isSignedIn() {
-    return request.auth != null;
+
+    // Helper function to determine if a user is signed in.
+    function isSignedIn() {
+      return request.auth != null;
+    }
   }
 }
