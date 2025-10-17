@@ -2,9 +2,10 @@
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane } from 'lucide-react';
+import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Landmark, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function HowToBookPage() {
   const steps = [
@@ -78,6 +79,38 @@ export default function HowToBookPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+               <div className="mt-20">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Official Payment Information</h2>
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-3">Please use the official accounts below for all transactions. Be cautious of fraud attempts.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center gap-4">
+                            <Landmark className="w-8 h-8 text-primary" />
+                            <CardTitle>Bank Transfer</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3 text-muted-foreground text-lg">
+                            <p><strong className="text-foreground font-medium">Bank Name:</strong> Bank Central Asia (BCA)</p>
+                            <p><strong className="text-foreground font-medium">Account Holder:</strong> PT. PRESTIGE BALI</p>
+                            <p><strong className="text-foreground font-medium">Account Number:</strong> 123-456-7890 (IDR)</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center gap-4">
+                            <Wallet className="w-8 h-8 text-primary" />
+                            <CardTitle>PayPal</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3 text-muted-foreground text-lg">
+                            <p><strong className="text-foreground font-medium">PayPal Email:</strong></p>
+                            <p>payment@prestigebali.com</p>
+                            <p className="text-sm">Please ensure to cover any transaction fees.</p>
+                        </CardContent>
+                    </Card>
+                </div>
               </div>
             </div>
           </div>
