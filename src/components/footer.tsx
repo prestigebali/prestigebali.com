@@ -49,6 +49,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link href="/about" className="text-sm text-gray-400 hover:text-primary">About Us</Link></li>
               <li><Link href="/packages" className="text-sm text-gray-400 hover:text-primary">Packages</Link></li>
+              <li><Link href="/promotions" className="text-sm text-gray-400 hover:text-primary">Promotions</Link></li>
               <li><Link href="/how-to-book" className="text-sm text-gray-400 hover:text-primary">How to Book</Link></li>
               <li><a href="/#destinations" className="text-sm text-gray-400 hover:text-primary">Destinations</a></li>
               <li><a href="/#experiences" className="text-sm text-gray-400 hover:text-primary">Experiences</a></li>

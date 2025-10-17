@@ -24,6 +24,7 @@ export function Header() {
   const navLinks = [
     { name: 'About', href: '/about' },
     { name: 'Packages', href: '/packages' },
+    { name: 'Promotions', href: '/promotions' },
     { name: 'How to Book', href: '/how-to-book' },
     { name: 'Destinations', href: '/#destinations' },
     { name: 'Experiences', href: '/#experiences' },

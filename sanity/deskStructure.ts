@@ -1,5 +1,5 @@
 import {type StructureResolver} from 'sanity/structure'
-import {Settings, Package, Map as MapIcon} from 'lucide-react'
+import {Settings, Package, Map as MapIcon, Tag as TagIcon} from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
@@ -18,6 +18,11 @@ export const deskStructure: StructureResolver = (S) =>
       S.divider(),
       // Document types
       S.listItem()
+        .title('Promotions')
+        .icon(TagIcon)
+        .schemaType('promotion')
+        .child(S.documentTypeList('promotion').title('Promotions')),
+      S.listItem()
         .title('Destinations')
         .icon(MapIcon)
         .schemaType('destination')
@@ -30,7 +35,7 @@ export const deskStructure: StructureResolver = (S) =>
       // The rest of the document types
       ...S.documentTypeListItems().filter(
         (listItem) =>
-          !['siteSettings', 'destination', 'tourPackage'].includes(
+          !['siteSettings', 'destination', 'tourPackage', 'promotion'].includes(
             listItem.getId()!,
           ),
       ),

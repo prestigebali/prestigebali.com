@@ -233,6 +233,58 @@
         "comment",
         "reviewDate"
       ]
+    },
+    "Promotion": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Promotion",
+      "type": "object",
+      "description": "Represents a time-limited promotion for a tour package.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Promotion."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the promotion."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the promotion."
+        },
+        "tourPackageId": {
+          "type": "string",
+          "description": "Reference to the TourPackage this promotion applies to."
+        },
+        "discountPercentage": {
+          "type": "number",
+          "description": "The percentage discount offered."
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The start date of the promotion."
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The end date of the promotion."
+        },
+        "image": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for an image representing the promotion."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "discountPercentage",
+        "startDate",
+        "endDate",
+        "image"
+      ]
     }
   },
   "auth": {
@@ -277,6 +329,13 @@
           "$ref": "#/entities/Review"
         },
         "description": "Stores user reviews for tour packages."
+      },
+      {
+        "path": "/promotions/{promotionId}",
+        "schema": {
+          "$ref": "#/entities/Promotion"
+        },
+        "description": "Stores promotion details for tour packages."
       }
     ]
   }
