@@ -90,11 +90,6 @@ export function BookingDialog({
       const bookingsCol = collection(firestore, 'bookings');
       await addDoc(bookingsCol, bookingData);
 
-      toast({
-        title: 'Booking Submitted!',
-        description: 'Your booking request has been received. We will contact you shortly.',
-      });
-      
       onOpenChange(false); // Close the form dialog FIRST
       setShowConfirmation(true); // THEN show the confirmation dialog
       form.reset();
