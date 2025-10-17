@@ -25,6 +25,7 @@ export function Header() {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Packages', href: '/packages' },
+    { name: 'How to Book', href: '/how-to-book' },
     { name: 'Destinations', href: '/#destinations' },
     { name: 'Experiences', href: '/#experiences' },
   ];
