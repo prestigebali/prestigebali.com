@@ -18,7 +18,7 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { LayoutDashboard, Package, LogOut, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Users, Settings, PenSquare } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -130,6 +130,17 @@ export default function AdminLayout({
                 <Link href="/admin/settings">
                   <Settings />
                   Pengaturan
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/studio')}
+              >
+                <Link href="/studio">
+                  <PenSquare />
+                  Sanity Studio
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
