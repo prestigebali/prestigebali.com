@@ -1,5 +1,11 @@
 import {type StructureResolver} from 'sanity/structure'
-import {Settings, Package, Map as MapIcon, Tag as TagIcon} from 'lucide-react'
+import {
+  Settings,
+  Package,
+  Map as MapIcon,
+  Tag as TagIcon,
+  Presentation,
+} from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
@@ -14,6 +20,16 @@ export const deskStructure: StructureResolver = (S) =>
             .schemaType('siteSettings')
             .documentId('siteSettings')
             .title('Site Settings'),
+        ),
+      // Hero Settings singleton
+      S.listItem()
+        .title('Hero Settings')
+        .icon(Presentation)
+        .child(
+          S.editor()
+            .schemaType('heroSettings')
+            .documentId('heroSettings')
+            .title('Hero Settings'),
         ),
       S.divider(),
       // Document types
@@ -35,8 +51,12 @@ export const deskStructure: StructureResolver = (S) =>
       // The rest of the document types
       ...S.documentTypeListItems().filter(
         (listItem) =>
-          !['siteSettings', 'destination', 'tourPackage', 'promotion'].includes(
-            listItem.getId()!,
-          ),
+          ![
+            'siteSettings',
+            'heroSettings',
+            'destination',
+            'tourPackage',
+            'promotion',
+          ].includes(listItem.getId()!),
       ),
     ])

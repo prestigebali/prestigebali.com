@@ -14,7 +14,6 @@ import { client, urlFor } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
 
 const reviewData = [
@@ -61,31 +60,80 @@ export default function Home() {
 }
 
 function HeroSection() {
+  const [heroSettings, setHeroSettings] = useState<SanityDocument | null>(null);
+
+  useEffect(() => {
+    const fetchHeroSettings = async () => {
+      const query = `*[_type == "heroSettings" && _id == "heroSettings"][0]`;
+      const data = await client.fetch(query);
+      setHeroSettings(data);
+    };
+    fetchHeroSettings();
+  }, []);
+
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (!url) return null;
+    let videoId;
+    if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('watch?v=')) {
+      videoId = url.split('watch?v=')[1].split('&')[0];
+    } else {
+      return null;
+    }
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&iv_load_policy=3&rel=0`;
+  };
+
+  const youTubeEmbedUrl = heroSettings?.youtubeVideoUrl ? getYouTubeEmbedUrl(heroSettings.youtubeVideoUrl) : null;
+
   return (
-    <section className="relative h-screen w-full flex items-center justify-center text-center text-primary-foreground">
-      {heroImage && (
+    <section className="relative h-screen w-full flex items-center justify-center text-center text-primary-foreground overflow-hidden">
+      {heroSettings?.backgroundType === 'image' && heroSettings.backgroundImage && (
         <Image
-          src={heroImage.imageUrl}
-          alt={heroImage.imageHint}
-          data-ai-hint={heroImage.imageHint}
+          src={urlFor(heroSettings.backgroundImage).url()}
+          alt={heroSettings.headline || 'Travel background'}
           fill
           className="object-cover"
           priority
         />
       )}
-      <div className="absolute inset-0 bg-black/10" />
+      {heroSettings?.backgroundType === 'video' && youTubeEmbedUrl && (
+        <iframe
+          src={youTubeEmbedUrl}
+          className="absolute top-1/2 left-1/2 w-[110vw] h-[110vh] min-w-[177.77vh] min-h-[56.25vw] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          frameBorder="0"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+        ></iframe>
+      )}
+      {heroSettings?.backgroundType === 'video' && heroSettings.backgroundVideoUrl && !youTubeEmbedUrl && (
+         <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute top-0 left-0 w-full h-full object-cover"
+         >
+           <source src={heroSettings.backgroundVideoUrl} type="video/mp4" />
+           Your browser does not support the video tag.
+         </video>
+      )}
+
+      <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
-          Crafting Premium Leisures & Tours
+          {heroSettings?.headline || "Crafting Premium Leisures & Tours"}
         </h1>
         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-lg shadow-black/50">
-         Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits.
+         {heroSettings?.subheadline || "Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits."}
         </p>
-        <div className="animate-fade-in-up animation-delay-600">
-          <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-            <Link href="/packages">Explore Packages</Link>
-          </Button>
-        </div>
+        {heroSettings?.buttonText && heroSettings.buttonLink && (
+          <div className="animate-fade-in-up animation-delay-600">
+            <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
+              <Link href={heroSettings.buttonLink}>{heroSettings.buttonText}</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

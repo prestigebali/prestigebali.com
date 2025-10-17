@@ -58,6 +58,52 @@
         "address"
       ]
     },
+    "HeroSettings": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "HeroSettings",
+      "type": "object",
+      "description": "Settings for the homepage hero section.",
+      "properties": {
+        "headline": {
+          "type": "string",
+          "description": "The main headline text."
+        },
+        "subheadline": {
+          "type": "string",
+          "description": "The supporting text below the headline."
+        },
+        "buttonText": {
+          "type": "string",
+          "description": "Text for the call-to-action button."
+        },
+        "buttonLink": {
+          "type": "string",
+          "description": "URL for the call-to-action button.",
+          "format": "uri"
+        },
+        "backgroundType": {
+          "type": "string",
+          "enum": ["Image", "Video"]
+        },
+        "backgroundImage": {
+          "type": "string",
+          "format": "uri"
+        },
+        "backgroundVideo": {
+          "type": "string",
+          "format": "uri"
+        },
+        "backgroundVideoUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "youtubeVideoUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": ["headline", "backgroundType"]
+    },
     "Destination": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Destination",
@@ -301,6 +347,13 @@
           "$ref": "#/entities/SiteSettings"
         },
         "description": "Stores global website settings like contact info and social media links."
+      },
+      {
+        "path": "/settings/hero",
+        "schema": {
+          "$ref": "#/entities/HeroSettings"
+        },
+        "description": "Stores settings for the homepage hero section."
       },
       {
         "path": "/destinations/{destinationId}",
