@@ -3,27 +3,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Instagram } from 'lucide-react';
-import { useDocOnce, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
-
-interface SiteSettings {
-  email?: string;
-  phoneNumber?: string;
-  facebookUrl?: string;
-  twitterUrl?: string;
-  instagramUrl?: string;
-  address?: string;
-}
+import { client } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
+import { useState, useEffect } from 'react';
 
 export function Footer() {
-  const firestore = useFirestore();
+  const [settings, setSettings] = useState<SanityDocument | null>(null);
 
-  const settingsDocRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return doc(firestore, 'settings', 'global');
-  }, [firestore]);
-
-  const { data: settings } = useDocOnce<SiteSettings>(settingsDocRef);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const query = `*[_type == "siteSettings" && _id == "siteSettings"][0]`;
+      const data = await client.fetch(query);
+      setSettings(data);
+    };
+    fetchSettings();
+  }, []);
   
   const socialLinks = [
     { name: 'Facebook', url: settings?.facebookUrl, icon: Facebook },

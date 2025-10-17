@@ -3,17 +3,16 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/header';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { TourCard } from '@/components/tour-card';
 import { ReviewCard } from '@/components/review-card';
 import { Footer } from '@/components/footer';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { destinations as packageDestinations, experienceTypes as packageExperienceTypes, tourCategories } from '@/lib/packages';
+import { tourCategories, experienceTypes as staticExperienceTypes } from '@/lib/packages';
 import Link from 'next/link';
-import { useFirestore, useMemoFirebase } from '@/firebase';
-import { useCollectionOnce } from '@/firebase/firestore/use-collection-once';
-import { collection } from 'firebase/firestore';
+import { client, urlFor } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero');
 const reviews = PlaceHolderImages.filter(p => p.description === 'avatar');
@@ -93,6 +92,22 @@ function HeroSection() {
 }
 
 function DestinationsSection() {
+  const [destinations, setDestinations] = useState<SanityDocument[]>([]);
+
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      const query = `*[_type == "destination"]{
+        _id,
+        name,
+        slug,
+        image
+      }`;
+      const data = await client.fetch(query);
+      setDestinations(data);
+    };
+    fetchDestinations();
+  }, []);
+
   return (
     <section id="destinations" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -103,19 +118,20 @@ function DestinationsSection() {
             </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {packageDestinations.map((dest) => (
+          {destinations.map((dest) => (
             <Link 
-              key={dest.name} 
+              key={dest._id} 
               href={`/packages?destination=${encodeURIComponent(dest.name)}`} 
               className="relative group aspect-[1.7] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
             >
-              <Image
-                src={dest.image.imageUrl}
-                alt={dest.name}
-                data-ai-hint={dest.image.imageHint}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+              {dest.image && (
+                <Image
+                  src={urlFor(dest.image).url()}
+                  alt={dest.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
               <div className="absolute bottom-0 left-0 p-6">
                 <h3 className="text-3xl font-bold text-white text-shadow-md shadow-black/50">{dest.name}</h3>
@@ -130,14 +146,25 @@ function DestinationsSection() {
 
 function ToursSection() {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [allPackages, setAllPackages] = useState<SanityDocument[]>([]);
 
-  const firestore = useFirestore();
-  const packagesCollection = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'tour_packages');
-  }, [firestore]);
-
-  const { data: allPackages } = useCollectionOnce(packagesCollection);
+  useEffect(() => {
+    const fetchPackages = async () => {
+      const query = `*[_type == "tourPackage"]{
+        _id,
+        title,
+        description,
+        price,
+        rating,
+        image,
+        category,
+        "destination": destination->name
+      }`;
+      const data = await client.fetch(query);
+      setAllPackages(data);
+    };
+    fetchPackages();
+  }, []);
 
   const filteredTours = useMemo(() => {
     if (!allPackages) return [];
@@ -173,8 +200,8 @@ function ToursSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredTours.map((tour) => (
             <TourCard
-              key={tour.id}
-              id={tour.id}
+              key={tour._id}
+              id={tour._id}
               image={tour.image}
               title={tour.title}
               description={tour.description}
@@ -196,6 +223,7 @@ function ToursSection() {
 }
 
 function ExperiencesSection() {
+  // Keeping this section with static data for now as a schema for it doesn't exist yet.
   return (
     <section id="experiences" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -209,7 +237,7 @@ function ExperiencesSection() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {packageExperienceTypes.map((exp) => (
+          {staticExperienceTypes.map((exp) => (
             <Link
               href={`/packages?category=${encodeURIComponent(exp.title)}`}
               key={exp.title}

@@ -2,17 +2,17 @@
 
 import Image from 'next/image';
 import { Star, StarHalf, Pin } from 'lucide-react';
-import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Badge } from './ui/badge';
 import React from 'react';
 import { BookingDialog } from './booking-dialog';
+import { urlFor } from '@/lib/sanity';
 
 interface TourCardProps {
-  id: string; // id is required now
-  image: ImagePlaceholder;
+  id: string;
+  image: any; // Sanity image object
   title: string;
   description: string;
   price: number;
@@ -38,15 +38,16 @@ const renderStars = (rating: number) => {
 export function TourCard({ id, image, title, description, price, rating, destination, category, className }: TourCardProps) {
   const [isBookingOpen, setBookingOpen] = React.useState(false);
   
+  const imageUrl = image ? urlFor(image).width(600).height(400).url() : '/placeholder.png';
+
   return (
     <>
       <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
         <div className="relative aspect-[4/3] overflow-hidden">
-          {image?.imageUrl && (
+          {imageUrl && (
             <Image
-              src={image.imageUrl}
+              src={imageUrl}
               alt={title}
-              data-ai-hint={image.imageHint}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -66,7 +67,7 @@ export function TourCard({ id, image, title, description, price, rating, destina
               </div>
               <div className="flex items-center gap-2 mb-2">
                 {renderStars(rating)}
-                <span className="text-xs text-muted-foreground font-medium">{rating.toFixed(1)}</span>
+                <span className="text-xs text-muted-foreground font-medium">{rating?.toFixed(1) || 'N/A'}</span>
               </div>
               <div className="text-2xl font-bold text-primary">
                 ${price}

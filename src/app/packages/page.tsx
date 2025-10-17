@@ -1,13 +1,12 @@
-
 'use client';
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { TourCard } from '@/components/tour-card';
-import { destinations, experienceTypes } from '@/lib/packages';
+import { destinations as staticDestinations, experienceTypes } from '@/lib/packages';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -15,13 +14,12 @@ import { Slider } from '@/components/ui/slider';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useFirestore, useMemoFirebase } from '@/firebase';
-import { useCollectionOnce } from '@/firebase/firestore/use-collection-once';
-import { collection } from 'firebase/firestore';
-import { useMemo } from 'react';
+import { client } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
 
 const PackagesContent = () => {
     const searchParams = useSearchParams();
+    const [allPackages, setAllPackages] = useState<SanityDocument[]>([]);
     const [filters, setFilters] = useState<{
         destinations: string[];
         categories: string[];
@@ -32,13 +30,23 @@ const PackagesContent = () => {
         price: [0, 3000],
     });
 
-    const firestore = useFirestore();
-    const packagesCollection = useMemoFirebase(() => {
-        if (!firestore) return null;
-        return collection(firestore, 'tour_packages');
-    }, [firestore]);
-
-    const { data: allPackages } = useCollectionOnce(packagesCollection);
+    useEffect(() => {
+        const fetchPackages = async () => {
+            const query = `*[_type == "tourPackage"]{
+                _id,
+                title,
+                description,
+                price,
+                rating,
+                image,
+                category,
+                "destination": destination->name
+            }`;
+            const data = await client.fetch(query);
+            setAllPackages(data);
+        };
+        fetchPackages();
+    }, []);
 
     useEffect(() => {
         const destinationParam = searchParams.get('destination');
@@ -106,7 +114,7 @@ const PackagesContent = () => {
                     <div>
                         <h4 className="font-semibold mb-3">Destination</h4>
                         <div className="space-y-2">
-                            {destinations.map(dest => (
+                            {staticDestinations.map(dest => (
                                 <div key={dest.name} className="flex items-center gap-2">
                                     <Checkbox
                                         id={`dest-${dest.name}`}
@@ -190,7 +198,7 @@ const PackagesContent = () => {
                                 {filteredPackages.length > 0 ? (
                                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                                         {filteredPackages.map(pkg => (
-                                            <TourCard key={pkg.id} {...pkg} />
+                                            <TourCard key={pkg._id} id={pkg._id} {...pkg} />
                                         ))}
                                     </div>
                                 ) : (
