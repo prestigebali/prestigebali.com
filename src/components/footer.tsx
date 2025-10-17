@@ -29,7 +29,7 @@ export function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 font-bold text-2xl mb-4 text-white">
               <Image 
@@ -75,7 +75,7 @@ export function Footer() {
                 </div>
               )}
           </div>
-           <div className="lg:col-span-2">
+           <div className="lg:col-span-1">
             <h4 className="font-semibold text-white mb-4">Official Payment</h4>
              <div className='flex flex-col gap-6 text-sm text-gray-400'>
                 <div className="space-y-2">
