@@ -1,4 +1,4 @@
-'use client';
+'use server';
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -6,11 +6,7 @@ import * as React from 'react';
 
 
 export default function PrivacyPolicyPage() {
-  // We use useEffect to get the current date on the client-side to avoid hydration mismatch
-  const [currentDate, setCurrentDate] = React.useState('');
-  React.useEffect(() => {
-    setCurrentDate(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
-  }, []);
+  const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
