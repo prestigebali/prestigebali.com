@@ -46,7 +46,7 @@ export default function HowToBookPage() {
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
       <main className="flex-1">
-        <section className="relative h-[40vh] w-full flex items-center justify-center text-center text-white bg-gray-800">
+        <section className="relative h-[40vh] w-full flex items-center justify-center text-center text-white bg-gray-800 pt-20">
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative z-10 max-w-4xl mx-auto px-4">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-shadow-lg shadow-black/50">
