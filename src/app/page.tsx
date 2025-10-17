@@ -79,7 +79,7 @@ function HeroSection() {
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           Crafting Premium Leisures & Tours
         </h1>
-        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-md shadow-black/50">
+        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-lg shadow-black/50">
          Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits.
         </p>
         <div className="animate-fade-in-up animation-delay-600">
