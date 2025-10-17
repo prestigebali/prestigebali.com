@@ -77,16 +77,16 @@ export function Footer() {
           </div>
            <div className="lg:col-span-2">
             <h4 className="font-semibold text-white mb-4">Official Payment</h4>
-             <div className='flex flex-col md:flex-row gap-8'>
-                <div className="space-y-2 text-sm text-gray-400">
+             <div className='flex flex-col gap-6 text-sm text-gray-400'>
+                <div className="space-y-2">
+                  <div className='flex gap-2 items-center font-medium text-white'><Wallet className='w-4 h-4'/> PayPal</div>
+                  <p>{settings?.paypalEmail || 'Not configured'}</p>
+                </div>
+                <div className="space-y-2">
                   <div className='flex gap-2 items-center font-medium text-white'><Landmark className='w-4 h-4'/> Bank Transfer</div>
                   <p>{settings?.bankName || 'Not configured'}</p>
                   <p>A/N: {settings?.bankAccountHolder || 'Not configured'}</p>
                   <p>Acc: {settings?.bankAccountNumber || 'Not configured'}</p>
-                </div>
-                <div className="space-y-2 text-sm text-gray-400">
-                  <div className='flex gap-2 items-center font-medium text-white'><Wallet className='w-4 h-4'/> PayPal</div>
-                  <p>{settings?.paypalEmail || 'Not configured'}</p>
                 </div>
              </div>
           </div>
