@@ -7,9 +7,11 @@ import heroSettings from './schemas/heroSettings'
 import experience from './schemas/experience'
 import booking from './schemas/booking'
 import review from './schemas/review'
+import paymentSettings from './schemas/paymentSettings'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
+  paymentSettings,
   heroSettings,
   destination,
   tourPackage,

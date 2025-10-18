@@ -10,7 +10,7 @@ import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 
 export default async function HowToBookPage() {
-  const settings = await client.fetch<SanityDocument | null>(`*[_type == "siteSettings" && _id == "siteSettings"][0]`);
+  const settings = await client.fetch<SanityDocument | null>(`*[_type == "paymentSettings" && _id == "paymentSettings"][0]`);
   
   const steps = [
     {

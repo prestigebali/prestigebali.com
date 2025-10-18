@@ -8,6 +8,7 @@ import type { SanityDocument } from 'next-sanity';
 
 export async function Footer() {
   const settings = await client.fetch<SanityDocument>(`*[_type == "siteSettings" && _id == "siteSettings"][0]`);
+  const paymentSettings = await client.fetch<SanityDocument>(`*[_type == "paymentSettings" && _id == "paymentSettings"][0]`);
   
   const socialLinks = [
     { name: 'Facebook', url: settings?.facebookUrl, icon: Facebook },
@@ -71,13 +72,13 @@ export async function Footer() {
              <div className='flex flex-col gap-6 text-sm text-gray-400'>
                 <div className="space-y-2">
                   <div className='flex gap-2 items-center font-medium text-white'><Wallet className='w-4 h-4'/> PayPal</div>
-                  <p>{settings?.paypalEmail || 'Not configured'}</p>
+                  <p>{paymentSettings?.paypalEmail || 'Not configured'}</p>
                 </div>
                 <div className="space-y-2">
                   <div className='flex gap-2 items-center font-medium text-white'><Landmark className='w-4 h-4'/> Bank Transfer</div>
-                  <p>{settings?.bankName || 'Not configured'}</p>
-                  <p>A/N: {settings?.bankAccountHolder || 'Not configured'}</p>
-                  <p>Acc: {settings?.bankAccountNumber || 'Not configured'}</p>
+                  <p>{paymentSettings?.bankName || 'Not configured'}</p>
+                  <p>A/N: {paymentSettings?.bankAccountHolder || 'Not configured'}</p>
+                  <p>Acc: {paymentSettings?.bankAccountNumber || 'Not configured'}</p>
                 </div>
              </div>
           </div>

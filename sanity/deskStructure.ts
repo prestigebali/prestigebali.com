@@ -7,6 +7,7 @@ import {
   Presentation,
   Heart,
   Users,
+  CreditCard,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
@@ -22,6 +23,16 @@ export const deskStructure: StructureResolver = (S) =>
             .schemaType('siteSettings')
             .documentId('siteSettings')
             .title('Site Settings'),
+        ),
+      // Payment Settings singleton
+      S.listItem()
+        .title('Payment Settings')
+        .icon(CreditCard)
+        .child(
+          S.editor()
+            .schemaType('paymentSettings')
+            .documentId('paymentSettings')
+            .title('Payment Settings'),
         ),
       // Hero Settings singleton
       S.listItem()
@@ -44,7 +55,7 @@ export const deskStructure: StructureResolver = (S) =>
         .title('Promotions')
         .icon(TagIcon)
         .schemaType('promotion')
-        .child(S.documentTypeList('promotion').title('Promotions')),
+                .child(S.documentTypeList('promotion').title('Promotions')),
       S.listItem()
         .title('Experiences')
         .icon(Heart)
@@ -65,6 +76,7 @@ export const deskStructure: StructureResolver = (S) =>
         (listItem) =>
           ![
             'siteSettings',
+            'paymentSettings',
             'heroSettings',
             'destination',
             'tourPackage',
