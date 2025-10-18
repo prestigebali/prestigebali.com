@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
+import 'react-phone-number-input/style.css';
 import { Poppins, Plus_Jakarta_Sans } from 'next/font/google';
 import { FloatingContact } from '@/components/floating-contact';
 

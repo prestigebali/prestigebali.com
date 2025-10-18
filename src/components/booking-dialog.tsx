@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,7 +49,7 @@ interface BookingDialogProps {
 const bookingSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email('Please enter a valid email address.'),
-  phoneNumber: z.string().min(10, 'Please enter a valid phone number.'),
+  phoneNumber: z.string().refine(isValidPhoneNumber, { message: "Please enter a valid phone number." }),
 });
 
 export function BookingDialog({
@@ -152,7 +155,13 @@ export function BookingDialog({
                   <FormItem>
                     <FormLabel>Phone/WhatsApp Number</FormLabel>
                     <FormControl>
-                      <Input type="tel" placeholder="+62 812 3456 7890" {...field} />
+                        <PhoneInput
+                            international
+                            defaultCountry="ID"
+                            placeholder="Enter phone number"
+                            {...field}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
