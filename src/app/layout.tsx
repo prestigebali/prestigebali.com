@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
 import { Poppins, Plus_Jakarta_Sans } from 'next/font/google';
+import { FloatingContact } from '@/components/floating-contact';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         {children}
         <Toaster />
+        <FloatingContact />
       </body>
     </html>
   );
