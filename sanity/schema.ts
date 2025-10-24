@@ -8,6 +8,7 @@ import experience from './schemas/experience'
 import booking from './schemas/booking'
 import review from './schemas/review'
 import paymentSettings from './schemas/paymentSettings'
+import blockContent from './schemas/blockContent'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
@@ -19,4 +20,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   experience,
   booking,
   review,
+  blockContent,
 ]
