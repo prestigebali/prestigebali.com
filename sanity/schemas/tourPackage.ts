@@ -33,7 +33,7 @@ export default defineType({
     defineField({
       name: 'description',
       title: 'Package Description',
-      type: 'blockContent',
+      type: 'text',
     }),
     defineField({
       name: 'price',
