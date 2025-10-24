@@ -10,7 +10,6 @@ import { PackagesClient } from './packages-client';
 async function getPackagesData() {
   const packagesQuery = `*[_type == "tourPackage"]{
       _id,
-      "slug": slug.current,
       title,
       description,
       price,

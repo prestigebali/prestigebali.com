@@ -192,7 +192,6 @@ function ToursSection() {
 async function ToursContent() {
   const allPackages = await client.fetch<SanityDocument[]>(`*[_type == "tourPackage"]{
       _id,
-      "slug": slug.current,
       title,
       description,
       price,
@@ -230,15 +229,7 @@ async function ToursContent() {
         {packagesToShow.map((tour) => (
           <TourCard
             key={tour._id}
-            id={tour._id}
-            slug={tour.slug}
-            image={tour.image}
-            title={tour.title}
-            description={tour.description}
-            price={tour.price}
-            rating={tour.rating}
-            destination={tour.destination}
-            category={tour.category}
+            {...tour}
           />
         ))}
       </div>

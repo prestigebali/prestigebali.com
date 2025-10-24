@@ -9,18 +9,23 @@ import { Badge } from './ui/badge';
 import React from 'react';
 import { BookingDialog } from './booking-dialog';
 import { urlFor } from '@/lib/sanity';
-import Link from 'next/link';
+import type { SanityDocument } from 'next-sanity';
+import { PackageDetailDialog } from './package-detail-dialog';
 
-interface TourCardProps {
-  id: string;
-  slug?: string;
-  image: any; // Sanity image object
-  title: string;
-  description: string;
-  price: number;
-  rating: number;
-  destination: string;
-  category: string;
+// Function to convert block content to plain text
+const blockContentToPlainText = (blocks: any[] = []) => {
+  return blocks
+    .map(block => {
+      if (block._type !== 'block' || !block.children) {
+        return '';
+      }
+      return block.children.map((child: any) => child.text).join('');
+    })
+    .join('\n\n');
+};
+
+
+interface TourCardProps extends SanityDocument {
   className?: string;
 }
 
@@ -37,14 +42,21 @@ const renderStars = (rating: number) => {
   );
 };
 
-export function TourCard({ id, slug, image, title, description, price, rating, destination, category, className }: TourCardProps) {
+export function TourCard({ className, ...tourPackage }: TourCardProps) {
   const [isBookingOpen, setBookingOpen] = React.useState(false);
+  const [isDetailOpen, setDetailOpen] = React.useState(false);
   
+  const { _id, title, image, description, price, rating, destination, category } = tourPackage;
+
   const imageUrl = image ? urlFor(image).width(600).height(400).url() : '/placeholder.png';
+  const plainDescription = blockContentToPlainText(description);
 
   return (
     <>
-      <Card className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card', className)}>
+      <Card
+        className={cn('group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card cursor-pointer', className)}
+        onClick={() => setDetailOpen(true)}
+      >
         <div className="relative aspect-[4/3] overflow-hidden">
           {imageUrl && (
             <Image
@@ -54,14 +66,14 @@ export function TourCard({ id, slug, image, title, description, price, rating, d
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           )}
-          <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>
+          {category && <Badge variant="default" className="absolute top-4 left-4">{category}</Badge>}
         </div>
         <div className="flex flex-col flex-grow">
           <CardHeader className="p-6">
             <CardTitle className="text-xl mb-2 leading-tight font-bold">
                {title}
             </CardTitle>
-            <CardDescription className="text-muted-foreground line-clamp-2">{description}</CardDescription>
+            <CardDescription className="text-muted-foreground line-clamp-2">{plainDescription}</CardDescription>
           </CardHeader>
           <CardFooter className="p-6 pt-0 mt-auto flex justify-between items-end">
             <div>
@@ -77,16 +89,30 @@ export function TourCard({ id, slug, image, title, description, price, rating, d
                 ${price}
               </div>
             </div>
-            <Button size="sm" className="rounded-full" onClick={() => setBookingOpen(true)}>
+            <Button 
+              size="sm" 
+              className="rounded-full" 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card's onClick from firing
+                setBookingOpen(true);
+              }}
+            >
               Book Now
             </Button>
           </CardFooter>
         </div>
       </Card>
+      
       <BookingDialog 
-          tourPackage={{ id, title }}
+          tourPackage={{ id: _id, title }}
           isOpen={isBookingOpen}
           onOpenChange={setBookingOpen}
+      />
+
+      <PackageDetailDialog
+        tourPackage={tourPackage}
+        isOpen={isDetailOpen}
+        onOpenChange={setDetailOpen}
       />
     </>
   );
