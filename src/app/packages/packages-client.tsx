@@ -20,6 +20,12 @@ interface PackagesClientProps {
 
 export function PackagesClient({ allPackages, experienceTypes, destinations }: PackagesClientProps) {
     const searchParams = useSearchParams();
+    
+    const maxPrice = useMemo(() => {
+        if (!allPackages || allPackages.length === 0) return 3000;
+        return Math.ceil(Math.max(...allPackages.map(p => p.price)));
+    }, [allPackages]);
+
     const [filters, setFilters] = useState<{
         destinations: string[];
         categories: string[];
@@ -27,9 +33,13 @@ export function PackagesClient({ allPackages, experienceTypes, destinations }: P
     }>({
         destinations: [],
         categories: [],
-        price: [0, 3000],
+        price: [0, maxPrice],
     });
 
+    useEffect(() => {
+        setFilters(prev => ({ ...prev, price: [0, maxPrice] }));
+    }, [maxPrice]);
+    
     useEffect(() => {
         const destinationParam = searchParams.get('destination');
         const categoryParam = searchParams.get('category');
@@ -71,7 +81,7 @@ export function PackagesClient({ allPackages, experienceTypes, destinations }: P
         setFilters({
             destinations: [],
             categories: [],
-            price: [0, 3000],
+            price: [0, maxPrice],
         });
     }
 
@@ -127,7 +137,7 @@ export function PackagesClient({ allPackages, experienceTypes, destinations }: P
                         <h4 className="font-semibold mb-3">Price Range</h4>
                         <Slider
                             min={0}
-                            max={3000}
+                            max={maxPrice}
                             step={100}
                             value={filters.price}
                             onValueChange={handlePriceChange}
