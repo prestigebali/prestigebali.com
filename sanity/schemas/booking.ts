@@ -11,32 +11,27 @@ export default defineType({
       name: 'name',
       title: 'Full Name',
       type: 'string',
-      readOnly: true,
     }),
     defineField({
       name: 'email',
       title: 'Email Address',
       type: 'string',
-      readOnly: true,
     }),
     defineField({
       name: 'phoneNumber',
       title: 'Phone Number',
       type: 'string',
-      readOnly: true,
     }),
     defineField({
       name: 'tourPackage',
       title: 'Tour Package',
       type: 'reference',
       to: [{type: 'tourPackage'}],
-      readOnly: true,
     }),
     defineField({
       name: 'bookingDate',
       title: 'Booking Date',
       type: 'datetime',
-      readOnly: true,
     }),
   ],
   preview: {
