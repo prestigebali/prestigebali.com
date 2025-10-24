@@ -65,7 +65,7 @@ export function PackageDetailDialog({
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
           <DialogHeader className="pr-8">
-            <DialogTitle className="text-3xl font-bold">{tourPackage.title}</DialogTitle>
+            <DialogTitle className="text-2xl font-bold">{tourPackage.title}</DialogTitle>
             <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
               <div className="flex items-center gap-1">
                 <Pin className="w-4 h-4" />
