@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -77,8 +76,8 @@ export function PackageDetailDialog({
               </div>
             </div>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-8 pr-4">
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+          <div className="flex-1 overflow-y-auto space-y-6 pr-4">
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden w-full">
               <Image src={imageUrl} alt={tourPackage.title} fill className="object-cover" />
               {tourPackage.category && (
                 <Badge variant="default" className="absolute top-4 left-4">
