@@ -76,8 +76,8 @@ export function PackageDetailDialog({
               </div>
             </div>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-6 pr-4">
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden w-full">
+          <div className="grid md:grid-cols-2 gap-6 flex-1 overflow-y-auto pr-4">
+             <div className="relative aspect-[4/3] rounded-lg overflow-hidden w-full self-start">
               <Image src={imageUrl} alt={tourPackage.title} fill className="object-cover" />
               {tourPackage.category && (
                 <Badge variant="default" className="absolute top-4 left-4">
