@@ -7,6 +7,11 @@ export const client = createClient({
   dataset,
   apiVersion,
   useCdn: process.env.NODE_ENV === 'production', // Use CDN in production
+  // Implement ISR by setting a revalidate time (e.g., 1 hour)
+  // This will cache pages and re-fetch data in the background
+  next: {
+    revalidate: 3600 // 1 hour
+  }
 });
 
 
