@@ -1,18 +1,21 @@
 import {defineType, defineField} from 'sanity'
-import {Package as PackageIcon} from 'lucide-react'
 
 export default defineType({
   name: 'tourPackage',
   title: 'Tour Package',
   type: 'document',
-  icon: PackageIcon,
   fields: [
+
+    // =====================
+    // BASIC INFO
+    // =====================
     defineField({
       name: 'title',
-      title: 'Package Name',
+      title: 'Package Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: Rule => Rule.required(),
     }),
+
     defineField({
       name: 'slug',
       title: 'Slug',
@@ -21,69 +24,136 @@ export default defineType({
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: Rule => Rule.required(),
     }),
+
     defineField({
-      name: 'destination',
-      title: 'Destination',
-      type: 'reference',
-      to: [{type: 'destination'}],
-      validation: (Rule) => Rule.required(),
+      name: 'shortDescription',
+      title: 'Short Description',
+      type: 'text',
+      rows: 3,
     }),
+
     defineField({
       name: 'description',
-      title: 'Package Description',
-      type: 'blockContent',
+      title: 'Full Description',
+      type: 'array',
+      of: [{type: 'block'}],
     }),
+
+    // =====================
+    // EXPERIENCE CATEGORY (IMPORTANT)
+    // =====================
     defineField({
-      name: 'price',
-      title: 'Price (USD)',
-      type: 'number',
-      validation: (Rule) => Rule.required().positive(),
+      name: 'experienceCategory',
+      title: 'Experience Category',
+      type: 'string',
+      validation: Rule => Rule.required(),
+      options: {
+        list: [
+          {
+            title: 'All-Inclusive Luxury Holiday Packages in Bali',
+            value: 'all-inclusive-luxury-holiday',
+          },
+          {
+            title: 'Luxury Private Transportation in Bali – Chauffeur & VIP Transfers',
+            value: 'luxury-private-transportation',
+          },
+          {
+            title: 'Private Luxury Tours & Signature Bali Experiences',
+            value: 'private-luxury-tours',
+          },
+          {
+            title: 'All-Inclusive Retreat Hosting Service in Bali',
+            value: 'retreat-hosting',
+          },
+          {
+            title: 'Luxury Honeymoons & Romantic Getaways in Bali',
+            value: 'luxury-honeymoon',
+          },
+          {
+            title: 'Luxury Villas & Private Stays',
+            value: 'luxury-villas',
+          },
+          {
+            title: 'Luxury Yacht Charters & Island Hopping (Bali, Komodo, Labuan Bajo)',
+            value: 'luxury-yacht-charter',
+          },
+          {
+            title: 'Luxury Team Building & Corporate Retreats in Bali',
+            value: 'corporate-retreat',
+          },
+        ],
+        layout: 'dropdown',
+      },
     }),
+
+    // =====================
+    // PACKAGE DETAILS
+    // =====================
     defineField({
       name: 'duration',
       title: 'Duration',
       type: 'string',
-      description: "Example: '7 Days' or '3 Days 2 Nights'",
+      description: 'Example: Full Day, 5 Days 4 Nights',
     }),
+
     defineField({
-      name: 'rating',
-      title: 'Rating',
+      name: 'priceFrom',
+      title: 'Price From',
       type: 'number',
-      description: 'A number between 1 and 5',
-      validation: (Rule) => Rule.min(1).max(5),
-      initialValue: 4.5,
     }),
+
     defineField({
-      name: 'category',
-      title: 'Experience Category',
+      name: 'currency',
+      title: 'Currency',
       type: 'string',
-      options: {
-        list: [
-          'Romantic Honeymoons',
-          'Family Vacations',
-          'Cultural Adventures',
-          'Wellness Retreats',
-          'Company Outings',
-        ],
-      },
+      initialValue: 'USD',
     }),
+
     defineField({
-      name: 'image',
-      title: 'Package Image',
+      name: 'inclusions',
+      title: 'Inclusions',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
+
+    // =====================
+    // MEDIA
+    // =====================
+    defineField({
+      name: 'featuredImage',
+      title: 'Featured Image',
       type: 'image',
       options: {
         hotspot: true,
       },
-      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: 'gallery',
+      title: 'Gallery',
+      type: 'array',
+      of: [{type: 'image'}],
+    }),
+
+    // =====================
+    // STATUS
+    // =====================
+    defineField({
+      name: 'isActive',
+      title: 'Active / Visible',
+      type: 'boolean',
+      initialValue: true,
     }),
   ],
+
   preview: {
     select: {
       title: 'title',
-      subtitle: 'destination.name',
-      media: 'image',
+      subtitle: 'experienceCategory',
+      media: 'featuredImage',
     },
   },
 })
+
