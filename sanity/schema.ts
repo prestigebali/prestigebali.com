@@ -9,11 +9,13 @@ import booking from './schemas/booking'
 import review from './schemas/review'
 import paymentSettings from './schemas/paymentSettings'
 import blockContent from './schemas/blockContent'
+import aboutPage from './schemas/aboutPage'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
   paymentSettings,
   heroSettings,
+  aboutPage,
   destination,
   tourPackage,
   promotion,
