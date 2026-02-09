@@ -1,5 +1,7 @@
 import { client } from '@/src/lib/sanity'
 import Link from 'next/link'
+export const dynamicParams = true
+export const revalidate = 60
 
 const query = `
 *[
