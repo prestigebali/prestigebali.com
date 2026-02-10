@@ -48,6 +48,12 @@ export default defineType({
     select: {
       title: 'title',
       media: 'image',
-    },
+    },    defineField({
+      name: 'relatedPackages',
+      title: 'Related Tour Packages',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'tourPackages' }] }],
+      description: 'Select which tour packages should appear under this Experience category',
+    }),
   },
 })
