@@ -1,5 +1,5 @@
-import {defineType, defineField} from 'sanity'
-import {Heart} from 'lucide-react'
+import { defineType, defineField } from 'sanity'
+import { Heart } from 'lucide-react'
 
 export default defineType({
   name: 'experience',
@@ -25,11 +25,11 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          {title: 'Heart (Honeymoons)', value: 'Heart'},
-          {title: 'Users (Family)', value: 'Users'},
-          {title: 'Mountain (Adventures)', value: 'Mountain'},
-          {title: 'Waves (Retreats)', value: 'Waves'},
-          {title: 'Building (Company)', value: 'Building'},
+          { title: 'Heart (Honeymoons)', value: 'Heart' },
+          { title: 'Users (Family)', value: 'Users' },
+          { title: 'Mountain (Adventures)', value: 'Mountain' },
+          { title: 'Waves (Retreats)', value: 'Waves' },
+          { title: 'Building (Company)', value: 'Building' },
         ],
       },
       validation: (Rule) => Rule.required(),
@@ -44,7 +44,7 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ✅ THIS IS THE BUTTON YOU WANT (Add products to experience)
+    // ✅ This creates the "Add item" button to link many products
     defineField({
       name: 'relatedPackages',
       title: 'Related Tour Packages',
