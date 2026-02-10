@@ -38,17 +38,19 @@ export default defineType({
       name: 'image',
       title: 'Experience Image',
       type: 'image',
-      options: { hotspot: true },
+      options: {
+        hotspot: true,
+      },
       validation: (Rule) => Rule.required(),
     }),
 
-    // ✅ Correct position
+    // ✅ THIS IS THE BUTTON YOU WANT (Add products to experience)
     defineField({
       name: 'relatedPackages',
       title: 'Related Tour Packages',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'tourPackages' }] }],
-      description: 'Select which tour packages should appear under this Experience category',
+      description: 'Select which tour packages appear under this experience',
     }),
   ],
   preview: {
