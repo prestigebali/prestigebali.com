@@ -2,7 +2,7 @@
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Landmark, Wallet, ExternalLink } from 'lucide-react';
+import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Wallet, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,18 +91,7 @@ export default async function HowToBookPage() {
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-3">Please use the official accounts below for all transactions. Be cautious of fraud attempts.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-4">
-                            <Landmark className="w-8 h-8 text-primary" />
-                            <CardTitle>Bank Transfer</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3 text-muted-foreground text-lg">
-                            <p><strong className="text-foreground font-medium">Bank Name:</strong> {settings?.bankName || 'Not configured'}</p>
-                            <p><strong className="text-foreground font-medium">Account Holder:</strong> {settings?.bankAccountHolder || 'Not configured'}</p>
-                            <p><strong className="text-foreground font-medium">Account Number:</strong> {settings?.bankAccountNumber || 'Not configured'}</p>
-                        </CardContent>
-                    </Card>
+                <div className="max-w-sm mx-auto">
                     <Card>
                         <CardHeader className="flex flex-row items-center gap-4">
                             <Wallet className="w-8 h-8 text-primary" />
