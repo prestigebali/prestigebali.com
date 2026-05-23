@@ -10,6 +10,7 @@ import review from './schemas/review'
 import paymentSettings from './schemas/paymentSettings'
 import blockContent from './schemas/blockContent'
 import aboutPage from './schemas/aboutPage'
+import wellnessService from './schemas/wellnessService'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
@@ -23,4 +24,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   booking,
   review,
   blockContent,
+  wellnessService,
 ]
