@@ -32,6 +32,12 @@ export default defineType({
       description: 'The email address for PayPal payments.',
       validation: (Rule) => Rule.email(),
     }),
+    defineField({
+      name: 'paypalLink',
+      title: 'PayPal.me Link',
+      type: 'string',
+      description: 'The PayPal.me link for direct payments (e.g., https://paypal.me/prestigebali).',
+    }),
   ],
   preview: {
     prepare() {

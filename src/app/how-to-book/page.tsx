@@ -2,7 +2,7 @@
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Landmark, Wallet } from 'lucide-react';
+import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Landmark, Wallet, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -109,9 +109,24 @@ export default async function HowToBookPage() {
                             <CardTitle>PayPal</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3 text-muted-foreground text-lg">
-                            <p><strong className="text-foreground font-medium">PayPal Email:</strong></p>
-                            <p>{settings?.paypalEmail || 'Not configured'}</p>
-                            <p className="text-sm">Please ensure to cover any transaction fees.</p>
+                            {settings?.paypalLink ? (
+                                <>
+                                    <p><strong className="text-foreground font-medium">Direct Payment Link:</strong></p>
+                                    <Button asChild variant="default" className="w-full">
+                                        <a href={settings.paypalLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                                            Pay via PayPal
+                                            <ExternalLink className="w-4 h-4" />
+                                        </a>
+                                    </Button>
+                                    <p className="text-sm">Please ensure to cover any transaction fees.</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p><strong className="text-foreground font-medium">PayPal Email:</strong></p>
+                                    <p>{settings?.paypalEmail || 'Not configured'}</p>
+                                    <p className="text-sm">Please ensure to cover any transaction fees.</p>
+                                </>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
