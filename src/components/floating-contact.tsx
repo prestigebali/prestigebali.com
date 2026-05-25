@@ -5,7 +5,6 @@ import type { SanityDocument } from 'next-sanity';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
 import { client } from '@/lib/sanity';
-import Link from 'next/link';
 
 const WhatsAppIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor" className="w-6 h-6">
@@ -19,7 +18,7 @@ export function FloatingContact() {
   useEffect(() => {
     client
       .fetch<SanityDocument | null>(
-        \`*[_type == "siteSettings" && _id == "siteSettings"][0]{ email, "whatsappNumber": phoneNumber }\`
+        '*[_type == "siteSettings" && _id == "siteSettings"][0]{ email, "whatsappNumber": phoneNumber }'
       )
       .then((s) => {
         if (s) {
@@ -35,33 +34,27 @@ export function FloatingContact() {
       });
   }, []);
 
-  const whatsAppMessage = \`Hello, I'm interested in learning more about your tour packages.\`;
-  const emailSubject = \`Inquiry about Prestige Bali Tour Packages\`;
+  const whatsAppMessage = 'Hello, I am interested in learning more about your tour packages.';
+  const emailSubject = 'Inquiry about Prestige Bali Tour Packages';
 
   const whatsappNumber = settings?.whatsappNumber ?? '6287764161803';
   const email = settings?.email ?? 'sales@prestigebali.com';
 
-  const whatsappUrl = \`https://wa.me/\${whatsappNumber}?text=\${encodeURIComponent(whatsAppMessage)}\`;
-  const emailUrl = \`mailto:\${email}?subject=\${encodeURIComponent(emailSubject)}\`;
+  const whatsappUrl = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsAppMessage);
+  const emailUrl = 'mailto:' + email + '?subject=' + encodeURIComponent(emailSubject);
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
-      <Link href={emailUrl} aria-label="Contact via Email">
-        <Button
-          size="icon"
-          className="rounded-full w-12 h-12 bg-red-500 hover:bg-red-600 shadow-lg"
-        >
+      <a href={emailUrl} aria-label="Contact via Email">
+        <Button size="icon" className="rounded-full w-12 h-12 bg-red-500 hover:bg-red-600 shadow-lg">
           <Mail className="w-5 h-5" />
         </Button>
-      </Link>
-      <Link href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-        <Button
-          size="icon"
-          className="rounded-full w-14 h-14 bg-green-500 hover:bg-green-600 shadow-xl"
-        >
+      </a>
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+        <Button size="icon" className="rounded-full w-14 h-14 bg-green-500 hover:bg-green-600 shadow-xl">
           <WhatsAppIcon />
         </Button>
-      </Link>
+      </a>
     </div>
   );
 }
