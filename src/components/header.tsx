@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 const packagesLinks = [
-  { name: 'Luxury Day Tours', href: '/packages?category=Luxury+Day+Tours' },
-  { name: 'Holiday Packages', href: '/packages?category=Holiday+Packages' },
+  { name: 'Luxury Day Tours', href: '/day-tours' },
+  { name: 'Holiday Packages', href: '/holiday-packages' },
 ];
 
 export function Header() {
