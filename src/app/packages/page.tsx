@@ -1,4 +1,4 @@
-'use server';
+
 
   import { Suspense } from 'react';
   import { Header } from '@/components/header';
