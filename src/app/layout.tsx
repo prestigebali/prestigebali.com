@@ -4,6 +4,8 @@ import './globals.css';
 import 'react-phone-number-input/style.css';
 import { Poppins, Plus_Jakarta_Sans } from 'next/font/google';
 import { FloatingContact } from '@/components/floating-contact';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -34,6 +36,8 @@ export default function RootLayout({
         {children}
         <Toaster />
         <FloatingContact />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
