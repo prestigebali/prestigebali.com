@@ -2,20 +2,19 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Twitter, Instagram, Landmark, Wallet } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Landmark, Wallet, ArrowLeftRight } from 'lucide-react';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 
 export async function Footer() {
   const settings = await client.fetch<SanityDocument>(`*[_type == "siteSettings" && _id == "siteSettings"][0]`);
   const paymentSettings = await client.fetch<SanityDocument>(`*[_type == "paymentSettings" && _id == "paymentSettings"][0]`);
-  
+
   const socialLinks = [
     { name: 'Facebook', url: settings?.facebookUrl, icon: Facebook },
     { name: 'Twitter', url: settings?.twitterUrl, icon: Twitter },
     { name: 'Instagram', url: settings?.instagramUrl, icon: Instagram },
   ].filter(link => link.url);
-
 
   return (
     <footer className="bg-gray-900 text-gray-300">
@@ -23,17 +22,9 @@ export async function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 font-bold text-2xl mb-4 text-white">
-              <Image 
-                src="https://res.cloudinary.com/dfinkfssq/image/upload/v1760581094/logo_th6oyh.png" 
-                alt="Prestige Bali Logo"
-                width={140}
-                height={35}
-                className="w-auto h-8"
-              />
+              <Image src="https://res.cloudinary.com/dfinkfssq/image/upload/v1760581094/logo_th6oyh.png" alt="Prestige Bali Logo" width={140} height={35} className="w-auto h-8" />
             </Link>
-            <p className="text-sm text-gray-400">
-              Crafting premium leisure and tour experiences across Indonesia’s most captivating islands.
-            </p>
+            <p className="text-sm text-gray-400">Crafting premium leisure and tour experiences across Indonesia's most captivating islands.</p>
           </div>
           <div className="lg:col-span-1">
             <h4 className="font-semibold text-white mb-4">Quick Links</h4>
@@ -48,39 +39,56 @@ export async function Footer() {
             </ul>
           </div>
           <div className="lg:col-span-1">
-             <h4 className="font-semibold text-white mb-4">Contact Us</h4>
-             <ul className="space-y-2 text-sm text-gray-400">
-                <li>{settings?.email || 'sales@prestigebali.com'}</li>
-                <li>{settings?.phoneNumber || '+62 877 6416 1803'}</li>
-                <li>{settings?.address || 'Jl. Sunset Road No.8, Kuta, Bali'}</li>
-             </ul>
-             {socialLinks.length > 0 && (
-                <div className="mt-6">
-                    <h4 className="font-semibold text-white mb-4">Follow Us</h4>
-                    <div className="flex space-x-4">
-                    {socialLinks.map(social => (
-                        <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
-                        <social.icon className="w-5 h-5" />
-                        </a>
-                    ))}
-                    </div>
+            <h4 className="font-semibold text-white mb-4">Contact Us</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>{settings?.email || 'sales@prestigebali.com'}</li>
+              <li>{settings?.phoneNumber || '+62 877 6416 1803'}</li>
+              <li>{settings?.address || 'Jl. Sunset Road No.8, Kuta, Bali'}</li>
+            </ul>
+            {socialLinks.length > 0 && (
+              <div className="mt-6">
+                <h4 className="font-semibold text-white mb-4">Follow Us</h4>
+                <div className="flex space-x-4">
+                  {socialLinks.map(social => (
+                    <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary">
+                      <social.icon className="w-5 h-5" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="lg:col-span-1">
+            <h4 className="font-semibold text-white mb-4">Official Payment</h4>
+            <div className="flex flex-col gap-5 text-sm text-gray-400">
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center font-medium text-white"><Wallet className="w-4 h-4" /> PayPal</div>
+                {paymentSettings?.paypalEmail ? (
+                  <a
+                    href={`https://www.paypal.com/send?recipient=${encodeURIComponent(paymentSettings.paypalEmail)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline break-all"
+                  >
+                    {paymentSettings.paypalEmail}
+                  </a>
+                ) : <p>Not configured</p>}
+              </div>
+              {paymentSettings?.wiseEmail && (
+                <div className="space-y-1">
+                  <div className="flex gap-2 items-center font-medium text-white"><ArrowLeftRight className="w-4 h-4" /> Wise</div>
+                  <a href="https://wise.com/pay/me" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                    {paymentSettings.wiseEmail}
+                  </a>
                 </div>
               )}
-          </div>
-           <div className="lg:col-span-1">
-            <h4 className="font-semibold text-white mb-4">Official Payment</h4>
-             <div className='flex flex-col gap-6 text-sm text-gray-400'>
-                <div className="space-y-2">
-                  <div className='flex gap-2 items-center font-medium text-white'><Wallet className='w-4 h-4'/> PayPal</div>
-                  <p>{paymentSettings?.paypalEmail || 'Not configured'}</p>
-                </div>
-                <div className="space-y-2">
-                  <div className='flex gap-2 items-center font-medium text-white'><Landmark className='w-4 h-4'/> Bank Transfer</div>
-                  <p>{paymentSettings?.bankName || 'Not configured'}</p>
-                  <p>A/N: {paymentSettings?.bankAccountHolder || 'Not configured'}</p>
-                  <p>Acc: {paymentSettings?.bankAccountNumber || 'Not configured'}</p>
-                </div>
-             </div>
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center font-medium text-white"><Landmark className="w-4 h-4" /> Bank Transfer</div>
+                <p>{paymentSettings?.bankName || 'Not configured'}</p>
+                <p>A/N: {paymentSettings?.bankAccountHolder || 'Not configured'}</p>
+                <p>Acc: {paymentSettings?.bankAccountNumber || 'Not configured'}</p>
+              </div>
+            </div>
           </div>
         </div>
         <div className="border-t border-gray-700 pt-8 text-center text-sm text-gray-500">
