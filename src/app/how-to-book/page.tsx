@@ -10,7 +10,12 @@ import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 
 export default async function HowToBookPage() {
-  const settings = await client.fetch<SanityDocument | null>(`*[_type == "paymentSettings" && _id == "paymentSettings"][0]`);
+  let settings: SanityDocument | null = null;
+try {
+  settings = await client.fetch<SanityDocument | null>('*[_type == "paymentSettings" && _id == "paymentSettings"][0]');
+} catch {
+  // use null defaults
+}
 
   const steps = [
     { icon: <Search className="w-12 h-12 text-primary" />, title: '1. Explore Tour Packages', description: 'Find the perfect tour package for you on our Packages page. Use the filters to sort by destination, experience type, and price.', link: '/packages', linkLabel: 'Explore Packages' },
