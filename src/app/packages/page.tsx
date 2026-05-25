@@ -57,16 +57,23 @@
     );
   };
 
-  async function PackagesContent() {
-    const { allPackages, experienceTypes, destinations } = await getPackagesData();
-    return (
-      <PackagesClient 
-        allPackages={allPackages} 
-        experienceTypes={experienceTypes}
-        destinations={destinations}
-      />
-    );
+ async function PackagesContent() {
+  let allPackages: SanityDocument[] = [];
+  let experienceTypes: SanityDocument[] = [];
+  let destinations: SanityDocument[] = [];
+  try {
+    const data = await getPackagesData();
+    allPackages = data.allPackages;
+    experienceTypes = data.experienceTypes;
+    destinations = data.destinations;
+  } catch (err) {
+    console.error('Failed to load packages data:', err);
   }
-
-  export default PackagesPage;
-  
+  return (
+    <PackagesClient
+      allPackages={allPackages}
+      experienceTypes={experienceTypes}
+      destinations={destinations}
+    />
+  );
+}
