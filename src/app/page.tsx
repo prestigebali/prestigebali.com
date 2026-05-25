@@ -39,7 +39,6 @@ const reviewData = [
   }
 ];
 
-
 export default async function Home() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -57,7 +56,12 @@ export default async function Home() {
 }
 
 async function HeroSection() {
-  const heroSettings = await client.fetch<SanityDocument>(`*[_type == "heroSettings" && _id == "heroSettings"][0]`);
+  let heroSettings: SanityDocument | null = null;
+  try {
+    heroSettings = await client.fetch<SanityDocument>('*[_type == "heroSettings" && _id == "heroSettings"][0]');
+  } catch {
+    // use defaults
+  }
 
   const getYouTubeEmbedUrl = (url: string) => {
     if (!url) return null;
@@ -95,27 +99,25 @@ async function HeroSection() {
           allow="autoplay; encrypted-media"
         ></iframe>
       )}
-       {heroSettings?.backgroundType === 'Video' && !youTubeEmbedUrl && (backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl) && (
-         <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute top-0 left-0 w-full h-full object-cover"
-            key={backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl}
-         >
-           <source src={backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl} type="video/mp4" />
-           Your browser does not support the video tag.
-         </video>
+      {heroSettings?.backgroundType === 'Video' && !youTubeEmbedUrl && (backgroundVideoAssetUrl || heroSettings?.backgroundVideoUrl) && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          key={backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl}
+        >
+          <source src={backgroundVideoAssetUrl || heroSettings.backgroundVideoUrl} type="video/mp4" />
+        </video>
       )}
-
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up text-shadow-lg shadow-black/50">
           {heroSettings?.headline || "Crafting Premium Leisures & Tours"}
         </h1>
         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-300 text-shadow-lg shadow-black/50">
-         {heroSettings?.subheadline || "Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits."}
+          {heroSettings?.subheadline || "Exclusive, tailor-made experiences across Bali, Lombok, Labuan Bajo, and Sumbawa. Your unforgettable journey awaits."}
         </p>
         {heroSettings?.buttonText && heroSettings.buttonLink && (
           <div className="animate-fade-in-up animation-delay-600">
@@ -130,27 +132,27 @@ async function HeroSection() {
 }
 
 async function DestinationsSection() {
-  const destinations = await client.fetch<SanityDocument[]>(`*[_type == "destination"]{
-    _id,
-    name,
-    slug,
-    image
-  }`);
+  let destinations: SanityDocument[] = [];
+  try {
+    destinations = await client.fetch<SanityDocument[]>('*[_type == "destination"]{_id, name, slug, image}');
+  } catch {
+    // use empty array
+  }
 
   return (
     <section id="destinations" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Our Destinations</p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
-              Explore Captivating Islands
-            </h2>
+          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Our Destinations</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
+            Explore Captivating Islands
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {destinations.map((dest) => (
-            <Link 
-              key={dest._id} 
-              href={`/packages?destination=${encodeURIComponent(dest.name)}`} 
+            <Link
+              key={dest._id}
+              href={`/packages?destination=${encodeURIComponent(dest.name)}`}
               className="relative group aspect-[1.7] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
             >
               {dest.image && (
@@ -190,47 +192,34 @@ function ToursSection() {
 }
 
 async function ToursContent() {
-  const allPackages = await client.fetch<SanityDocument[]>(`*[_type == "tourPackage"]{
-      _id,
-      title,
-      description,
-      price,
-      rating,
-      image,
-      category,
-      "destination": destination->name
-    }`);
-  
-  const tourCategories = await client.fetch<string[]>(`*[_type == "experience"].title`);
+  let allPackages: SanityDocument[] = [];
+  let tourCategories: string[] = [];
+  try {
+    [allPackages, tourCategories] = await Promise.all([
+      client.fetch<SanityDocument[]>('*[_type == "tourPackage"]{_id, title, description, price, rating, image, category, "destination": destination->name}'),
+      client.fetch<string[]>('*[_type == "experience"].title'),
+    ]);
+  } catch {
+    // use empty arrays
+  }
 
   const packagesToShow = allPackages.slice(0, 6);
 
   return (
     <>
       <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
-        <Button
-          variant={"default"}
-          className="rounded-full transition-all duration-300"
-        >
+        <Button variant="default" className="rounded-full transition-all duration-300">
           <Link href="/packages">All</Link>
         </Button>
         {tourCategories.map(category => (
-          <Button
-            key={category}
-            variant={"outline"}
-            className="rounded-full transition-all duration-300"
-          >
+          <Button key={category} variant="outline" className="rounded-full transition-all duration-300">
             <Link href={`/packages?category=${encodeURIComponent(category)}`}>{category}</Link>
           </Button>
         ))}
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {packagesToShow.map((tour) => (
-          <TourCard
-            key={tour._id}
-            {...tour}
-          />
+          <TourCard key={tour._id} {...tour} />
         ))}
       </div>
       <div className="text-center mt-12">
@@ -243,14 +232,13 @@ async function ToursContent() {
 }
 
 async function ExperiencesSection() {
-  const experiences = await client.fetch<SanityDocument[]>(`*[_type == "experience"]{
-    _id,
-    title,
-    description,
-    image,
-    icon
-  }`);
-  
+  let experiences: SanityDocument[] = [];
+  try {
+    experiences = await client.fetch<SanityDocument[]>('*[_type == "experience"]{_id, title, description, image, icon}');
+  } catch {
+    // use empty array
+  }
+
   return (
     <section id="experiences" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -265,23 +253,25 @@ async function ExperiencesSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {experiences.map((exp) => (
-            <Link
-              href={`/packages?category=${encodeURIComponent(exp.title)}`}
-              key={exp._id}
-              className="relative group aspect-[1/1.2] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
-            >
-              <Image
-                src={urlFor(exp.image).url()}
-                alt={exp.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <h3 className="text-2xl font-bold text-shadow-md shadow-black/50">{exp.title}</h3>
-                <p className="mt-2 text-sm text-primary-foreground/80 line-clamp-2">{exp.description}</p>
-              </div>
-            </Link>
+            exp.image ? (
+              <Link
+                href={`/packages?category=${encodeURIComponent(exp.title)}`}
+                key={exp._id}
+                className="relative group aspect-[1/1.2] overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block"
+              >
+                <Image
+                  src={urlFor(exp.image).url()}
+                  alt={exp.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-6 text-white">
+                  <h3 className="text-2xl font-bold text-shadow-md shadow-black/50">{exp.title}</h3>
+                  <p className="mt-2 text-sm text-primary-foreground/80 line-clamp-2">{exp.description}</p>
+                </div>
+              </Link>
+            ) : null
           ))}
         </div>
       </div>
@@ -290,40 +280,38 @@ async function ExperiencesSection() {
 }
 
 async function ReviewsSection() {
-  const reviews = await client.fetch<SanityDocument[]>(`*[_type == "review"]{
-    _id,
-    name,
-    handle,
-    rating,
-    comment,
-    avatar
-  }`);
+  let reviews: SanityDocument[] = [];
+  try {
+    reviews = await client.fetch<SanityDocument[]>('*[_type == "review"]{_id, name, handle, rating, comment, avatar}');
+  } catch {
+    // fall back to static reviews
+    reviews = reviewData.map(r => ({ ...r, _type: 'review', _createdAt: '', _updatedAt: '', _rev: '' }));
+  }
+
+  const displayReviews = reviews.length > 0 ? reviews : reviewData.map(r => ({ ...r, _type: 'review', _createdAt: '', _updatedAt: '', _rev: '' }));
 
   return (
     <section id="reviews" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 relative">
-           <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
-              Treasured Memories, Trusted Service
-            </h2>
+          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Guest Stories</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
+            Treasured Memories, Trusted Service
+          </h2>
         </div>
         <Carousel
-          opts={{
-            align: "start",
-            loop: reviews.length > 2,
-          }}
+          opts={{ align: "start", loop: displayReviews.length > 2 }}
           className="w-full max-w-6xl mx-auto"
         >
           <CarouselContent className="-ml-4">
-            {reviews.map((review) => (
-              <CarouselItem key={review._id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+            {displayReviews.map((review, i) => (
+              <CarouselItem key={review._id || i} className="pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-1 h-full">
                   <ReviewCard
-                    avatarUrl={review.avatar ? urlFor(review.avatar).url() : "https://picsum.photos/seed/avatar/100/100"}
+                    avatarUrl={review.avatar ? urlFor(review.avatar).url() : review.avatarUrl || "https://picsum.photos/seed/avatar/100/100"}
                     name={review.name}
                     handle={review.handle}
-                    review={review.comment}
+                    review={review.comment || review.review}
                     rating={review.rating}
                     className="h-full"
                   />
@@ -331,12 +319,12 @@ async function ReviewsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-           {reviews.length > 1 && (
+          {displayReviews.length > 1 && (
             <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
               <CarouselPrevious className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
               <CarouselNext className="static translate-y-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground" />
             </div>
-           )}
+          )}
         </Carousel>
       </div>
     </section>
