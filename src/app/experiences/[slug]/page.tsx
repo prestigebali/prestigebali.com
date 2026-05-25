@@ -1,4 +1,4 @@
-import { client } from '@/src/lib/sanity'
+import { client } from '@/lib/sanity'
 import Link from 'next/link'
 export const dynamicParams = true
 export const revalidate = 60
@@ -58,4 +58,3 @@ export default async function ExperiencePage({
     </div>
   )
 }
-
