@@ -9,15 +9,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
-const packagesLinks = [
-  { name: 'Luxury Day Tours', href: '/day-tours' },
+const programsLinks = [
+  { name: 'Day Tour', href: '/day-tours' },
   { name: 'Holiday Packages', href: '/holiday-packages' },
 ];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [packagesOpen, setPackagesOpen] = useState(false);
-  const [mobilePackagesOpen, setMobilePackagesOpen] = useState(false);
+  const [programsOpen, setProgramsOpen] = useState(false);
+  const [mobileProgramsOpen, setMobileProgramsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
@@ -30,7 +30,7 @@ export function Header() {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setPackagesOpen(false);
+        setProgramsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -63,21 +63,21 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-8">
           <Link href="/about" className={linkClass}>About</Link>
 
-          {/* Luxury Day Tours dropdown */}
+          {/* Programs dropdown */}
           <div ref={dropdownRef} className="relative">
             <button
-              onClick={() => setPackagesOpen((o) => !o)}
+              onClick={() => setProgramsOpen((o) => !o)}
               className={cn(linkClass, 'flex items-center gap-1')}
             >
-              Packages <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', packagesOpen && 'rotate-180')} />
+              Programs <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', programsOpen && 'rotate-180')} />
             </button>
-            {packagesOpen && (
+            {programsOpen && (
               <div className="absolute top-full left-0 mt-2 w-52 rounded-xl bg-gray-900/95 backdrop-blur-sm shadow-xl border border-white/10 py-1.5 z-50">
-                {packagesLinks.map((link) => (
+                {programsLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={() => setPackagesOpen(false)}
+                    onClick={() => setProgramsOpen(false)}
                     className="block px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     {link.name}
@@ -126,18 +126,18 @@ export function Header() {
                 <nav className="flex flex-col gap-4">
                   <Link href="/about" className="text-lg font-medium hover:text-primary transition-colors">About</Link>
 
-                  {/* Mobile Packages accordion */}
+                  {/* Mobile Programs accordion */}
                   <div>
                     <button
-                      onClick={() => setMobilePackagesOpen((o) => !o)}
+                      onClick={() => setMobileProgramsOpen((o) => !o)}
                       className="flex items-center justify-between w-full text-lg font-medium hover:text-primary transition-colors"
                     >
-                      Packages
-                      <ChevronDown className={cn('h-4 w-4 transition-transform', mobilePackagesOpen && 'rotate-180')} />
+                      Programs
+                      <ChevronDown className={cn('h-4 w-4 transition-transform', mobileProgramsOpen && 'rotate-180')} />
                     </button>
-                    {mobilePackagesOpen && (
+                    {mobileProgramsOpen && (
                       <div className="mt-2 ml-4 flex flex-col gap-3 border-l-2 border-muted pl-4">
-                        {packagesLinks.map((link) => (
+                        {programsLinks.map((link) => (
                           <Link key={link.href} href={link.href} className="text-base text-muted-foreground hover:text-primary transition-colors">
                             {link.name}
                           </Link>
