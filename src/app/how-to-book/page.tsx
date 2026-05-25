@@ -2,7 +2,7 @@
 
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { Search, List, Mail, MessageCircle, CreditCard, CheckCircle, Plane, Landmark, Wallet, ArrowLeftRight } from 'lucide-react';
+import { Search, List, MessageCircle, CreditCard, CheckCircle, Plane, Landmark, Wallet, ArrowLeftRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,7 +54,7 @@ export default async function HowToBookPage() {
                   <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Official Payment Information</h2>
                   <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-3">Please use the official accounts below for all transactions. Be cautious of fraud attempts.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <Card>
                     <CardHeader className="flex flex-row items-center gap-4">
                       <Landmark className="w-8 h-8 text-primary" />
@@ -66,26 +66,29 @@ export default async function HowToBookPage() {
                       <p><strong className="text-foreground font-medium">Account Number:</strong> {settings?.bankAccountNumber || 'Not configured'}</p>
                     </CardContent>
                   </Card>
+
                   <Card>
                     <CardHeader className="flex flex-row items-center gap-4">
-                      <Wallet className="w-8 h-8 text-primary" />
+                      <Wallet className="w-8 h-8 text-blue-600" />
                       <CardTitle>PayPal</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-muted-foreground">
-                      <p className="font-medium text-foreground">Send payment to:</p>
-                      {settings?.paypalEmail ? (
-                        <a
-                          href={`https://www.paypal.com/send?recipient=${encodeURIComponent(settings.paypalEmail)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-primary hover:underline font-medium text-lg break-all"
-                        >
-                          <Wallet className="w-4 h-4 flex-shrink-0" />{settings.paypalEmail}
-                        </a>
-                      ) : <p className="text-lg">Not configured</p>}
+                    <CardContent className="space-y-4 text-muted-foreground">
+                      <p className="font-medium text-foreground">Pay securely via PayPal:</p>
+                      <a
+                        href="https://paypal.me/prestigebali"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-base"
+                      >
+                        <Wallet className="w-5 h-5" /> Pay via PayPal
+                      </a>
+                      {settings?.paypalEmail && (
+                        <p className="text-sm">{settings.paypalEmail}</p>
+                      )}
                       <p className="text-sm">Please ensure to cover any transaction fees.</p>
                     </CardContent>
                   </Card>
+
                   <Card>
                     <CardHeader className="flex flex-row items-center gap-4">
                       <ArrowLeftRight className="w-8 h-8 text-primary" />
@@ -104,6 +107,25 @@ export default async function HowToBookPage() {
                         </a>
                       ) : <p className="text-lg">Not configured</p>}
                       <p className="text-sm">Great for international transfers with low fees.</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center gap-4">
+                      <MessageCircle className="w-8 h-8 text-green-500" />
+                      <CardTitle>WhatsApp</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground">
+                      <p className="font-medium text-foreground">Chat with us directly:</p>
+                      <a
+                        href="https://wa.me/6287764161803"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors text-base"
+                      >
+                        <MessageCircle className="w-5 h-5" /> Chat on WhatsApp
+                      </a>
+                      <p className="text-sm">Quick responses for booking inquiries.</p>
                     </CardContent>
                   </Card>
                 </div>
