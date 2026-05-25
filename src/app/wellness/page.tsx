@@ -19,9 +19,13 @@ interface WellnessService extends SanityDocument {
 }
 
 async function getWellnessServices() {
-  return client.fetch<WellnessService[]>(
-    `*[_type == "wellnessService" && isActive != false] | order(order asc, _createdAt asc)`
-  );
+  try {
+    return await client.fetch<WellnessService[]>(
+      `*[_type == "wellnessService" && isActive != false] | order(order asc, _createdAt asc)`
+    );
+  } catch {
+    return [];
+  }
 }
 
 export default async function WellnessPage() {
