@@ -3,12 +3,10 @@ import imageUrlBuilder from '@sanity/image-url'
 import {projectId, dataset, apiVersion} from './sanity-client-config'
 
 export const client = createClient({
-  projectId,
-  dataset,
-  apiVersion,
+  projectId: projectId || 'placeholder',
+  dataset: dataset || 'production',
+  apiVersion: apiVersion || '2024-05-01',
   useCdn: process.env.NODE_ENV === 'production',
-  // Implement ISR by setting a revalidate time (e.g., 1 hour in production)
-  // and disable it for development to always get fresh data.
   next: {
     revalidate: process.env.NODE_ENV === 'production' ? 3600 : false,
   },
