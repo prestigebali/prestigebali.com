@@ -1,6 +1,8 @@
 import { client } from '@/lib/sanity';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const CATEGORY_HREFS: Record<string, string> = {
   'Day Tour': '/day-tours',
   'Day Tours': '/day-tours',
