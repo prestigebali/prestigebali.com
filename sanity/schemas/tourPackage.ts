@@ -50,12 +50,13 @@ import {defineType, defineField} from 'sanity'
         type: 'string',
         description: 'Controls which nav dropdown this package appears under on the website.',
         validation: Rule => Rule.required(),
-        options: {
-          list: [
-            { title: 'Luxury Day Tours', value: 'Luxury Day Tours' },
-            { title: 'Holiday Packages', value: 'Holiday Packages' },
-          ],
-          layout: 'radio',
+       options: {
+  list: [
+    { title: 'Day Tour', value: 'Day Tour' },
+    { title: 'Holiday Package', value: 'Holiday Package' },
+  ],
+  layout: 'radio',
+},
         },
       }),
 
