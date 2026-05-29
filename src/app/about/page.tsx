@@ -1,3 +1,24 @@
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { client } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
+
+// Types
+interface AboutPageData {
+  _id: string;
+  title?: string;
+  description?: string;
+  heroImage?: any;
+  [key: string]: any;
+}
+
+export const metadata: Metadata = {
+  title: 'About Prestige Bali | Luxury Travel Experts',
+  description: 'Learn about Prestige Bali - your premier luxury travel partner in Indonesia.',
+};
+
 export default async function AboutPage() {
   let aboutPageData: AboutPageData | null = null;
   let experienceTypes: SanityDocument[] = [];
@@ -20,5 +41,40 @@ export default async function AboutPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+// Placeholder components if they don't exist
+function AboutHeroSection({ data }: { data: AboutPageData | null }) {
+  return (
+    <section className="relative h-[60vh] w-full flex items-center justify-center text-center text-white">
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+      <div className="relative z-10 max-w-3xl mx-auto px-4">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">
+          About Prestige Bali
+        </h1>
+        <p className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto">
+          Your premier luxury travel partner in Indonesia
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function AboutContentSection({ data, experienceTypes }: { 
+  data: AboutPageData | null; 
+  experienceTypes: SanityDocument[];
+}) {
+  return (
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <div className="prose prose-lg max-w-none">
+          <p className="text-muted-foreground">
+            Prestige Bali is dedicated to crafting unforgettable luxury experiences 
+            across Indonesia&apos;s most breathtaking destinations.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
