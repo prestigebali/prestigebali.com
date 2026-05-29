@@ -1,6 +1,6 @@
 'use server';
 
-import { getSanityWriteClient } from "./sanity-client";
+import { getSanityWriteClient } from "@/lib/sanity-client";
 
 interface BookingData {
     name: string;
