@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity-client';
+import { client } from '@/lib/sanity';
 
 const CATEGORY_HREFS: Record<string, string> = {
   'Day Tour': '/day-tours',
@@ -15,17 +15,7 @@ function getDurationType(duration: string | undefined): 'Day Tour' | 'Holiday Pa
 
   const lowerDuration = duration.toLowerCase();
 
-  // Day tour indicators: contains "day" but NOT "days", "hour", "hrs", "full day", "half day"
-  const dayTourPatterns = [
-    /\b\d*\s*hour/i,
-    /\b\d*\s*hr/i,
-    /\bfull\s*day\b/i,
-    /\bhalf\s*day\b/i,
-    /\b1\s*day\b/i,
-    /\bsingle\s*day\b/i,
-  ];
-
-  // Multiday indicators: contains "days", "nights", "d/n", "nights"
+  // Multiday indicators: checked FIRST (higher priority)
   const multidayPatterns = [
     /\b\d+\s*days?\b/i,
     /\b\d+\s*nights?\b/i,
@@ -39,16 +29,26 @@ function getDurationType(duration: string | undefined): 'Day Tour' | 'Holiday Pa
     if (pattern.test(lowerDuration)) return 'Holiday Package';
   }
 
+  // Day tour indicators: contains "hour", "hrs", "full day", "half day", "1 day"
+  const dayTourPatterns = [
+    /\b\d*\s*hour/i,
+    /\b\d*\s*hr/i,
+    /\bfull\s*day\b/i,
+    /\bhalf\s*day\b/i,
+    /\b1\s*day\b/i,
+    /\bsingle\s*day\b/i,
+  ];
+
   // Check if it's a day tour
   for (const pattern of dayTourPatterns) {
     if (pattern.test(lowerDuration)) return 'Day Tour';
   }
 
-  // Default: if duration contains "day" but not matched above, check for plural
+  // Default: if duration contains "day" but not matched above
   if (/\bdays\b/i.test(lowerDuration)) return 'Holiday Package';
   if (/\bday\b/i.test(lowerDuration)) return 'Day Tour';
 
-  // Fallback based on mainCategory if duration is ambiguous
+  // Ultimate fallback
   return 'Holiday Package';
 }
 
