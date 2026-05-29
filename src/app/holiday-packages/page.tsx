@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 async function getHolidayPackages() {
   try {
     return await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && mainCategory == "Holiday Packages" && isActive != false]{
+      `*[_type == "tourPackage" && mainCategory == "Holiday Package" && isActive != false]{
         _id,
         title,
         "image": featuredImage,
