@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 async function getDayTours() {
   try {
     return await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && mainCategory == "Luxury Day Tours" && isActive != false]{
+      `*[_type == "tourPackage" && mainCategory == "Day Tour" && isActive != false]{
         _id,
         title,
         "image": featuredImage,
