@@ -126,12 +126,11 @@ export async function GET() {
       return acc;
     }, {});
 
-  // Format for header dropdown
-const result = Object.entries(grouped).map(([category, items]) => ({
-  category,
-  href: CATEGORY_HREFS[category] || '/packages',
-  items: [], // Empty items array
-}));
+    // Format for header dropdown with empty items
+    const result = Object.entries(grouped).map(([category]) => ({
+      category,
+      href: CATEGORY_HREFS[category] || '/packages',
+      items: [],
     }));
 
     // Sort: Day Tour first, then Holiday Package
