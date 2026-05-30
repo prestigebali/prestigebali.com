@@ -126,14 +126,12 @@ export async function GET() {
       return acc;
     }, {});
 
-    // Format for header dropdown
-    const result = Object.entries(grouped).map(([category, items]) => ({
-      category,
-      href: CATEGORY_HREFS[category] || '/packages',
-      items: items.map((item: any) => ({
-        title: item.title,
-        slug: item.slug,
-      })),
+  // Format for header dropdown
+const result = Object.entries(grouped).map(([category, items]) => ({
+  category,
+  href: CATEGORY_HREFS[category] || '/packages',
+  items: [], // Empty items array
+}));
     }));
 
     // Sort: Day Tour first, then Holiday Package
