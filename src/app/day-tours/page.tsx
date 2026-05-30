@@ -58,64 +58,26 @@ async function getDayTours() {
   }
 }
 
-// Helper function to determine if a tour is a day tour based on duration
-function isDayTour(tour: any): boolean {
-  // First check mainCategory
-  if (tour.mainCategory === 'Day Tour') {
-    return true;
-  }
-  
-  // Check duration for day tour patterns
-  if (tour.duration) {
-    const durationLower = tour.duration.toLowerCase();
-    
-    // Day tour patterns: full day, half day, 8 hours, etc.
-    if (/\b(full\s*day|half\s*day|8\s*hour|full day|half day)\b/i.test(durationLower)) {
-      return true;
-    }
-    
-    // Check for hour-based durations (4+ hours)
-    if (/\b\d+\s*(?:hours?|hrs?)\b/i.test(durationLower)) {
-      const match = durationLower.match(/(\d+)\s*(?:hours?|hrs?)/i);
-      if (match && parseInt(match[1]) >= 4) {
-        return true;
-      }
-    }
-    
-    // Check for single day (1 day) - but not multi-day
-    if (/\b1\s*day\b/i.test(durationLower) && !/\d+\s*(?:days|nights)/i.test(durationLower)) {
-      return true;
-    }
-  }
-  
-  return false;
-}
-
 export default async function DayToursPage() {
-  const allTours = await getDayTours();
+  const allTours = await getDayTours() || [];
 
-  // Filter for Day Tours (by mainCategory or duration heuristic)
-  const tours = allTours.filter(tour => tour && isDayTour(tour));
+  // Filter for Day Tours only
+  const tours = allTours.filter(tour => tour?.mainCategory === 'Day Tour') || [];
 
-  // Group tours by destination - with null safety
-  const toursByDestination: { [key: string]: SanityDocument[] } = {};
-  tours.forEach((tour) => {
-    if (!tour || !tour._id) return; // Skip invalid tours
+  // Group tours by destination
+  const toursByDestination = tours.reduce((acc: any, tour: any) => {
+    if (!tour || !tour._id) return acc;
     
-    const destination = tour.destination && String(tour.destination).trim() !== '' 
-      ? String(tour.destination) 
-      : 'Other Destinations';
-      
-    if (!toursByDestination[destination]) {
-      toursByDestination[destination] = [];
+    const dest = tour.destination || 'Other';
+    if (!acc[dest]) {
+      acc[dest] = [];
     }
-    toursByDestination[destination].push(tour);
-  });
+    acc[dest].push(tour);
+    return acc;
+  }, {});
 
-  // Sort destinations alphabetically - ensure it's an array
-  const sortedDestinations = Array.isArray(Object.keys(toursByDestination)) 
-    ? Object.keys(toursByDestination).sort()
-    : [];
+  // Get sorted destination keys
+  const destinations = Object.keys(toursByDestination).sort();
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -161,7 +123,7 @@ export default async function DayToursPage() {
         </section>
 
         {/* Products Grid by Destination */}
-        {tours.length > 0 && sortedDestinations.length > 0 ? (
+        {tours.length > 0 ? (
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
               <div className="mb-10 text-center">
@@ -174,21 +136,24 @@ export default async function DayToursPage() {
               </div>
 
               {/* Destinations Sections */}
-              {sortedDestinations && sortedDestinations.length > 0 && sortedDestinations.map((destination) => (
-                <div key={destination} className="mb-16">
-                  <div className="mb-8">
-                    <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">
-                      Day Tours in {destination}
-                    </h3>
-                    <div className="h-1 w-16 bg-primary rounded-full"></div>
+              {destinations.map((destination) => {
+                const destTours = toursByDestination[destination] || [];
+                return (
+                  <div key={destination} className="mb-16">
+                    <div className="mb-8">
+                      <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">
+                        Day Tours in {destination}
+                      </h3>
+                      <div className="h-1 w-16 bg-primary rounded-full"></div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                      {destTours.map((tour: any) => (
+                        <TourCard key={tour._id} id={tour._id} {...tour} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {toursByDestination[destination] && toursByDestination[destination].map((tour) => (
-                      <TourCard key={tour._id} id={tour._id} {...tour} />
-                    ))}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         ) : (
