@@ -95,20 +95,27 @@ export default async function DayToursPage() {
   const allTours = await getDayTours();
 
   // Filter for Day Tours (by mainCategory or duration heuristic)
-  const tours = allTours.filter(isDayTour);
+  const tours = allTours.filter(tour => tour && isDayTour(tour));
 
-  // Group tours by destination
+  // Group tours by destination - with null safety
   const toursByDestination: { [key: string]: SanityDocument[] } = {};
   tours.forEach((tour) => {
-    const destination = tour.destination || 'Other';
+    if (!tour || !tour._id) return; // Skip invalid tours
+    
+    const destination = tour.destination && String(tour.destination).trim() !== '' 
+      ? String(tour.destination) 
+      : 'Other Destinations';
+      
     if (!toursByDestination[destination]) {
       toursByDestination[destination] = [];
     }
     toursByDestination[destination].push(tour);
   });
 
-  // Sort destinations alphabetically
-  const sortedDestinations = Object.keys(toursByDestination).sort();
+  // Sort destinations alphabetically - ensure it's an array
+  const sortedDestinations = Array.isArray(Object.keys(toursByDestination)) 
+    ? Object.keys(toursByDestination).sort()
+    : [];
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -154,7 +161,7 @@ export default async function DayToursPage() {
         </section>
 
         {/* Products Grid by Destination */}
-        {tours.length > 0 ? (
+        {tours.length > 0 && sortedDestinations.length > 0 ? (
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
               <div className="mb-10 text-center">
@@ -167,7 +174,7 @@ export default async function DayToursPage() {
               </div>
 
               {/* Destinations Sections */}
-              {sortedDestinations.map((destination) => (
+              {sortedDestinations && sortedDestinations.length > 0 && sortedDestinations.map((destination) => (
                 <div key={destination} className="mb-16">
                   <div className="mb-8">
                     <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">
@@ -176,7 +183,7 @@ export default async function DayToursPage() {
                     <div className="h-1 w-16 bg-primary rounded-full"></div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {toursByDestination[destination].map((tour) => (
+                    {toursByDestination[destination] && toursByDestination[destination].map((tour) => (
                       <TourCard key={tour._id} id={tour._id} {...tour} />
                     ))}
                   </div>
