@@ -89,7 +89,7 @@ function AboutContentSection({
   return (
     <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 max-w-4xl">
-        {data?.description ? (
+    {data?.description && Array.isArray(data.description) && data.description.length > 0 ? (
           <div className="prose prose-lg max-w-none">
             <PortableText value={data.description} />
           </div>
