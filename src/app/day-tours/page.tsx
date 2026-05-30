@@ -5,6 +5,7 @@ import { Footer } from '@/components/footer';
 import { TourCard } from '@/components/tour-card';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
+import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
   title: 'Luxury Day Tours in Bali | Private Guided Experiences | Prestige Bali',
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
 async function getDayTours() {
   try {
     return await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && (isActive == true || isActive == null)]{
+      `*[_type == "tourPackage" && mainCategory == "Day Tour" && (isActive == true || isActive == null)] | order(_createdAt asc) {
         _id,
         title,
         "image": featuredImage,
@@ -50,7 +51,7 @@ async function getDayTours() {
         mainCategory,
         slug,
         duration
-      } | order(_createdAt asc)`
+      }`
     );
   } catch (error) {
     console.error('Error fetching tours:', error);
@@ -61,11 +62,8 @@ async function getDayTours() {
 export default async function DayToursPage() {
   const allTours = await getDayTours() || [];
 
-  // Filter for Day Tours only
-  const tours = allTours.filter(tour => tour?.mainCategory === 'Day Tour') || [];
-
   // Group tours by destination
-  const toursByDestination = tours.reduce((acc: any, tour: any) => {
+  const toursByDestination = allTours.reduce((acc: any, tour: any) => {
     if (!tour || !tour._id) return acc;
     
     const dest = tour.destination || 'Other';
@@ -78,6 +76,9 @@ export default async function DayToursPage() {
 
   // Get sorted destination keys
   const destinations = Object.keys(toursByDestination).sort();
+
+  // Get unique categories
+  const categories = [...new Set(allTours.map(tour => tour?.category).filter(Boolean))];
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -111,29 +112,44 @@ export default async function DayToursPage() {
         <section className="py-14 bg-background border-b border-border">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Bali&apos;s Premier Private Day Tour Experiences
+              Bali's Premier Private Day Tour Experiences
             </h2>
             <p className="text-lg text-muted-foreground mb-4">
-              Whether you&apos;re chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali&apos;s ancient villages, our luxury day tours are tailored to your preferences.
+              Whether you're chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali's ancient villages, our luxury day tours are tailored to your preferences.
             </p>
             <p className="text-lg text-muted-foreground">
-              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali&apos;s most breathtaking destinations — all without the hassle.
+              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali's most breathtaking destinations — all without the hassle.
             </p>
           </div>
         </section>
 
         {/* Products Grid by Destination */}
-        {tours.length > 0 ? (
+        {allTours.length > 0 ? (
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
-              <div className="mb-10 text-center">
-                <h2 className="text-3xl font-bold tracking-tight">
+              <div className="mb-12 text-center">
+                <h2 className="text-3xl font-bold tracking-tight mb-2">
                   Browse Our Day Tours
                 </h2>
-                <p className="text-muted-foreground mt-2">
-                  {`${tours.length} exclusive day tour${tours.length === 1 ? '' : 's'} available to book`}
+                <p className="text-muted-foreground">
+                  {`${allTours.length} exclusive day tour${allTours.length === 1 ? '' : 's'} available to book`}
                 </p>
               </div>
+
+              {/* Quick Filter by Category */}
+              {categories.length > 0 && (
+                <div className="mb-12 flex flex-wrap gap-2 justify-center">
+                  {categories.map((category) => (
+                    <Button
+                      key={category}
+                      variant="outline"
+                      className="rounded-full"
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
+              )}
 
               {/* Destinations Sections */}
               {destinations.map((destination) => {
@@ -145,10 +161,13 @@ export default async function DayToursPage() {
                         Day Tours in {destination}
                       </h3>
                       <div className="h-1 w-16 bg-primary rounded-full"></div>
+                      <p className="text-muted-foreground mt-2">
+                        {`${destTours.length} tour${destTours.length === 1 ? '' : 's'} available`}
+                      </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                       {destTours.map((tour: any) => (
-                        <TourCard key={tour._id} id={tour._id} {...tour} />
+                        <TourCard key={tour._id} {...tour} />
                       ))}
                     </div>
                   </div>
@@ -159,8 +178,9 @@ export default async function DayToursPage() {
         ) : (
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
-              <div className="text-center py-20 text-muted-foreground">
-                <p className="text-xl">No day tours available yet. Please check back soon.</p>
+              <div className="text-center py-20">
+                <p className="text-xl text-muted-foreground mb-4">No day tours available yet.</p>
+                <p className="text-muted-foreground">Check back soon for our exclusive luxury day tour experiences.</p>
               </div>
             </div>
           </section>
