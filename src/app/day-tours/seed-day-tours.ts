@@ -1,11 +1,14 @@
 /**
  * Sanity Data Seeding Script for Day Tours
  * 
- * Usage:
- * npx ts-node scripts/seed-day-tours.ts
- * 
- * This script populates your Sanity CMS with luxury day tour packages.
- * Make sure you have SANITY_API_WRITE_TOKEN environment variable set.
+ * SETUP:
+ * 1. npm install @sanity/client
+ * 2. Get write token from https://manage.sanity.io → Your Project → Settings → API → Tokens
+ * 3. Set environment variables:
+ *    export NEXT_PUBLIC_SANITY_PROJECT_ID="your_id"
+ *    export NEXT_PUBLIC_SANITY_DATASET="production"
+ *    export SANITY_API_WRITE_TOKEN="your_token"
+ * 4. Run: npx ts-node scripts/seed-day-tours.ts
  */
 
 import { createClient } from '@sanity/client';
@@ -18,22 +21,17 @@ const client = createClient({
   apiVersion: '2023-12-01',
 });
 
-// Day Tour Data
 const dayToursData = [
   {
     title: 'Luxury Yacht Cruise Tour + Snorkeling',
     shortDescription: 'Experience pristine waters, vibrant marine life, and luxury aboard a private yacht.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Embark on an unforgettable luxury yacht cruise combined with world-class snorkeling. Discover hidden coves, pristine coral reefs, and encounter tropical fish in their natural habitat. Your day includes a gourmet lunch prepared onboard, professional snorkeling equipment, and personalized service from our expert crew.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Embark on an unforgettable luxury yacht cruise combined with world-class snorkeling. Discover hidden coves, pristine coral reefs, and encounter tropical fish in their natural habitat. Your day includes a gourmet lunch prepared onboard, professional snorkeling equipment, and personalized service from our expert crew.',
+      }],
+    }],
     priceFrom: 350,
     currency: 'USD',
     duration: '8 hours',
@@ -45,17 +43,13 @@ const dayToursData = [
   {
     title: 'Devdan Dance Performance + Balinese Lunch',
     shortDescription: 'Immerse yourself in Balinese culture with a spectacular fire dance and traditional meal.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Experience the magic of Devdan Theatre\'s award-winning performances featuring acrobatics, fire dancing, and traditional Balinese dance. Followed by an authentic Balinese lunch at a local restaurant with a cultural guide explaining the traditions and customs of Bali.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Experience the magic of Devdan Theatre\'s award-winning performances featuring acrobatics, fire dancing, and traditional Balinese dance. Followed by an authentic Balinese lunch at a local restaurant with a cultural guide explaining the traditions and customs of Bali.',
+      }],
+    }],
     priceFrom: 180,
     currency: 'USD',
     duration: '6 hours',
@@ -67,17 +61,13 @@ const dayToursData = [
   {
     title: 'Watersport Adventure + Luxury Spa',
     shortDescription: 'Combine thrilling water sports with a relaxing spa treatment at a luxury resort.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Start your day with exciting watersports including surfing, jet skiing, or paddleboarding at Bali\'s best beaches. After lunch, unwind with a full spa treatment at a luxury wellness resort. Perfect for adventure seekers who also crave relaxation.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Start your day with exciting watersports including surfing, jet skiing, or paddleboarding at Bali\'s best beaches. After lunch, unwind with a full spa treatment at a luxury wellness resort. Perfect for adventure seekers who also crave relaxation.',
+      }],
+    }],
     priceFrom: 280,
     currency: 'USD',
     duration: '10 hours',
@@ -89,17 +79,13 @@ const dayToursData = [
   {
     title: 'ENTERTAINMENT & LIFESTYLE – Luxury Adventure',
     shortDescription: 'An all-day adventure combining entertainment, dining, and exclusive lifestyle experiences.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'A curated day of luxury entertainment and lifestyle activities. Visit upscale venues, enjoy gourmet dining experiences, attend live performances, and explore Bali\'s most exclusive clubs and entertainment spots with VIP access.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'A curated day of luxury entertainment and lifestyle activities. Visit upscale venues, enjoy gourmet dining experiences, attend live performances, and explore Bali\'s most exclusive clubs and entertainment spots with VIP access.',
+      }],
+    }],
     priceFrom: 420,
     currency: 'USD',
     duration: '10 hours',
@@ -111,17 +97,13 @@ const dayToursData = [
   {
     title: 'Uluwatu Sunset, Kecak Dance & Jimbaran Beach Dinner',
     shortDescription: 'Witness an iconic Balinese fire dance at sunset, followed by fresh seafood on the beach.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Experience the legendary Kecak fire dance at the clifftop Uluwatu Temple as the sun sets over the Indian Ocean. Followed by a romantic beachfront dinner at Jimbaran Beach with fresh grilled seafood, soft sand, and ocean breezes.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Experience the legendary Kecak fire dance at the clifftop Uluwatu Temple as the sun sets over the Indian Ocean. Followed by a romantic beachfront dinner at Jimbaran Beach with fresh grilled seafood, soft sand, and ocean breezes.',
+      }],
+    }],
     priceFrom: 320,
     currency: 'USD',
     duration: '6 hours',
@@ -133,17 +115,13 @@ const dayToursData = [
   {
     title: 'Spa - Beach Sunset & Luxury Seafood',
     shortDescription: 'Rejuvenate with spa treatments, then enjoy sunset and fresh seafood on a pristine beach.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Start with a luxurious spa session at a beachfront resort, then relax with sunset views over the ocean. Conclude with a gourmet seafood dinner featuring the day\'s fresh catch, paired with premium wines.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Start with a luxurious spa session at a beachfront resort, then relax with sunset views over the ocean. Conclude with a gourmet seafood dinner featuring the day\'s fresh catch, paired with premium wines.',
+      }],
+    }],
     priceFrom: 290,
     currency: 'USD',
     duration: '8 hours',
@@ -155,17 +133,13 @@ const dayToursData = [
   {
     title: 'Mount Batur Sunrise Jeep & Hot Springs',
     shortDescription: 'Witness an unforgettable sunrise from Mount Batur, then soak in natural hot springs.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Start before dawn for a jeep ride to Mount Batur\'s summit. Watch the sunrise paint the sky while gazing over Bali\'s volcanic landscape. Descend for a relaxing soak in natural hot springs, followed by a traditional Balinese breakfast.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Start before dawn for a jeep ride to Mount Batur\'s summit. Watch the sunrise paint the sky while gazing over Bali\'s volcanic landscape. Descend for a relaxing soak in natural hot springs, followed by a traditional Balinese breakfast.',
+      }],
+    }],
     priceFrom: 220,
     currency: 'USD',
     duration: '7 hours',
@@ -177,17 +151,13 @@ const dayToursData = [
   {
     title: 'Bali Swing & Waterfall Experience',
     shortDescription: 'Thrilling jungle swings and stunning waterfall hikes in Bali\'s lush rainforest.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Experience heart-pounding jungle swings suspended over valleys, combined with hikes to breathtaking waterfalls. Perfect photo opportunities and an authentic immersion in Bali\'s natural beauty. Includes lunch at a local restaurant.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Experience heart-pounding jungle swings suspended over valleys, combined with hikes to breathtaking waterfalls. Perfect photo opportunities and an authentic immersion in Bali\'s natural beauty. Includes lunch at a local restaurant.',
+      }],
+    }],
     priceFrom: 200,
     currency: 'USD',
     duration: '7 hours',
@@ -199,17 +169,13 @@ const dayToursData = [
   {
     title: 'White Water Rafting & Jungle Adventure',
     shortDescription: 'Navigate thrilling rapids and explore Bali\'s jungle with professional guides.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Experience the adrenaline rush of white water rafting through Bali\'s pristine rivers. Navigate various difficulty levels with expert guides, then explore the surrounding jungle ecosystem. Includes all safety equipment and a hearty lunch.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Experience the adrenaline rush of white water rafting through Bali\'s pristine rivers. Navigate various difficulty levels with expert guides, then explore the surrounding jungle ecosystem. Includes all safety equipment and a hearty lunch.',
+      }],
+    }],
     priceFrom: 240,
     currency: 'USD',
     duration: '8 hours',
@@ -221,17 +187,13 @@ const dayToursData = [
   {
     title: 'Traditional Villages & Balinese Crafts',
     shortDescription: 'Discover authentic Balinese villages and learn traditional crafts from local artisans.',
-    description: [
-      {
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            text: 'Visit traditional villages off the beaten path, meet local artisans, and learn about traditional Balinese crafts including woodcarving, batik making, and silver smithing. Enjoy lunch with a local family and gain insight into authentic Balinese life.',
-          },
-        ],
-      },
-    ],
+    description: [{
+      _type: 'block',
+      children: [{
+        _type: 'span',
+        text: 'Visit traditional villages off the beaten path, meet local artisans, and learn about traditional Balinese crafts including woodcarving, batik making, and silver smithing. Enjoy lunch with a local family and gain insight into authentic Balinese life.',
+      }],
+    }],
     priceFrom: 180,
     currency: 'USD',
     duration: '7 hours',
@@ -246,7 +208,13 @@ async function seedDayTours() {
   try {
     console.log('🌴 Starting Prestige Bali Day Tours seeding...\n');
 
-    // First, fetch all destinations to get their _id references
+    if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
+      throw new Error('❌ NEXT_PUBLIC_SANITY_PROJECT_ID is not set');
+    }
+    if (!process.env.SANITY_API_WRITE_TOKEN) {
+      throw new Error('❌ SANITY_API_WRITE_TOKEN is not set');
+    }
+
     const existingDestinations = await client.fetch('*[_type == "destination"]');
     const destinationMap: { [key: string]: string } = {};
 
@@ -254,27 +222,27 @@ async function seedDayTours() {
       destinationMap[dest.name] = dest._id;
     });
 
-    console.log('📍 Found destinations:', Object.keys(destinationMap));
-    console.log('');
+    console.log('📍 Found destinations:', Object.keys(destinationMap), '\n');
 
-    // Process each tour
+    let created = 0, updated = 0, skipped = 0;
+
     for (const tour of dayToursData) {
       const destinationId = destinationMap[tour.destination];
 
       if (!destinationId) {
-        console.warn(`⚠️  Skipping "${tour.title}" - Destination "${tour.destination}" not found`);
+        console.warn(`⚠️  Skipping "${tour.title}" - Destination not found`);
+        skipped++;
         continue;
       }
+
+      const tourId = `tour-${tour.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
       const tourDoc = {
         _type: 'tourPackage',
         title: tour.title,
         slug: {
           _type: 'slug',
-          current: tour.title
-            .toLowerCase()
-            .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
-            .replace(/\s+/g, '-'),
+          current: tour.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-'),
         },
         shortDescription: tour.shortDescription,
         description: tour.description,
@@ -289,29 +257,33 @@ async function seedDayTours() {
           _ref: destinationId,
         },
         isActive: true,
-        _id: `tour-${tour.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+        _id: tourId,
       };
 
       try {
         const result = await client.createOrReplace(tourDoc);
-        console.log(`✅ Created/Updated: ${result.title}`);
+        console.log(`✅ Created: ${result.title}`);
+        created++;
       } catch (error: any) {
         if (error.statusCode === 409) {
-          // Document exists, update it
-          await client.patch(tourDoc._id).set(tourDoc).commit();
-          console.log(`✅ Updated: ${tour.title}`);
+          await client.patch(tourId).set(tourDoc).commit();
+          console.log(`🔄 Updated: ${tour.title}`);
+          updated++;
         } else {
-          console.error(`❌ Error creating ${tour.title}:`, error.message);
+          console.error(`❌ Error: ${tour.title} - ${error.message}`);
         }
       }
     }
 
-    console.log('\n✨ Day Tours seeding completed!\n');
+    console.log('\n' + '='.repeat(60));
+    console.log('✨ Day Tours seeding completed!');
+    console.log('='.repeat(60));
+    console.log(`📊 Results: ✅ ${created} | 🔄 ${updated} | ⚠️  ${skipped}`);
+    console.log('='.repeat(60) + '\n');
   } catch (error) {
-    console.error('❌ Fatal error during seeding:', error);
+    console.error('❌ Fatal error:', error);
     process.exit(1);
   }
 }
 
-// Run the seeding
 seedDayTours();
