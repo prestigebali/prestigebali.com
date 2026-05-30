@@ -4,7 +4,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
-import { PortableText } from 'next-sanity';
+import { PortableText } from '@/components/portable-text';
 
 // Types
 interface AboutPageData {
