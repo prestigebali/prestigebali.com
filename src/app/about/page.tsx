@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { client, urlFor } from '@/lib/sanity';
-import type { SanityDocument } from 'next-sanity';
 import { PortableText } from '@/components/portable-text';
 
 // Types
@@ -25,23 +24,19 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   let aboutPageData: AboutPageData | null = null;
-  let experienceTypes: SanityDocument[] = [];
 
   try {
-    [aboutPageData, experienceTypes] = await Promise.all([
-      client.fetch<AboutPageData | null>(
-        `*[_type == "aboutPage" && _id == "aboutPage"][0] {
-          _id,
-          heroHeadline,
-          heroSubheadline,
-          heroImage,
-          contentSubtitle,
-          contentTitle,
-          contentBody
-        }`
-      ),
-      client.fetch<SanityDocument[]>('*[_type == "experience"] | order(title asc) { _id, title, description }'),
-    ]);
+    aboutPageData = await client.fetch<AboutPageData | null>(
+      `*[_type == "aboutPage" && _id == "aboutPage"][0] {
+        _id,
+        heroHeadline,
+        heroSubheadline,
+        heroImage,
+        contentSubtitle,
+        contentTitle,
+        contentBody
+      }`
+    );
     console.log('About page data loaded:', { hasData: !!aboutPageData, hasContentBody: !!aboutPageData?.contentBody });
   } catch (err) {
     console.error('Failed to fetch Sanity data for /about:', err);
@@ -52,7 +47,7 @@ export default async function AboutPage() {
       <Header />
       <main className="flex-1">
         <AboutHeroSection data={aboutPageData} />
-        <AboutContentSection data={aboutPageData} experienceTypes={experienceTypes} />
+        <AboutContentSection data={aboutPageData} />
       </main>
       <Footer />
     </div>
@@ -88,10 +83,8 @@ function AboutHeroSection({ data }: { data: AboutPageData | null }) {
 
 function AboutContentSection({
   data,
-  experienceTypes,
 }: {
   data: AboutPageData | null;
-  experienceTypes: SanityDocument[];
 }) {
   return (
     <section className="py-16 md:py-24 bg-background">
@@ -121,21 +114,6 @@ function AboutContentSection({
               travel, we specialize in curating bespoke itineraries that combine cultural
               immersion, adventure, and relaxation in equal measure.
             </p>
-          </div>
-        )}
-
-        {/* Experiences Section */}
-        {experienceTypes && experienceTypes.length > 0 && (
-          <div className="mt-20 pt-16 border-t">
-            <h2 className="text-3xl font-bold mb-8 text-center">Our Experiences</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {experienceTypes.map((exp) => (
-                <div key={exp._id} className="border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">{exp.title}</h3>
-                  <p className="text-muted-foreground">{exp.description || 'Premium experience'}</p>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </div>
