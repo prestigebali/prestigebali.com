@@ -41,7 +41,28 @@ async function getPackagesData() {
   return { dayTours, holidayPackages, destinations };
 }
 
-const PackagesPage = () => {
+async function PackagesContent() {
+  let dayTours: SanityDocument[] = [];
+  let holidayPackages: SanityDocument[] = [];
+  let destinations: SanityDocument[] = [];
+  try {
+    const data = await getPackagesData();
+    dayTours = data.dayTours;
+    holidayPackages = data.holidayPackages;
+    destinations = data.destinations;
+  } catch (err) {
+    console.error('Failed to load packages data:', err);
+  }
+  return (
+    <PackagesClient
+      dayTours={dayTours}
+      holidayPackages={holidayPackages}
+      destinations={destinations}
+    />
+  );
+}
+
+export default async function PackagesPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
@@ -64,26 +85,4 @@ const PackagesPage = () => {
       <Footer />
     </div>
   );
-};
-
-async function PackagesContent() {
-  let dayTours: SanityDocument[] = [];
-  let holidayPackages: SanityDocument[] = [];
-  let destinations: SanityDocument[] = [];
-  try {
-    const data = await getPackagesData();
-    dayTours = data.dayTours;
-    holidayPackages = data.holidayPackages;
-    destinations = data.destinations;
-  } catch (err) {
-    console.error('Failed to load packages data:', err);
-  }
-  return (
-    <PackagesClient
-      dayTours={dayTours}
-      holidayPackages={holidayPackages}
-      destinations={destinations}
-    />
-  );
 }
-export default PackagesPage;
