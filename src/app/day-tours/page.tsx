@@ -59,6 +59,19 @@ async function getDayTours() {
 export default async function DayToursPage() {
   const tours = await getDayTours();
 
+  // Group tours by destination
+  const toursByDestination: { [key: string]: SanityDocument[] } = {};
+  tours.forEach((tour) => {
+    const destination = tour.destination || 'Other';
+    if (!toursByDestination[destination]) {
+      toursByDestination[destination] = [];
+    }
+    toursByDestination[destination].push(tour);
+  });
+
+  // Sort destinations alphabetically
+  const sortedDestinations = Object.keys(toursByDestination).sort();
+
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
@@ -94,41 +107,56 @@ export default async function DayToursPage() {
               Bali&apos;s Premier Private Day Tour Experiences
             </h2>
             <p className="text-lg text-muted-foreground mb-4">
-              Whether you&apos;re chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali&apos;s ancient villages, our luxury day tours are crafted to go beyond the ordinary. Each tour is led by a professional English-speaking guide and includes a private air-conditioned vehicle, door-to-door hotel pick-up, and flexible itineraries tailored to your interests.
+              Whether you&apos;re chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali&apos;s ancient villages, our luxury day tours are tailored to your preferences.
             </p>
             <p className="text-lg text-muted-foreground">
-              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali&apos;s most breathtaking destinations — all without the stress of planning.
+              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali&apos;s most breathtaking destinations — all without the hassle.
             </p>
           </div>
         </section>
 
-        {/* Products Grid */}
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="mb-10 text-center">
-              <h2 className="text-3xl font-bold tracking-tight">
-                {tours.length > 0 ? 'Browse Our Day Tours' : 'Day Tours Coming Soon'}
-              </h2>
-              <p className="text-muted-foreground mt-2">
-                {tours.length > 0
-                  ? `${tours.length} exclusive day tour${tours.length === 1 ? '' : 's'} available to book`
-                  : 'We are preparing exclusive day tour packages — check back soon.'}
-              </p>
-            </div>
-
-            {tours.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                {tours.map((tour) => (
-                  <TourCard key={tour._id} id={tour._id} {...tour} />
-                ))}
+        {/* Products Grid by Destination */}
+        {tours.length > 0 ? (
+          <section className="py-16 bg-muted/30">
+            <div className="container mx-auto px-4">
+              <div className="mb-10 text-center">
+                <h2 className="text-3xl font-bold tracking-tight">
+                  {tours.length > 0 ? 'Browse Our Day Tours' : 'Day Tours Coming Soon'}
+                </h2>
+                <p className="text-muted-foreground mt-2">
+                  {tours.length > 0
+                    ? `${tours.length} exclusive day tour${tours.length === 1 ? '' : 's'} available to book`
+                    : 'We are preparing exclusive day tour packages — check back soon.'}
+                </p>
               </div>
-            ) : (
+
+              {/* Destinations Sections */}
+              {sortedDestinations.map((destination) => (
+                <div key={destination} className="mb-16">
+                  <div className="mb-8">
+                    <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">
+                      Day Tours in {destination}
+                    </h3>
+                    <div className="h-1 w-16 bg-primary rounded-full"></div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {toursByDestination[destination].map((tour) => (
+                      <TourCard key={tour._id} id={tour._id} {...tour} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section className="py-16 bg-muted/30">
+            <div className="container mx-auto px-4">
               <div className="text-center py-20 text-muted-foreground">
                 <p className="text-xl">No day tours available yet. Please check back soon.</p>
               </div>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
 
         {/* SEO Trust Section */}
         <section className="py-16 bg-background">
