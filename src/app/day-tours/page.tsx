@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 async function getDayTours() {
   try {
     return await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && mainCategory == "Day Tour" && isActive != false]{
+      `*[_type == "tourPackage" && (isActive == true || isActive == null)]{
         _id,
         title,
         "image": featuredImage,
@@ -51,13 +51,19 @@ async function getDayTours() {
         slug
       } | order(_createdAt asc)`
     );
-  } catch {
+  } catch (error) {
+    console.error('Error fetching tours:', error);
     return [];
   }
 }
 
 export default async function DayToursPage() {
-  const tours = await getDayTours();
+  const allTours = await getDayTours();
+
+  // Filter for Day Tours only (by mainCategory)
+  const tours = allTours.filter(
+    tour => tour.mainCategory === 'Day Tour'
+  );
 
   // Group tours by destination
   const toursByDestination: { [key: string]: SanityDocument[] } = {};
@@ -121,12 +127,10 @@ export default async function DayToursPage() {
             <div className="container mx-auto px-4">
               <div className="mb-10 text-center">
                 <h2 className="text-3xl font-bold tracking-tight">
-                  {tours.length > 0 ? 'Browse Our Day Tours' : 'Day Tours Coming Soon'}
+                  Browse Our Day Tours
                 </h2>
                 <p className="text-muted-foreground mt-2">
-                  {tours.length > 0
-                    ? `${tours.length} exclusive day tour${tours.length === 1 ? '' : 's'} available to book`
-                    : 'We are preparing exclusive day tour packages — check back soon.'}
+                  {`${tours.length} exclusive day tour${tours.length === 1 ? '' : 's'} available to book`}
                 </p>
               </div>
 
