@@ -1,77 +1,87 @@
+import { Suspense } from 'react';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { client } from '@/lib/sanity';
+import type { SanityDocument } from 'next-sanity';
+import { PackagesClient } from './packages-client';
 
-  import { Suspense } from 'react';
-  import { Header } from '@/components/header';
-  import { Footer } from '@/components/footer';
-  import { client } from '@/lib/sanity';
-  import type { SanityDocument } from 'next-sanity';
-  import { PackagesClient } from './packages-client';
+async function getPackagesData() {
+  const dayToursQuery = `*[_type == "tourPackage" && mainCategory == "Day Tour" && isActive != false]{
+    _id,
+    title,
+    shortDescription,
+    priceFrom,
+    currency,
+    featuredImage,
+    "destination": destination->name,
+    slug,
+    isActive
+  } | order(_createdAt asc)`;
 
-  async function getPackagesData() {
-    const packagesQuery = `*[_type == "tourPackage"]{
-        _id,
-        title,
-        shortDescription,
-        priceFrom,
-        currency,
-        featuredImage,
-        mainCategory,
-        "category": experienceCategory,
-        "destination": destination->name,
-        slug,
-        isActive
-    }`;
-    const experienceTypesQuery = `*[_type == "experience"]{_id, title}`;
-    const destinationsQuery = `*[_type == "destination"]{_id, name}`;
+  const holidayPackagesQuery = `*[_type == "tourPackage" && mainCategory == "Holiday Package" && isActive != false]{
+    _id,
+    title,
+    shortDescription,
+    priceFrom,
+    currency,
+    featuredImage,
+    "destination": destination->name,
+    slug,
+    isActive
+  } | order(_createdAt asc)`;
 
-    const [allPackages, experienceTypes, destinations] = await Promise.all([
-      client.fetch<SanityDocument[]>(packagesQuery),
-      client.fetch<SanityDocument[]>(experienceTypesQuery),
-      client.fetch<SanityDocument[]>(destinationsQuery)
-    ]);
+  const destinationsQuery = `*[_type == "destination"]{_id, name} | order(name asc)`;
 
-    return { allPackages, experienceTypes, destinations };
-  }
+  const [dayTours, holidayPackages, destinations] = await Promise.all([
+    client.fetch<SanityDocument[]>(dayToursQuery),
+    client.fetch<SanityDocument[]>(holidayPackagesQuery),
+    client.fetch<SanityDocument[]>(destinationsQuery)
+  ]);
 
-  const PackagesPage = () => {
-    return (
-      <div className="flex flex-col min-h-dvh bg-background text-foreground">
-        <Header />
-        <main className="flex-1">
-          <section className="py-24 md:py-32 bg-background">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Our Packages</h1>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-4">
-                  Discover your next unforgettable journey. Filter by destination, experience, and price.
-                </p>
-              </div>
-              <Suspense fallback={<div className="text-center">Loading packages...</div>}>
-                <PackagesContent />
-              </Suspense>
+  return { dayTours, holidayPackages, destinations };
+}
+
+const PackagesPage = () => {
+  return (
+    <div className="flex flex-col min-h-dvh bg-background text-foreground">
+      <Header />
+      <main className="flex-1">
+        <section className="py-24 md:py-32 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-primary uppercase tracking-wider">EXCLUSIVE PACKAGES</p>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">Find Your Perfect Journey</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-4">
+                Discover your next unforgettable adventure. Choose from our curated Day Tours or multi-day Holiday Packages.
+              </p>
             </div>
-          </section>
-        </main>
-        <Footer />
-      </div>
-    );
-  };
+            <Suspense fallback={<div className="text-center">Loading packages...</div>}>
+              <PackagesContent />
+            </Suspense>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
- async function PackagesContent() {
-  let allPackages: SanityDocument[] = [];
-  let experienceTypes: SanityDocument[] = [];
+async function PackagesContent() {
+  let dayTours: SanityDocument[] = [];
+  let holidayPackages: SanityDocument[] = [];
   let destinations: SanityDocument[] = [];
   try {
     const data = await getPackagesData();
-    allPackages = data.allPackages;
-    experienceTypes = data.experienceTypes;
+    dayTours = data.dayTours;
+    holidayPackages = data.holidayPackages;
     destinations = data.destinations;
   } catch (err) {
     console.error('Failed to load packages data:', err);
   }
   return (
     <PackagesClient
-      allPackages={allPackages}
-      experienceTypes={experienceTypes}
+      dayTours={dayTours}
+      holidayPackages={holidayPackages}
       destinations={destinations}
     />
   );
