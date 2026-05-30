@@ -26,7 +26,14 @@ export default async function AboutPage() {
 
   try {
     [aboutPageData, experienceTypes] = await Promise.all([
-      client.fetch<AboutPageData | null>('*[_type == "aboutPage" && _id == "aboutPage"][0]'),
+     client.fetch<AboutPageData | null>(
+  `*[_type == "aboutPage" && _id == "aboutPage"][0] {
+    _id,
+    title,
+    description,
+    heroImage
+  }`
+),
       client.fetch<SanityDocument[]>('*[_type == "experience"] | order(title asc)'),
     ]);
   } catch (err) {
