@@ -48,7 +48,8 @@ async function getDayTours() {
         "destination": destination->name,
         "category": experienceCategory,
         mainCategory,
-        slug
+        slug,
+        duration
       } | order(_createdAt asc)`
     );
   } catch (error) {
@@ -57,13 +58,44 @@ async function getDayTours() {
   }
 }
 
+// Helper function to determine if a tour is a day tour based on duration
+function isDayTour(tour: any): boolean {
+  // First check mainCategory
+  if (tour.mainCategory === 'Day Tour') {
+    return true;
+  }
+  
+  // Check duration for day tour patterns
+  if (tour.duration) {
+    const durationLower = tour.duration.toLowerCase();
+    
+    // Day tour patterns: full day, half day, 8 hours, etc.
+    if (/\b(full\s*day|half\s*day|8\s*hour|full day|half day)\b/i.test(durationLower)) {
+      return true;
+    }
+    
+    // Check for hour-based durations (4+ hours)
+    if (/\b\d+\s*(?:hours?|hrs?)\b/i.test(durationLower)) {
+      const match = durationLower.match(/(\d+)\s*(?:hours?|hrs?)/i);
+      if (match && parseInt(match[1]) >= 4) {
+        return true;
+      }
+    }
+    
+    // Check for single day (1 day) - but not multi-day
+    if (/\b1\s*day\b/i.test(durationLower) && !/\d+\s*(?:days|nights)/i.test(durationLower)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 export default async function DayToursPage() {
   const allTours = await getDayTours();
 
-  // Filter for Day Tours only (by mainCategory)
-  const tours = allTours.filter(
-    tour => tour.mainCategory === 'Day Tour'
-  );
+  // Filter for Day Tours (by mainCategory or duration heuristic)
+  const tours = allTours.filter(isDayTour);
 
   // Group tours by destination
   const toursByDestination: { [key: string]: SanityDocument[] } = {};
