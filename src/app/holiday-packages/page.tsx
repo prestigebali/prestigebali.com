@@ -76,22 +76,22 @@ function isHolidayPackage(duration: string | undefined): boolean {
 async function getHolidayPackages() {
   try {
     const allPackages = await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && isActive == true]{
+      `*[_type == "tourPackage" && isActive == true && mainCategory == "Holiday Package"]{
         _id,
         title,
-        "image": featuredImage,
-        "description": shortDescription,
-        "price": priceFrom,
+        image,
+        shortDescription,
+        price,
         rating,
         "destination": destination->name,
-        "category": experienceCategory,
+        category,
         duration,
         slug
       } | order(_createdAt asc)`
     );
 
-    // Filter to only holiday packages based on duration (7+ days)
-    return allPackages.filter((pkg: any) => isHolidayPackage(pkg.duration));
+    // Ensure array and filter out null/undefined
+    return (Array.isArray(allPackages) ? allPackages : []).filter((pkg: any) => pkg && pkg._id);
   } catch (error) {
     console.error('Error fetching holiday packages:', error);
     return [];
@@ -136,10 +136,10 @@ export default async function HolidayPackagesPage() {
               Indonesia&apos;s Most Sought-After Holiday Packages
             </h2>
             <p className="text-lg text-muted-foreground mb-4">
-              From romantic honeymoon retreats in Ubud&apos;s jungle to thrilling multi-island adventures across Lombok&apos;s pristine beaches and Labuan Bajo&apos;s Komodo dragons, Prestige Bali designs every package around your dream holiday. We handle every detail — accommodation, transport, tours, dining — so all you have to do is arrive and enjoy.
+              From romantic honeymoon retreats in Ubud&apos;s jungle to thrilling multi-island adventures across Lombok&apos;s pristine beaches and Labuan Bajo&apos;s Komodo dragons, Prestige Bali crafts unforgettable escapes.
             </p>
             <p className="text-lg text-muted-foreground">
-              Our holiday packages start from 7 nights and can extend to 14+ days, including stays at Bali&apos;s most coveted villas and resorts, curated with over 500 accommodation partners. Whether you&apos;re celebrating a special occasion or simply craving a premium escape, we make it extraordinary.
+              Our holiday packages start from 7 nights and can extend to 14+ days, including stays at Bali&apos;s most coveted villas and resorts, curated with over 500 accommodation partners. Whether you seek romance, adventure, or wellness, we have your perfect retreat.
             </p>
           </div>
         </section>
@@ -165,16 +165,16 @@ export default async function HolidayPackagesPage() {
           <div className="container mx-auto px-4">
             <div className="mb-10 text-center">
               <h2 className="text-3xl font-bold tracking-tight">
-                {packages.length > 0 ? 'Browse Our Holiday Packages' : 'Packages Coming Soon'}
+                {packages && packages.length > 0 ? 'Browse Our Holiday Packages' : 'Packages Coming Soon'}
               </h2>
               <p className="text-muted-foreground mt-2">
-                {packages.length > 0
+                {packages && packages.length > 0
                   ? `${packages.length} curated package${packages.length === 1 ? '' : 's'} ready to book`
                   : 'We are preparing exclusive holiday packages — check back soon.'}
               </p>
             </div>
 
-            {packages.length > 0 ? (
+            {packages && packages.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 {packages.map((pkg) => (
                   <TourCard key={pkg._id} id={pkg._id} {...pkg} />
