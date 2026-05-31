@@ -80,19 +80,19 @@ async function getDayTours() {
       `*[_type == "tourPackage" && isActive == true]{
         _id,
         title,
-        "image": featuredImage,
+        "image": image,
         "description": shortDescription,
-        "price": priceFrom,
+        "price": price,
         rating,
         "destination": destination->name,
-        "category": experienceCategory,
+        "category": category,
         duration,
         slug
       } | order(_createdAt asc)`
     );
 
     // Filter to only day tours based on duration
-    return allPackages.filter((pkg: any) => isDayTour(pkg.duration));
+    return (allPackages || []).filter((pkg: any) => isDayTour(pkg.duration));
   } catch (error) {
     console.error('Error fetching day tours:', error);
     return [];
@@ -117,8 +117,8 @@ export default async function DayToursPage() {
   // Get sorted destination keys
   const destinations = Object.keys(toursByDestination).sort();
 
-  // Get unique categories
-  const categories = [...new Set(tours.map(tour => tour?.category).filter(Boolean))];
+  // Get unique categories - safely handle null
+  const categories = [...new Set((tours || []).map(tour => tour?.category).filter(Boolean))];
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -155,10 +155,10 @@ export default async function DayToursPage() {
               Bali&apos;s Premier Private Day Tour Experiences
             </h2>
             <p className="text-lg text-muted-foreground mb-4">
-              Whether you&apos;re chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali&apos;s ancient villages, our luxury day tours are crafted to go beyond the ordinary. Each tour is led by a professional English-speaking guide and includes a private air-conditioned vehicle, door-to-door hotel pick-up, and flexible itineraries tailored to your interests.
+              Whether you&apos;re chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali&apos;s ancient villages, our luxury day tours are designed for discerning travelers.
             </p>
             <p className="text-lg text-muted-foreground">
-              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali&apos;s most breathtaking destinations — all without the stress of planning.
+              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali&apos;s most breathtaking destinations — all without the hassle of group tours.
             </p>
           </div>
         </section>
