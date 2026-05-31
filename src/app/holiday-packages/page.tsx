@@ -5,26 +5,27 @@ import { Footer } from '@/components/footer';
 import { TourCard } from '@/components/tour-card';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Bali Holiday Packages | Tailor-Made Multi-Day Getaways | Prestige Bali',
+  title: 'Luxury Holiday Packages in Bali | Multi-Day Tours | Prestige Bali',
   description:
-    'Discover premium Bali holiday packages — from romantic honeymoons and family vacations to adventure escapes across Bali, Lombok, Labuan Bajo, and Sumbawa. Fully tailor-made multi-day itineraries.',
+    'Tailor-made luxury holiday packages across Bali, Lombok, Labuan Bajo & Sumbawa. From romantic honeymoons to family adventures, 7+ days of unforgettable experiences.',
   keywords: [
     'Bali holiday packages',
-    'Bali tour packages',
-    'Bali multi-day packages',
-    'Bali honeymoon package',
-    'Bali family holiday',
-    'Lombok tour package',
-    'Labuan Bajo tour',
-    'luxury Bali vacation',
-    'all-inclusive Bali package',
+    'multi-day tours Bali',
+    'luxury holiday packages',
+    'Bali honeymoon packages',
+    'family holiday Bali',
+    'Lombok packages',
+    'Labuan Bajo tours',
+    'Indonesia holiday packages',
   ],
   openGraph: {
-    title: 'Bali Holiday Packages | Prestige Bali',
+    title: 'Luxury Holiday Packages | Prestige Bali',
     description:
-      'Tailor-made multi-day holiday packages across Bali, Lombok, Labuan Bajo, and Sumbawa. Luxury travel designed around you.',
+      'Curated multi-day holiday packages across Indonesia. Romantic, adventurous, or relaxing — all designed for you.',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=1200&q=80',
@@ -36,10 +37,46 @@ export const metadata: Metadata = {
   },
 };
 
+// Helper function to extract days from duration
+function extractDays(duration: string | undefined): number | null {
+  if (!duration) return null;
+  const daysMatch = duration.match(/(\d+)\s*(?:days?|d)/i);
+  return daysMatch ? parseInt(daysMatch[1], 10) : null;
+}
+
+// Check if package is a holiday package (7+ days)
+function isHolidayPackage(duration: string | undefined): boolean {
+  if (!duration) return false;
+  const lowerDuration = duration.toLowerCase();
+
+  // Check for explicit multiday patterns
+  if (/\b\d+\s*days?\s*\d+\s*nights?\b/i.test(lowerDuration)) {
+    const days = extractDays(duration);
+    return days !== null && days >= 7;
+  }
+
+  if (/\b\d+d\/\d+n\b/i.test(lowerDuration)) {
+    const days = extractDays(duration);
+    return days !== null && days >= 7;
+  }
+
+  if (/\bmulti[-\s]?day\b/i.test(lowerDuration)) {
+    return true;
+  }
+
+  // Check for explicit days
+  const days = extractDays(duration);
+  if (days !== null && days >= 7) {
+    return true;
+  }
+
+  return false;
+}
+
 async function getHolidayPackages() {
   try {
-    return await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && mainCategory == "Holiday Package" && isActive != false]{
+    const allPackages = await client.fetch<SanityDocument[]>(
+      `*[_type == "tourPackage" && isActive == true]{
         _id,
         title,
         "image": featuredImage,
@@ -48,11 +85,15 @@ async function getHolidayPackages() {
         rating,
         "destination": destination->name,
         "category": experienceCategory,
-        mainCategory,
+        duration,
         slug
       } | order(_createdAt asc)`
     );
-  } catch {
+
+    // Filter to only holiday packages based on duration (7+ days)
+    return allPackages.filter((pkg: any) => isHolidayPackage(pkg.duration));
+  } catch (error) {
+    console.error('Error fetching holiday packages:', error);
     return [];
   }
 }
@@ -98,7 +139,7 @@ export default async function HolidayPackagesPage() {
               From romantic honeymoon retreats in Ubud&apos;s jungle to thrilling multi-island adventures across Lombok&apos;s pristine beaches and Labuan Bajo&apos;s Komodo dragons, Prestige Bali designs every package around your dream holiday. We handle every detail — accommodation, transport, tours, dining — so all you have to do is arrive and enjoy.
             </p>
             <p className="text-lg text-muted-foreground">
-              Our holiday packages start from 3 nights and can extend to 14+ days, including stays at Bali&apos;s most coveted villas and resorts, curated with over 500 accommodation partners. Whether you&apos;re celebrating a special occasion or simply craving a premium escape, we make it extraordinary.
+              Our holiday packages start from 7 nights and can extend to 14+ days, including stays at Bali&apos;s most coveted villas and resorts, curated with over 500 accommodation partners. Whether you&apos;re celebrating a special occasion or simply craving a premium escape, we make it extraordinary.
             </p>
           </div>
         </section>
@@ -174,6 +215,25 @@ export default async function HolidayPackagesPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 bg-primary text-primary-foreground">
+          <div className="container mx-auto px-4 text-center max-w-2xl">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready for Your Dream Holiday?
+            </h2>
+            <p className="mb-8 text-lg opacity-90">
+              Let us create a bespoke holiday package tailored to your vision.
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full bg-white text-primary hover:bg-white/90"
+            >
+              <Link href="/how-to-book">Start Planning Your Holiday</Link>
+            </Button>
           </div>
         </section>
 
