@@ -6,6 +6,7 @@ import { TourCard } from '@/components/tour-card';
 import { client } from '@/lib/sanity';
 import type { SanityDocument } from 'next-sanity';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Luxury Day Tours in Bali | Private Guided Experiences | Prestige Bali',
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Luxury Day Tours in Bali | Prestige Bali',
     description:
-      'Discover the best of Bali in a single day. Private, premium, and fully personalised day tours with Prestige Bali.',
+      'Discover Bali in a single day with our private, luxury day tours. Expert guides, custom itineraries, and premium service.',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200&q=80',
@@ -36,10 +37,47 @@ export const metadata: Metadata = {
   },
 };
 
+// Helper function to extract hours from duration
+function extractHours(duration: string | undefined): number | null {
+  if (!duration) return null;
+  const hoursMatch = duration.match(/(\d+)\s*(?:hours?|hrs?|hour|hr)/i);
+  return hoursMatch ? parseInt(hoursMatch[1], 10) : null;
+}
+
+// Helper function to extract days from duration
+function extractDays(duration: string | undefined): number | null {
+  if (!duration) return null;
+  const daysMatch = duration.match(/(\d+)\s*(?:days?|d)/i);
+  return daysMatch ? parseInt(daysMatch[1], 10) : null;
+}
+
+// Check if package is a day tour (8+ hours or 1 day)
+function isDayTour(duration: string | undefined): boolean {
+  if (!duration) return false;
+  const lowerDuration = duration.toLowerCase();
+
+  // Hour-based checks (8+ hours)
+  const hours = extractHours(duration);
+  if (hours !== null && hours >= 8) return true;
+
+  // Explicit day tour patterns
+  if (/\bfull\s*day\b/i.test(lowerDuration)) return true;
+  if (/\bhalf\s*day\b/i.test(lowerDuration)) return true;
+  if (/\b1\s*day\b/i.test(lowerDuration)) return true;
+  if (/\bsingle\s*day\b/i.test(lowerDuration)) return true;
+
+  // If it has days, check if it's 1 day
+  const days = extractDays(duration);
+  if (days !== null && days === 1) return true;
+  if (days !== null && days > 1) return false;
+
+  return false;
+}
+
 async function getDayTours() {
   try {
-    return await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && mainCategory == "Day Tour" && (isActive == true || isActive == null)] | order(_createdAt asc) {
+    const allPackages = await client.fetch<SanityDocument[]>(
+      `*[_type == "tourPackage" && isActive == true]{
         _id,
         title,
         "image": featuredImage,
@@ -48,22 +86,24 @@ async function getDayTours() {
         rating,
         "destination": destination->name,
         "category": experienceCategory,
-        mainCategory,
-        slug,
-        duration
-      }`
+        duration,
+        slug
+      } | order(_createdAt asc)`
     );
+
+    // Filter to only day tours based on duration
+    return allPackages.filter((pkg: any) => isDayTour(pkg.duration));
   } catch (error) {
-    console.error('Error fetching tours:', error);
+    console.error('Error fetching day tours:', error);
     return [];
   }
 }
 
 export default async function DayToursPage() {
-  const allTours = await getDayTours() || [];
+  const tours = await getDayTours();
 
   // Group tours by destination
-  const toursByDestination = allTours.reduce((acc: any, tour: any) => {
+  const toursByDestination = tours.reduce((acc: any, tour: any) => {
     if (!tour || !tour._id) return acc;
     
     const dest = tour.destination || 'Other';
@@ -78,7 +118,7 @@ export default async function DayToursPage() {
   const destinations = Object.keys(toursByDestination).sort();
 
   // Get unique categories
-  const categories = [...new Set(allTours.map(tour => tour?.category).filter(Boolean))];
+  const categories = [...new Set(tours.map(tour => tour?.category).filter(Boolean))];
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -112,19 +152,19 @@ export default async function DayToursPage() {
         <section className="py-14 bg-background border-b border-border">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Bali's Premier Private Day Tour Experiences
+              Bali&apos;s Premier Private Day Tour Experiences
             </h2>
             <p className="text-lg text-muted-foreground mb-4">
-              Whether you're chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali's ancient villages, our luxury day tours are tailored to your preferences.
+              Whether you&apos;re chasing the sacred rice terraces of Ubud, the dramatic sea temples of Uluwatu, or the cultural heartbeat of Bali&apos;s ancient villages, our luxury day tours are crafted to go beyond the ordinary. Each tour is led by a professional English-speaking guide and includes a private air-conditioned vehicle, door-to-door hotel pick-up, and flexible itineraries tailored to your interests.
             </p>
             <p className="text-lg text-muted-foreground">
-              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali's most breathtaking destinations — all without the hassle.
+              From sunrise hikes at Mount Batur to sunset cocktails at Tanah Lot, Prestige Bali delivers premium one-day escapes across Bali&apos;s most breathtaking destinations — all without the stress of planning.
             </p>
           </div>
         </section>
 
         {/* Products Grid by Destination */}
-        {allTours.length > 0 ? (
+        {tours.length > 0 ? (
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
               <div className="mb-12 text-center">
@@ -132,7 +172,7 @@ export default async function DayToursPage() {
                   Browse Our Day Tours
                 </h2>
                 <p className="text-muted-foreground">
-                  {`${allTours.length} exclusive day tour${allTours.length === 1 ? '' : 's'} available to book`}
+                  {`${tours.length} exclusive day tour${tours.length === 1 ? '' : 's'} available to book`}
                 </p>
               </div>
 
@@ -213,6 +253,23 @@ export default async function DayToursPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 bg-primary text-primary-foreground">
+          <div className="container mx-auto px-4 text-center max-w-2xl">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready for Your Perfect Day Tour?</h2>
+            <p className="mb-8 text-lg opacity-90">
+              Let us craft a custom day tour tailored to your interests and pace.
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full bg-white text-primary hover:bg-white/90"
+            >
+              <Link href="/how-to-book">Start Planning Your Tour</Link>
+            </Button>
           </div>
         </section>
 
