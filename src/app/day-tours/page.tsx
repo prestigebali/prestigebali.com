@@ -77,22 +77,22 @@ function isDayTour(duration: string | undefined): boolean {
 async function getDayTours() {
   try {
     const allPackages = await client.fetch<SanityDocument[]>(
-      `*[_type == "tourPackage" && isActive == true]{
+      `*[_type == "tourPackage" && isActive == true && mainCategory == "Day Tour"]{
         _id,
         title,
-        "image": image,
-        "description": shortDescription,
-        "price": price,
+        image,
+        shortDescription,
+        price,
         rating,
         "destination": destination->name,
-        "category": category,
+        category,
         duration,
         slug
       } | order(_createdAt asc)`
     );
 
-    // Filter to only day tours based on duration
-    return (allPackages || []).filter((pkg: any) => isDayTour(pkg.duration));
+    // Ensure array and filter out null/undefined
+    return (Array.isArray(allPackages) ? allPackages : []).filter((pkg: any) => pkg && pkg._id);
   } catch (error) {
     console.error('Error fetching day tours:', error);
     return [];
@@ -103,7 +103,7 @@ export default async function DayToursPage() {
   const tours = await getDayTours();
 
   // Group tours by destination
-  const toursByDestination = tours.reduce((acc: any, tour: any) => {
+  const toursByDestination = (tours || []).reduce((acc: any, tour: any) => {
     if (!tour || !tour._id) return acc;
     
     const dest = tour.destination || 'Other';
@@ -118,7 +118,7 @@ export default async function DayToursPage() {
   const destinations = Object.keys(toursByDestination).sort();
 
   // Get unique categories - safely handle null
-  const categories = [...new Set((tours || []).map(tour => tour?.category).filter(Boolean))];
+  const categories = Array.from(new Set((tours || []).map(tour => tour?.category).filter(Boolean)));
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
@@ -164,7 +164,7 @@ export default async function DayToursPage() {
         </section>
 
         {/* Products Grid by Destination */}
-        {tours.length > 0 ? (
+        {tours && tours.length > 0 ? (
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
               <div className="mb-12 text-center">
@@ -177,9 +177,9 @@ export default async function DayToursPage() {
               </div>
 
               {/* Quick Filter by Category */}
-              {categories.length > 0 && (
+              {categories && categories.length > 0 && (
                 <div className="mb-12 flex flex-wrap gap-2 justify-center">
-                  {categories.map((category) => (
+                  {categories.map((category: any) => (
                     <Button
                       key={category}
                       variant="outline"
