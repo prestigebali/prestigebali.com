@@ -9,6 +9,7 @@ import {
   Users,
   CreditCard,
   Info,
+  Zap,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
@@ -73,11 +74,121 @@ export const deskStructure: StructureResolver = (S) =>
         .icon(MapIcon)
         .schemaType('destination')
         .child(S.documentTypeList('destination').title('Destinations')),
+      
+      // Programs Section - Hierarchical Organization
       S.listItem()
-        .title('Tour Packages')
-        .icon(Package)
-        .schemaType('tourPackage')
-        .child(S.documentTypeList('tourPackage').title('Tour Packages')),
+        .title('Programs')
+        .icon(Zap)
+        .child(
+          S.list()
+            .title('Programs by Type')
+            .items([
+              // Day Tours Section
+              S.listItem()
+                .title('Day Tours')
+                .icon(Package)
+                .child(
+                  S.list()
+                    .title('Day Tours')
+                    .items([
+                      // All Day Tours
+                      S.listItem()
+                        .title('All Day Tours')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('All Day Tours')
+                            .filter('mainCategory == "Day Tour"')
+                        ),
+                      S.divider(),
+                      // Day Tours by Experience Category
+                      S.listItem()
+                        .title('By Experience Category')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Day Tours by Category')
+                            .filter('mainCategory == "Day Tour"')
+                            .defaultOrdering([{field: 'category', direction: 'asc'}])
+                        ),
+                      S.divider(),
+                      // Day Tours by Price
+                      S.listItem()
+                        .title('By Price (Low to High)')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Day Tours by Price')
+                            .filter('mainCategory == "Day Tour"')
+                            .defaultOrdering([{field: 'price', direction: 'asc'}])
+                        ),
+                      S.divider(),
+                      // Create New Day Tour
+                      S.listItem()
+                        .title('+ Create New Day Tour')
+                        .icon(Package)
+                        .child(
+                          S.document()
+                            .schemaType('tourPackage')
+                            .title('New Day Tour')
+                        ),
+                    ])
+                ),
+              
+              // Holiday Packages Section
+              S.listItem()
+                .title('Holiday Packages')
+                .icon(Package)
+                .child(
+                  S.list()
+                    .title('Holiday Packages')
+                    .items([
+                      // All Holiday Packages
+                      S.listItem()
+                        .title('All Holiday Packages')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('All Holiday Packages')
+                            .filter('mainCategory == "Holiday Package"')
+                        ),
+                      S.divider(),
+                      // Holiday Packages by Experience Category
+                      S.listItem()
+                        .title('By Experience Category')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Holiday Packages by Category')
+                            .filter('mainCategory == "Holiday Package"')
+                            .defaultOrdering([{field: 'category', direction: 'asc'}])
+                        ),
+                      S.divider(),
+                      // Holiday Packages by Price
+                      S.listItem()
+                        .title('By Price (Low to High)')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Holiday Packages by Price')
+                            .filter('mainCategory == "Holiday Package"')
+                            .defaultOrdering([{field: 'price', direction: 'asc'}])
+                        ),
+                      S.divider(),
+                      // Create New Holiday Package
+                      S.listItem()
+                        .title('+ Create New Holiday Package')
+                        .icon(Package)
+                        .child(
+                          S.document()
+                            .schemaType('tourPackage')
+                            .title('New Holiday Package')
+                        ),
+                    ])
+                ),
+              
+              S.divider(),
+              // All Tour Packages (for reference/management)
+              S.listItem()
+                .title('All Tour Packages (Legacy View)')
+                .child(S.documentTypeList('tourPackage').title('All Tour Packages')),
+            ])
+        ),
+      
       // The rest of the document types
       ...S.documentTypeListItems().filter(
         (listItem) =>
