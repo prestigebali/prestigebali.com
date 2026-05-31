@@ -42,13 +42,13 @@ export default defineType({
     }),
 
     // =====================
-    // MAIN NAV CATEGORY
+    // MAIN CATEGORY - FOR DAY TOURS VS HOLIDAY PACKAGES
     // =====================
     defineField({
       name: 'mainCategory',
-      title: 'Main Category (Nav Menu)',
+      title: 'Package Type',
       type: 'string',
-      description: 'Controls which nav dropdown this package appears under on the website.',
+      description: 'Choose: Day Tour or Holiday Package',
       validation: Rule => Rule.required(),
       options: {
         list: [
@@ -60,50 +60,24 @@ export default defineType({
     }),
 
     // =====================
-    // EXPERIENCE CATEGORY (IMPORTANT)
+    // EXPERIENCE CATEGORY
     // =====================
     defineField({
-      name: 'experienceCategory',
+      name: 'category',
       title: 'Experience Category',
       type: 'string',
-      validation: Rule => Rule.required(),
-      options: {
-        list: [
-          {
-            title: 'All-Inclusive Luxury Holiday Packages in Bali',
-            value: 'all-inclusive-luxury-holiday',
-          },
-          {
-            title: 'Luxury Private Transportation in Bali - Chauffeur & VIP Transfers',
-            value: 'luxury-private-transportation',
-          },
-          {
-            title: 'Private Luxury Tours & Signature Bali Experiences',
-            value: 'private-luxury-tours',
-          },
-          {
-            title: 'All-Inclusive Retreat Hosting Service in Bali',
-            value: 'retreat-hosting',
-          },
-          {
-            title: 'Luxury Honeymoons & Romantic Getaways in Bali',
-            value: 'luxury-honeymoon',
-          },
-          {
-            title: 'Luxury Villas & Private Stays',
-            value: 'luxury-villas',
-          },
-          {
-            title: 'Luxury Yacht Charters & Island Hopping (Bali, Komodo, Labuan Bajo)',
-            value: 'luxury-yacht-charter',
-          },
-          {
-            title: 'Luxury Team Building & Corporate Retreats in Bali',
-            value: 'corporate-retreat',
-          },
-        ],
-        layout: 'dropdown',
-      },
+      description: 'Example: Cultural Adventures, Beach Escapes, etc.',
+    }),
+
+    // =====================
+    // DESTINATION
+    // =====================
+    defineField({
+      name: 'destination',
+      title: 'Destination',
+      type: 'reference',
+      to: [{type: 'destination'}],
+      description: 'Select the destination for this tour',
     }),
 
     // =====================
@@ -117,9 +91,10 @@ export default defineType({
     }),
 
     defineField({
-      name: 'priceFrom',
+      name: 'price',
       title: 'Price From',
       type: 'number',
+      description: 'Starting price for this package',
     }),
 
     defineField({
@@ -134,13 +109,21 @@ export default defineType({
       title: 'Inclusions',
       type: 'array',
       of: [{type: 'string'}],
+      description: 'What\'s included in this package',
+    }),
+
+    defineField({
+      name: 'rating',
+      title: 'Rating',
+      type: 'number',
+      description: 'Rating out of 5',
     }),
 
     // =====================
     // MEDIA
     // =====================
     defineField({
-      name: 'featuredImage',
+      name: 'image',
       title: 'Featured Image',
       type: 'image',
       options: {
@@ -150,7 +133,7 @@ export default defineType({
 
     defineField({
       name: 'gallery',
-      title: 'Gallery',
+      title: 'Gallery Images',
       type: 'array',
       of: [{type: 'image'}],
     }),
@@ -170,7 +153,7 @@ export default defineType({
     select: {
       title: 'title',
       subtitle: 'mainCategory',
-      media: 'featuredImage',
+      media: 'image',
     },
   },
 })
