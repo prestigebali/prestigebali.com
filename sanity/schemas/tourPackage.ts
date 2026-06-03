@@ -60,13 +60,15 @@ export default defineType({
     }),
 
     // =====================
-    // EXPERIENCE CATEGORY
+    // EXPERIENCE CATEGORY - NOW LINKED TO TOUR CATEGORY DOC
     // =====================
     defineField({
       name: 'category',
-      title: 'Experience Category',
-      type: 'string',
-      description: 'Example: Cultural Adventures, Beach Escapes, etc.',
+      title: 'Tour Category',
+      type: 'reference',
+      to: [{type: 'tourCategory'}],
+      description: 'Select from predefined tour categories (Water Sports, Cultural, Adventure, etc.)',
+      validation: Rule => Rule.required(),
     }),
 
     // =====================
@@ -154,6 +156,15 @@ export default defineType({
       title: 'title',
       subtitle: 'mainCategory',
       media: 'image',
+      category: 'category.title',
+    },
+    prepare(selection) {
+      const { title, subtitle, category } = selection;
+      return {
+        title: title,
+        subtitle: `${subtitle}${category ? ' • ' + category : ''}`,
+        media: selection.media,
+      }
     },
   },
 })
