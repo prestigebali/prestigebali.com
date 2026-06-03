@@ -1,5 +1,6 @@
 import {type SchemaTypeDefinition} from 'sanity'
 import destination from './schemas/destination'
+import tourCategory from './schemas/tourCategory'
 import tourPackage from './schemas/tourPackage'
 import siteSettings from './schemas/siteSettings'
 import promotion from './schemas/promotion'
@@ -18,6 +19,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   heroSettings,
   aboutPage,
   destination,
+  tourCategory,
   tourPackage,
   promotion,
   experience,
