@@ -60,15 +60,26 @@ export default defineType({
     }),
 
     // =====================
-    // EXPERIENCE CATEGORY - NOW LINKED TO TOUR CATEGORY DOC
+    // TOUR CATEGORY - FILTER BY TYPE
     // =====================
     defineField({
       name: 'category',
       title: 'Tour Category',
       type: 'reference',
       to: [{type: 'tourCategory'}],
-      description: 'Select from predefined tour categories (Water Sports, Cultural, Adventure, etc.)',
+      description: 'Select tour type (Water Sports, Cultural, Adventure, etc.)',
       validation: Rule => Rule.required(),
+    }),
+
+    // =====================
+    // EXPERIENCE CATEGORY - FILTER BY EXPERIENCE TYPE
+    // =====================
+    defineField({
+      name: 'experienceCategory',
+      title: 'Experience Category',
+      type: 'reference',
+      to: [{type: 'experienceCategory'}],
+      description: 'Select experience type (Romantic, Adventure, Wellness, Corporate Retreat, etc.)',
     }),
 
     // =====================
@@ -157,12 +168,16 @@ export default defineType({
       subtitle: 'mainCategory',
       media: 'image',
       category: 'category.title',
+      experience: 'experienceCategory.title',
     },
     prepare(selection) {
-      const { title, subtitle, category } = selection;
+      const { title, subtitle, category, experience } = selection;
+      let subtitle_text = subtitle;
+      if (category) subtitle_text += ` • ${category}`;
+      if (experience) subtitle_text += ` • ${experience}`;
       return {
         title: title,
-        subtitle: `${subtitle}${category ? ' • ' + category : ''}`,
+        subtitle: subtitle_text,
         media: selection.media,
       }
     },
