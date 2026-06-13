@@ -10,12 +10,40 @@ import {
   CreditCard,
   Info,
   Zap,
+  BarChart3,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
     .title('Content')
     .items([
+      // Dashboard Section
+      S.listItem()
+        .title('📊 Dashboard')
+        .icon(BarChart3)
+        .child(
+          S.list()
+            .title('Dashboard')
+            .items([
+              S.listItem()
+                .title('Bookings Dashboard')
+                .child(
+                  S.document()
+                    .documentId('bookings-dashboard')
+                    .schemaType('bookingDashboard')
+                ),
+              S.listItem()
+                .title('Analytics Dashboard')
+                .child(
+                  S.document()
+                    .documentId('analytics-dashboard')
+                    .schemaType('analyticsDashboard')
+                ),
+            ])
+        ),
+
+      S.divider(),
+
       // Site Settings singleton
       S.listItem()
         .title('Site Settings')
@@ -26,6 +54,7 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId('siteSettings')
             .title('Site Settings'),
         ),
+
       // Payment Settings singleton
       S.listItem()
         .title('Payment Settings')
@@ -36,6 +65,7 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId('paymentSettings')
             .title('Payment Settings'),
         ),
+
       // Hero Settings singleton
       S.listItem()
         .title('Hero Settings')
@@ -46,38 +76,74 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId('heroSettings')
             .title('Hero Settings'),
         ),
+
       S.listItem()
         .title('About Page')
         .icon(Info)
         .child(
           S.editor().schemaType('aboutPage').documentId('aboutPage').title('About Page'),
         ),
+
       S.divider(),
-      // Document types
+
+      // Bookings Management
       S.listItem()
-        .title('Bookings')
+        .title('📋 Bookings')
         .icon(Users)
         .schemaType('booking')
-        .child(S.documentTypeList('booking').title('Bookings')),
+        .child(
+          S.documentTypeList('booking')
+            .title('All Bookings')
+            .canHandleIntent((intent, params) => {
+              // Allow all document intents (create, edit, delete)
+              return intent === 'edit' || intent === 'create'
+            })
+        ),
+
+      // Promotions
       S.listItem()
-        .title('Promotions')
+        .title('🎯 Promotions')
         .icon(TagIcon)
         .schemaType('promotion')
-        .child(S.documentTypeList('promotion').title('Promotions')),
+        .child(
+          S.documentTypeList('promotion')
+            .title('Promotions')
+            .canHandleIntent((intent, params) => {
+              return intent === 'edit' || intent === 'create'
+            })
+        ),
+
+      // Experiences
       S.listItem()
-        .title('Experiences')
+        .title('✨ Experiences')
         .icon(Heart)
         .schemaType('experience')
-        .child(S.documentTypeList('experience').title('Experiences')),
+        .child(
+          S.documentTypeList('experience')
+            .title('Experiences')
+            .canHandleIntent((intent, params) => {
+              return intent === 'edit' || intent === 'create'
+            })
+        ),
+
+      // Destinations
       S.listItem()
-        .title('Destinations')
+        .title('🗺️ Destinations')
         .icon(MapIcon)
         .schemaType('destination')
-        .child(S.documentTypeList('destination').title('Destinations')),
-      
+        .child(
+          S.documentTypeList('destination')
+            .title('Destinations')
+            .canHandleIntent((intent, params) => {
+              return intent === 'edit' || intent === 'create'
+            })
+        ),
+
+      S.divider(),
+
       // Programs Section - Hierarchical Organization
       S.listItem()
-        .title('Programs')
+        .title('📦 Programs')
         .icon(Zap)
         .child(
           S.list()
@@ -85,42 +151,76 @@ export const deskStructure: StructureResolver = (S) =>
             .items([
               // Day Tours Section
               S.listItem()
-                .title('Day Tours')
+                .title('Day Tours (15)')
                 .icon(Package)
                 .child(
                   S.list()
                     .title('Day Tours')
                     .items([
-                      // All Day Tours
                       S.listItem()
                         .title('All Day Tours')
                         .child(
                           S.documentTypeList('tourPackage')
                             .title('All Day Tours')
                             .filter('mainCategory == "Day Tour"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
                         ),
                       S.divider(),
-                      // Day Tours by Experience Category
                       S.listItem()
-                        .title('By Experience Category')
+                        .title('Water Sports')
                         .child(
                           S.documentTypeList('tourPackage')
-                            .title('Day Tours by Category')
-                            .filter('mainCategory == "Day Tour"')
-                            .defaultOrdering([{field: 'category', direction: 'asc'}])
+                            .title('Water Sports')
+                            .filter('mainCategory == "Day Tour" && category == "Water Sports"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
+                        ),
+                      S.listItem()
+                        .title('Cultural Tours')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Cultural Tours')
+                            .filter('mainCategory == "Day Tour" && category == "Cultural"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
+                        ),
+                      S.listItem()
+                        .title('Adventure')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Adventure')
+                            .filter('mainCategory == "Day Tour" && category == "Adventure"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
+                        ),
+                      S.listItem()
+                        .title('Leisure Activities')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Leisure Activities')
+                            .filter('mainCategory == "Day Tour" && category == "Leisure"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
                         ),
                       S.divider(),
-                      // Day Tours by Price
                       S.listItem()
-                        .title('By Price (Low to High)')
+                        .title('By Price')
                         .child(
                           S.documentTypeList('tourPackage')
                             .title('Day Tours by Price')
                             .filter('mainCategory == "Day Tour"')
                             .defaultOrdering([{field: 'price', direction: 'asc'}])
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
                         ),
                       S.divider(),
-                      // Create New Day Tour
                       S.listItem()
                         .title('+ Create New Day Tour')
                         .icon(Package)
@@ -131,45 +231,57 @@ export const deskStructure: StructureResolver = (S) =>
                         ),
                     ])
                 ),
-              
+
               // Holiday Packages Section
               S.listItem()
-                .title('Holiday Packages')
+                .title('Holiday Packages (10)')
                 .icon(Package)
                 .child(
                   S.list()
                     .title('Holiday Packages')
                     .items([
-                      // All Holiday Packages
                       S.listItem()
                         .title('All Holiday Packages')
                         .child(
                           S.documentTypeList('tourPackage')
                             .title('All Holiday Packages')
                             .filter('mainCategory == "Holiday Package"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
                         ),
                       S.divider(),
-                      // Holiday Packages by Experience Category
                       S.listItem()
-                        .title('By Experience Category')
+                        .title('Honeymoon Packages')
                         .child(
                           S.documentTypeList('tourPackage')
-                            .title('Holiday Packages by Category')
-                            .filter('mainCategory == "Holiday Package"')
-                            .defaultOrdering([{field: 'category', direction: 'asc'}])
+                            .title('Honeymoon')
+                            .filter('mainCategory == "Holiday Package" && category == "Honeymoon"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
                         ),
-                      S.divider(),
-                      // Holiday Packages by Price
                       S.listItem()
-                        .title('By Price (Low to High)')
+                        .title('Family Packages')
                         .child(
                           S.documentTypeList('tourPackage')
-                            .title('Holiday Packages by Price')
-                            .filter('mainCategory == "Holiday Package"')
-                            .defaultOrdering([{field: 'price', direction: 'asc'}])
+                            .title('Family')
+                            .filter('mainCategory == "Holiday Package" && category == "Family"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
+                        ),
+                      S.listItem()
+                        .title('Adventure Packages')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('Adventure')
+                            .filter('mainCategory == "Holiday Package" && category == "Adventure"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
                         ),
                       S.divider(),
-                      // Create New Holiday Package
                       S.listItem()
                         .title('+ Create New Holiday Package')
                         .icon(Package)
@@ -180,16 +292,40 @@ export const deskStructure: StructureResolver = (S) =>
                         ),
                     ])
                 ),
-              
-              S.divider(),
-              // All Tour Packages (for reference/management)
+
+              // Wellness Retreats
               S.listItem()
-                .title('All Tour Packages (Legacy View)')
-                .child(S.documentTypeList('tourPackage').title('All Tour Packages')),
+                .title('Wellness Retreats')
+                .icon(Package)
+                .child(
+                  S.list()
+                    .title('Wellness Retreats')
+                    .items([
+                      S.listItem()
+                        .title('All Wellness Retreats')
+                        .child(
+                          S.documentTypeList('tourPackage')
+                            .title('All Wellness Retreats')
+                            .filter('mainCategory == "Wellness Retreat"')
+                            .canHandleIntent((intent, params) => {
+                              return intent === 'edit' || intent === 'create'
+                            })
+                        ),
+                      S.divider(),
+                      S.listItem()
+                        .title('+ Create New Wellness Retreat')
+                        .icon(Package)
+                        .child(
+                          S.document()
+                            .schemaType('tourPackage')
+                            .title('New Wellness Retreat')
+                        ),
+                    ])
+                ),
             ])
         ),
-      
-      // The rest of the document types
+
+      // Rest of document types
       ...S.documentTypeListItems().filter(
         (listItem) =>
           ![
