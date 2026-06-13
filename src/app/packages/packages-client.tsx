@@ -126,7 +126,7 @@ export function PackagesClient({ dayTours, holidayPackages, destinations }: Pack
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {packages.filter(pkg => pkg && pkg._id).map(pkg => (
                       <TourCard key={pkg._id} id={pkg._id} {...pkg} />
-                    ))}
+                    )}
                   </div>
                 </div>
               ))
