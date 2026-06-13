@@ -35,7 +35,6 @@ export function PackagesClient({ dayTours, holidayPackages, destinations }: Pack
   const groupByDestination = (packages: SanityDocument[]) => {
     const grouped: { [key: string]: SanityDocument[] } = {};
    packages.forEach(pkg => {
-packages.forEach(pkg => {
   if (!pkg || !pkg._id) return;
   const dest = pkg.destination || 'Other';
       if (!grouped[dest]) {
