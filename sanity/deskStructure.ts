@@ -96,7 +96,7 @@ export const deskStructure: StructureResolver = (S) =>
             .title('All Bookings')
             .canHandleIntent((intent, params) => {
               // Allow all document intents (create, edit, delete)
-              return intent === 'edit' || intent === 'create'
+              return intent === 'edit' || intent === 'create' || intent === 'delete'
             })
         ),
 
@@ -109,7 +109,7 @@ export const deskStructure: StructureResolver = (S) =>
           S.documentTypeList('promotion')
             .title('Promotions')
             .canHandleIntent((intent, params) => {
-              return intent === 'edit' || intent === 'create'
+              return intent === 'edit' || intent === 'create' || intent === 'delete'
             })
         ),
 
@@ -122,7 +122,7 @@ export const deskStructure: StructureResolver = (S) =>
           S.documentTypeList('experience')
             .title('Experiences')
             .canHandleIntent((intent, params) => {
-              return intent === 'edit' || intent === 'create'
+              return intent === 'edit' || intent === 'create' || intent === 'delete'
             })
         ),
 
@@ -135,7 +135,7 @@ export const deskStructure: StructureResolver = (S) =>
           S.documentTypeList('destination')
             .title('Destinations')
             .canHandleIntent((intent, params) => {
-              return intent === 'edit' || intent === 'create'
+              return intent === 'edit' || intent === 'create' || intent === 'delete'
             })
         ),
 
@@ -164,7 +164,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('All Day Tours')
                             .filter('mainCategory == "Day Tour"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.divider(),
@@ -175,7 +175,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Water Sports')
                             .filter('mainCategory == "Day Tour" && category == "Water Sports"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.listItem()
@@ -185,7 +185,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Cultural Tours')
                             .filter('mainCategory == "Day Tour" && category == "Cultural"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.listItem()
@@ -195,7 +195,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Adventure')
                             .filter('mainCategory == "Day Tour" && category == "Adventure"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.listItem()
@@ -205,7 +205,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Leisure Activities')
                             .filter('mainCategory == "Day Tour" && category == "Leisure"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.divider(),
@@ -217,7 +217,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .filter('mainCategory == "Day Tour"')
                             .defaultOrdering([{field: 'price', direction: 'asc'}])
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.divider(),
@@ -247,7 +247,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('All Holiday Packages')
                             .filter('mainCategory == "Holiday Package"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.divider(),
@@ -258,7 +258,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Honeymoon')
                             .filter('mainCategory == "Holiday Package" && category == "Honeymoon"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.listItem()
@@ -268,7 +268,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Family')
                             .filter('mainCategory == "Holiday Package" && category == "Family"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.listItem()
@@ -278,7 +278,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('Adventure')
                             .filter('mainCategory == "Holiday Package" && category == "Adventure"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.divider(),
@@ -308,7 +308,7 @@ export const deskStructure: StructureResolver = (S) =>
                             .title('All Wellness Retreats')
                             .filter('mainCategory == "Wellness Retreat"')
                             .canHandleIntent((intent, params) => {
-                              return intent === 'edit' || intent === 'create'
+                              return intent === 'edit' || intent === 'create' || intent === 'delete'
                             })
                         ),
                       S.divider(),
