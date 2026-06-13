@@ -10,10 +10,15 @@ async function getPackagesData() {
     _id,
     title,
     shortDescription,
+    description,
+    price,
     priceFrom,
     currency,
+    image,
     featuredImage,
+    rating,
     "destination": destination->name,
+    category,
     slug,
     isActive
   } | order(_createdAt asc)`;
@@ -22,10 +27,15 @@ async function getPackagesData() {
     _id,
     title,
     shortDescription,
+    description,
+    price,
     priceFrom,
     currency,
+    image,
     featuredImage,
+    rating,
     "destination": destination->name,
+    category,
     slug,
     isActive
   } | order(_createdAt asc)`;
