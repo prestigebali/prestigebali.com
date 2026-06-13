@@ -34,9 +34,9 @@ export function PackagesClient({ dayTours, holidayPackages, destinations }: Pack
   // Group packages by destination
   const groupByDestination = (packages: SanityDocument[]) => {
     const grouped: { [key: string]: SanityDocument[] } = {};
-   packages.forEach(pkg => {
-  if (!pkg || !pkg._id) return;
-  const dest = pkg.destination || 'Other';
+    packages.forEach(pkg => {
+      if (!pkg || !pkg._id) return;
+      const dest = pkg.destination || 'Other';
       if (!grouped[dest]) {
         grouped[dest] = [];
       }
@@ -124,9 +124,8 @@ export function PackagesClient({ dayTours, holidayPackages, destinations }: Pack
                 <div key={destination}>
                   <h3 className="text-xl font-semibold mb-4 text-primary">{destination}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                   {packages.filter(pkg => pkg && pkg._id).map(pkg => (
-  <TourCard key={pkg._id} id={pkg._id} {...pkg} />
-))}
+                    {packages.filter(pkg => pkg && pkg._id).map(pkg => (
+                      <TourCard key={pkg._id} id={pkg._id} {...pkg} />
                     ))}
                   </div>
                 </div>
