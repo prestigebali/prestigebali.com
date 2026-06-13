@@ -20,4 +20,14 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
+
+  document: {
+    actions: (prev, context) => {
+      // Keep all default actions including delete
+      return prev.filter(
+        (action) =>
+          action.action !== 'unpublish' // Remove unpublish only
+      )
+    },
+  },
 })
