@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sanityClient } from '@/src/lib/sanity-client'
+import { client } from '@/lib/sanity'
 
 // GET all bookings
 export async function GET(request: NextRequest) {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       createdAt
     }`
 
-    const bookings = await sanityClient.fetch(query)
+const bookings = await client.fetch(query)
 
     return NextResponse.json(bookings)
   } catch (error) {
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     }
 
-    const result = await sanityClient.create(booking)
+    const result = await client.create(booking)
 
     return NextResponse.json(result, { status: 201 })
   } catch (error) {
