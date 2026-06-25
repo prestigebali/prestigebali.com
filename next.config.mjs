@@ -47,7 +47,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'prestigebali.com',
+      hostname: 'prestigebalileisure.com',
         port: '',
         pathname: '/**',
       },
